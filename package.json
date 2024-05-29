@@ -3,6 +3,6 @@
   "workspaces": [
     "packages/frontend",
     "packages/backend",
-    "common"
+    "packages/common"
   ]
 }
