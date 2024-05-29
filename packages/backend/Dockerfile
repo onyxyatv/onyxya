@@ -1,17 +1,26 @@
-FROM node:lts as backend-build
-
-USER onyxya
+FROM node:lts-alpine as build
 
 WORKDIR /home/onyxya/backend
 
-COPY . /home/onyxya/backend/
+COPY package.json ./
 
-RUN npm install && npm run build
+RUN npm install
 
-FROM node:lts-alpine
+COPY . .
 
-USER onyxya
+RUN chown -R node:node /home/onyxya/backend
 
-WORKDIR /home/onyxya/packages/backend
+USER node
 
-COPY --from=backend-build --chown=onyxya:onyxya /home/onyxya/backend .
+RUN npm run build
+
+FROM node:lts-alpine as production
+
+WORKDIR /home/onyxya/backend
+
+COPY --from=build /home/onyxya/backend/dist ./dist
+COPY --from=build /home/onyxya/backend/node_modules ./node_modules
+
+EXPOSE 3000
+
+CMD ["node", "dist/main"]
