@@ -1,10 +1,10 @@
-version: '3.8'
+version: '3'
 
 services:
   backend:
-    container_name: "onyxya_backend_dev"
+    container_name: "onyxya_dev"
     build:
-      context: ../
+      context: .
       dockerfile: ./docker/Dockerfile.dev
     ports:
       - "3000:3000"
