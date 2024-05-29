@@ -1,0 +1,15 @@
+FROM node:lts
+
+WORKDIR /onyxya
+
+COPY package.json /onyxya/package.json
+COPY packages /onyxya/packages
+COPY docker/start.dev.sh /onyxya/start.sh
+RUN chmod +x /onyxya/start.sh
+
+RUN npm install
+
+EXPOSE 3000
+EXPOSE 5173
+
+CMD ["./start.sh"]
