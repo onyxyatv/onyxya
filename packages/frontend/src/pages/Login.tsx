@@ -12,8 +12,13 @@ import { Button } from "@/components/ui/button.tsx";
 import { useForm } from "react-hook-form";
 import { LoginSchema, LoginSchemaDto } from "@common/validation/auth/login.schema.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {useState} from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const Login = () => {
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginSchemaDto>({
     resolver: zodResolver(LoginSchema),
@@ -55,7 +60,16 @@ const Login = () => {
               <FormItem className="pt-3">
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type={"password"} {...field} placeholder={"Password"}/>
+                  <div className="relative">
+                    <Input type={showPassword ? "text" : "password"} {...field} placeholder={"Password"} />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                    </button>
+                  </div>
                 </FormControl>
                 <FormMessage/>
               </FormItem>
