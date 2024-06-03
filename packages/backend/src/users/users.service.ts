@@ -43,8 +43,8 @@ export class UserService {
         username: loginData.username, password: hashedPassword
       });
 
-      if (user !== null) {  
-        const userJwt: string = this.generateUserJwt(user.username, user.role);
+      if (user !== null) {
+        const userJwt: string = this.generateUserJwt(user);
         return { jwt: userJwt, statusCode: HttpStatus.OK };
       }
     }
@@ -52,11 +52,12 @@ export class UserService {
     throw new NotFoundError("User with that credentials not found");
   }
 
-  generateUserJwt(username: string, role: string): string {
+  generateUserJwt(user: User): string {
     const userJwt: string = sign(
-      { 
-        username: username, 
-        role: role 
+      {
+        id: user.id,
+        username: user.username,
+        role: user.role
       },
       secret, { expiresIn: "168h" }
     );
@@ -68,12 +69,28 @@ export class UserService {
     const checkUser = await this.usersRepository.findOneBy({ username: createUser.username });
     if (checkUser !== null) throw new BadRequestError("User with that username already exists!");
 
-    const salt: number = UtilService.generateSalt();
+    const salt: string = UtilService.generateSalt();
     const hashedPassword: string = sha512(salt + createUser.password + salt);
     const user = new User(createUser.username, hashedPassword, createUser.role, salt);
     const resDb = await this.usersRepository.save(user);
     if (resDb !== null && resDb.isActive === true) return { success: true, statusCode: HttpStatus.CREATED };
 
     throw new InternalServerError("Error received from server during user creation!");
+  }
+
+  async getMyProfile(userId: number): Promise<object> {
+    if (userId) {
+      const user: User = await this.usersRepository.findOneBy({ id: userId });
+
+      if (user !== null) {
+        let returnedData = {
+          id: user.id, username: user.username,
+          role: user.role, isActive: user.isActive,
+          statusCode: HttpStatus.OK
+        };
+        return returnedData;
+      }
+    }
+    throw new NotFoundError("User with that id does not exists!");
   }
 }

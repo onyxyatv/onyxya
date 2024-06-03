@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
-    constructor(username: string, password: string, role: string, salt: number) {
+    constructor(username: string, password: string, role: string, salt: string) {
         this.username = username;
         this.password = password;
         this.role = role;
@@ -22,7 +22,7 @@ export class User {
     role: string;
 
     @Column()
-    salt: number;
+    salt: string;
 
     @Column({ default: true })
     isActive: boolean;

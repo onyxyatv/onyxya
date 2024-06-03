@@ -9,8 +9,8 @@ export class CreateAdmin1717278035 implements MigrationInterface {
     }
     const username: string = process.env.ONYXYA_ADMIN_USERNAME;
     const password: string = process.env.ONYXYA_ADMIN_PASSWORD;
-    const salt: number = UtilService.generateSalt();
-    const hashedPassword: string = sha512(password);
+    const salt: string = UtilService.generateSalt();
+    const hashedPassword: string = sha512(salt + password + salt);
 
     await queryRunner.query(
       `INSERT INTO user (username, password, salt, role) VALUES (?,?,?,?)`, 
