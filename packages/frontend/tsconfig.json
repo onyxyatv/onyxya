@@ -6,6 +6,15 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
+    /* Tailwind CSS */
+    "baseUrl": ".",
+    "paths": {
+      "@common/*": ["../common/*"],
+      "@/*": [
+        "./src/*",
+      ],
+    },
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
