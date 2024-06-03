@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './db/database.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
-const jwtSecret: string = process.env.JWT_SECRET_KEY;
 
 @Module({
   imports: [

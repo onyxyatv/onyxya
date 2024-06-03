@@ -11,6 +11,7 @@ services:
     command: ./start-dev.sh
     environment:
       - ONYXYA_API_PORT=3000
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     ports:
       - "3000:3000"
       - "5173:5173"
