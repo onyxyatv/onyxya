@@ -7,13 +7,15 @@ export class ZodValidationPipe implements PipeTransform {
 
   transform(value: unknown, metadata: ArgumentMetadata) {
     try {
-      const parsedValue = this.schema.parse(value);
+      const parsedValue: any = this.schema.parse(value);
       return parsedValue;
     } catch (error) {
       const err = error.errors[0].message.split(" ");
+      if (err.length === 1) err.push(err[0]); // if the message is only one word, we shift it so we don't lose it
       err[0] = error.errors[0].path[0];
-      const str = err.join(" ");
-      throw new BadRequestError(str);
+
+      const str: string = err.join(" ");
+      throw new BadRequestError(str.toLowerCase());
     }
   }
 }

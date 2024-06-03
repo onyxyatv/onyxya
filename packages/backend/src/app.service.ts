@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'OnyxyaTV';
+  getHello(): object {
+    return { message: 'OnyxyaTV Api' };
   }
 }
