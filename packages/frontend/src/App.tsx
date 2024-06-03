@@ -1,13 +1,26 @@
+import {
+  createBrowserRouter,
+  RouterProvider
+} from "react-router-dom";
+import Welcome from "@/pages/Welcome.tsx";
 import Login from "@/pages/Login.tsx";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Welcome />
+  },
+  {
+    path: "/login",
+    element: <Login />
+  }
+]);
 
 function App() {
 
   return (
     <>
-      {/*Center the Login component*/}
-      <div className="h-screen flex items-center justify-center">
-        <Login />
-      </div>
+      <RouterProvider router={router}/>
     </>
   )
 }

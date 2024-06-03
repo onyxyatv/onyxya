@@ -35,55 +35,57 @@ const Login = () => {
 
 
   return (
-    <Form {...form}>
-      <form onSubmit={ form.handleSubmit(handleSubmit) }>
-        <Card>
+    <div className={"h-screen flex items-center justify-center"}>
+      <Form {...form}>
+        <form onSubmit={ form.handleSubmit(handleSubmit) }>
+          <Card>
 
-          <CardHeader>
-            <CardTitle>Login</CardTitle>
-            <CardDescription>Please login to access your account.</CardDescription>
-          </CardHeader>
+            <CardHeader>
+              <CardTitle>Login</CardTitle>
+              <CardDescription>Please login to access your account.</CardDescription>
+            </CardHeader>
 
-          <CardContent>
-            <FormField control={ form.control } name={"username"} render={ ({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder={"Username"} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )
-            } />
+            <CardContent>
+              <FormField control={ form.control } name={"username"} render={ ({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder={"Username"} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )
+              } />
 
-            <FormField control={ form.control } name={"password"} render={ ({ field }) => (
-              <FormItem className="pt-3">
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input type={showPassword ? "text" : "password"} {...field} placeholder={"Password"} />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
-                    </button>
-                  </div>
-                </FormControl>
-                <FormMessage/>
-              </FormItem>
-            )
-            }/>
-          </CardContent>
+              <FormField control={ form.control } name={"password"} render={ ({ field }) => (
+                <FormItem className="pt-3">
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input type={showPassword ? "text" : "password"} {...field} placeholder={"Password"} />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage/>
+                </FormItem>
+              )
+              }/>
+            </CardContent>
 
-          <CardFooter>
-            <Button type={"submit"} variant={"default"}>Login</Button>
-          </CardFooter>
+            <CardFooter>
+              <Button type={"submit"} variant={"default"}>Login</Button>
+            </CardFooter>
 
-        </Card>
-      </form>
-    </Form>
+          </Card>
+        </form>
+      </Form>
+    </div>
   );
 }
 
