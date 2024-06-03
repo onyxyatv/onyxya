@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { usernameMaxLength, passwordMinLength, passwordMaxLength } from '@common/schemaConstants';
+import { usernameMaxLength, passwordMinLength, passwordMaxLength } from '../../schemaConstants';
 
-export const LoginSchema = z.object({
+export const loginSchema = z.object({
     username: z.string().min(4).max(usernameMaxLength),
     password: z.string().min(passwordMinLength).max(passwordMaxLength)
 });
 
-export type LoginSchemaDto = z.infer<typeof LoginSchema>;
+export type LoginUser = z.infer<typeof loginSchema>;
