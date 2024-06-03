@@ -8,7 +8,7 @@ import { User } from "src/models/user.model";
       type: 'sqlite',
       database: 'onyxya.sqlite',
       entities: [User],
-      synchronize: true
+      synchronize: false
     }),
   ],
 })

@@ -10,18 +10,21 @@ import {
 import { Input } from "@/components/ui/input.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useForm } from "react-hook-form";
-import { LoginSchema, LoginSchemaDto } from "@common/validation/auth/login.schema.ts";
+import { LoginUser, loginSchema } from "@common/validation/auth/login.schema.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {useState} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
+/**
+ * This component is used to render the login page.
+ * */
 const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const form = useForm<LoginSchemaDto>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<LoginUser>({
+    resolver: zodResolver(loginSchema),
     mode: "onSubmit",
     defaultValues: {
       username: "",
@@ -29,7 +32,7 @@ const Login = () => {
     }
   });
 
-  const handleSubmit = (values: LoginSchemaDto) => {
+  const handleSubmit = (values: LoginUser) => {
     console.log(values);
   }
 
