@@ -35,9 +35,9 @@ const Login = () => {
 
 
   return (
-    <div className={"h-screen flex items-center justify-center"}>
+    <div className={"h-screen w-screen flex items-center justify-center"}>
       <Form {...form}>
-        <form onSubmit={ form.handleSubmit(handleSubmit) }>
+        <form onSubmit={ form.handleSubmit(handleSubmit) } className={"w-1/5"}>
           <Card>
 
             <CardHeader>
