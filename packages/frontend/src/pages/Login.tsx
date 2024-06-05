@@ -12,9 +12,13 @@ import { Button } from "@/components/ui/button.tsx";
 import { useForm } from "react-hook-form";
 import { LoginUser, loginSchema } from "@common/validation/auth/login.schema.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {useState} from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import axios from "axios";
+import { api_url } from "../../config.json";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert.tsx";
+import {AlertCircle, Terminal} from "lucide-react";
 
 /**
  * This component is used to render the login page.
@@ -22,6 +26,8 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<LoginUser>({
     resolver: zodResolver(loginSchema),
@@ -32,8 +38,20 @@ const Login = () => {
     }
   });
 
-  const handleSubmit = (values: LoginUser) => {
-    console.log(values);
+  const handleSubmit = async (values: LoginUser) => {
+    setIsSubmitting(true);
+    try {
+      const res = await axios.post(api_url + "login", values, {
+        withCredentials: true
+      });
+      if (res.status === 200) {
+        window.location.href = "/dashboard";
+      }
+      setIsSubmitting(false);
+    } catch (e) {
+      setError("Login or password is incorrect. Please try again.");
+      setIsSubmitting(false);
+    }
   }
 
 
@@ -49,6 +67,14 @@ const Login = () => {
             </CardHeader>
 
             <CardContent>
+              { error &&
+                  <Alert variant="destructive" className={"mb-4"}>
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertTitle>Error</AlertTitle>
+                      <AlertDescription>
+                        {error}
+                      </AlertDescription>
+                  </Alert>}
               <FormField control={ form.control } name={"username"} render={ ({ field }) => (
                 <FormItem>
                   <FormLabel>Username</FormLabel>
@@ -82,7 +108,10 @@ const Login = () => {
             </CardContent>
 
             <CardFooter>
-              <Button type={"submit"} variant={"default"}>Login</Button>
+              {
+                isSubmitting ? <Button type={"submit"} variant={"default"} disabled>Loading...</Button> :
+                  <Button type={"submit"} variant={"default"}>Login</Button>
+              }
             </CardFooter>
 
           </Card>
