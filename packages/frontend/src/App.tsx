@@ -2,8 +2,11 @@ import {
   createBrowserRouter,
   RouterProvider
 } from "react-router-dom";
-import Welcome from "@/pages/Welcome.tsx";
+import Home from "@/pages/Home";
 import Login from "@/pages/Login.tsx";
+import Movies from "./pages/Movies";
+import Series from "./pages/Series";
+import Music from "./pages/Music";
 
 const router = createBrowserRouter([
   {
@@ -11,8 +14,20 @@ const router = createBrowserRouter([
     element: <Login />
   },
   {
-    path: "/dashboard",
-    element: <Welcome />
+    path: "/home",
+    element: <Home />
+  },
+  {
+    path: "/movies",
+    element: <Movies />
+  },
+  {
+    path: "/music",
+    element: <Music />
+  },
+  {
+    path: "/series",
+    element: <Series />
   }
 ]);
 
