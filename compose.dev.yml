@@ -2,13 +2,14 @@ version: '3.8'
 
 services:
   dev:
-    image: node:lts-alpine
+    image: node:20.14-alpine3.20
     container_name: onyxya-dev
     user: node
     working_dir: /home/node
     volumes:
       - .:/home/node
-    command: ./start-dev.sh
+    tty: true
+    stdin_open: true
     environment:
       - ONYXYA_API_PORT=3000
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
