@@ -1,14 +1,15 @@
-import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { User } from "src/models/user.model";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/models/user.model';
+import { Media } from '../models/media.model';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'onyxya.sqlite',
-      entities: [User],
-      synchronize: false
+      entities: [User, Media],
+      synchronize: true,
     }),
   ],
 })

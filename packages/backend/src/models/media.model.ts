@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Media {
@@ -14,9 +20,9 @@ export class Media {
   size: number;
   @Column({ nullable: true })
   mimeType: string;
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
-  @Column()
+  @UpdateDateColumn()
   modifiedAt: Date;
 
   constructor(
@@ -25,15 +31,11 @@ export class Media {
     extension: string,
     size: number,
     mimeType: string,
-    createdAt: Date,
-    modifiedAt: Date,
   ) {
     this.name = name;
     this.link = link;
     this.extension = extension;
     this.size = size;
     this.mimeType = mimeType;
-    this.createdAt = createdAt;
-    this.modifiedAt = modifiedAt;
   }
 }
