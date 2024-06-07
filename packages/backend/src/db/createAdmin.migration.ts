@@ -1,5 +1,5 @@
 import { sha512 } from "js-sha512";
-import UtilService from "src/utils/util.service";
+import UtilService from "src/services/util.service";
 import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class CreateAdmin1717278035 implements MigrationInterface {

@@ -4,10 +4,12 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './db/database.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { MediaCardModule } from './mediacart/mediacard.module';
 
 @Module({
   imports: [
     DatabaseModule, UsersModule,
+    MediaCardModule
   ],
   controllers: [AppController],
   providers: [AppService],

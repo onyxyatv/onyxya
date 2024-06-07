@@ -7,7 +7,7 @@ import { User } from 'src/models/user.model';
 import { Repository } from 'typeorm';
 import { sign } from "jsonwebtoken";
 import { CreateUser } from '@common/validation/auth/createUser.schema';
-import UtilService from 'src/utils/util.service';
+import UtilService from 'src/services/util.service';
 const secret: string = process.env.JWT_SECRET_KEY;
 
 @Injectable()

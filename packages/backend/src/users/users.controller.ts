@@ -11,6 +11,7 @@ import { AuthGuard } from 'src/middlewares/auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
+  @UseGuards(AuthGuard)
   @Get('/users')
   async getAll(@Res() res: Response): Promise<object> {
     const users: Array<User> = await this.userService.getAllUsers();
@@ -24,13 +25,6 @@ export class UserController {
   @UsePipes(new ZodValidationPipe(loginSchema))
   async login(@Res() res: Response, @Body() body: LoginUser): Promise<object> {
     const resLogin: any = await this.userService.login(body);
-    /*if (resLogin.statusCode === HttpStatus.OK) {
-      res.cookie("onyxyaToken", resLogin.jwt, {
-        httpOnly: false,
-        maxAge: (10000*360*128),
-        path: "/"
-      });
-    }*/
     return res.status(resLogin.statusCode).json(resLogin);
   }
 

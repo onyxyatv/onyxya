@@ -1,13 +1,11 @@
 import { UnauthorizedError } from "@common/errors/CustomError";
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
 import { verify } from "jsonwebtoken";
 import { Observable } from "rxjs";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     private jwtSecret: string = process.env.JWT_SECRET_KEY;
-    //constructor(private readonly jwtService: JwtService) {}
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         try {
