@@ -7,6 +7,7 @@ import Login from "@/pages/Login.tsx";
 import Movies from "./pages/Movies";
 import Series from "./pages/Series";
 import Music from "./pages/Music";
+import Settings from "./pages/Settings";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
   {
     path: "/series",
     element: <Series />
+  },
+  {
+    path: "/settings",
+    element: <Settings />
   }
 ]);
 

@@ -41,9 +41,8 @@ const Login = () => {
   const handleSubmit = async (values: LoginUser) => {
     setIsSubmitting(true);
     try {
-      const res: AxiosResponse<any> = await axios.post(api_url + "login", values, { withCredentials: true });
+      const res: AxiosResponse<any> = await axios.post(api_url + "/login", values, { withCredentials: true });
       if (res.status === 200) {
-        console.log();
         localStorage.setItem("onyxyaToken", res.data.jwt);
         window.location.href = "/home";
       }

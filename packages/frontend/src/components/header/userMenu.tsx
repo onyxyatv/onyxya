@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { FunctionComponent } from "react";
 import { CircleUser, LogOut, Settings } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const UserMenu: FunctionComponent = () => {
   return (
@@ -26,7 +27,7 @@ const UserMenu: FunctionComponent = () => {
           <CircleUser className="mr-1 h-5" /> Profile
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Settings className="mr-1 h-5" /> Parameters
+          <Settings className="mr-1 h-5" href="/settings" to="/settings" /> <Link to="/settings">Parameters</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <LogOut className="mr-1 h-5" /> Disconnect
