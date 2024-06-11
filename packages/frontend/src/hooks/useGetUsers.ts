@@ -22,7 +22,6 @@ function useGetUsers(): Array<any> {
 
     return users;
   } catch (error) {
-    alert("Error");
     return [];
   }
 }
