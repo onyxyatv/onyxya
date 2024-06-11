@@ -20,6 +20,8 @@ export class Media {
   size: number;
   @Column({ nullable: true })
   mimeType: string;
+  @Column()
+  inode: number;
   @CreateDateColumn()
   createdAt: Date;
   @UpdateDateColumn()
@@ -31,11 +33,13 @@ export class Media {
     extension: string,
     size: number,
     mimeType: string,
+    inode: number,
   ) {
     this.name = name;
     this.link = link;
     this.extension = extension;
     this.size = size;
     this.mimeType = mimeType;
+    this.inode = inode;
   }
 }

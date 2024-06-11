@@ -5,4 +5,4 @@
 *.sqlite
 .npm
 package-lock.json
-media/
+media-folder

@@ -7,9 +7,7 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { MediaModule } from './media/media.module';
 
 @Module({
-  imports: [
-    DatabaseModule, UsersModule, MediaModule,
-  ],
+  imports: [DatabaseModule, UsersModule, MediaModule],
   controllers: [AppController],
   providers: [AppService],
 })
