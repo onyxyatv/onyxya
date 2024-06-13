@@ -41,6 +41,7 @@ const Login = () => {
   const handleSubmit = async (values: LoginUser) => {
     setIsSubmitting(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: AxiosResponse<any> = await axios.post(api_url + "/login", values, { withCredentials: true });
       if (res.status === 200) {
         localStorage.setItem("onyxyaToken", res.data.jwt);

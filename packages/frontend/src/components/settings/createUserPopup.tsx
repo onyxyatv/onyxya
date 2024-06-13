@@ -39,10 +39,12 @@ const CreateUserPopup = () => {
 
   const handleCreateUser = async (values: CreateUser) => {
     try {
-      const res: AxiosResponse<any, any> = await axios.post(api_url + "/users/new", values, { withCredentials: true });
+      const res: AxiosResponse = await axios.post(api_url + "/users/new", values, { withCredentials: true });
       if (res.status === HttpStatusCode.Ok) {
         console.log("ee");
       }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMessage: string = (error.response !== undefined) ? error.response.statusText : "No More details";
       setError('User creation failed. Please try again');
@@ -52,7 +54,7 @@ const CreateUserPopup = () => {
 
   useEffect(() => {
     if (!popupOpened) form.reset();
-  }, [popupOpened]);
+  }, [form, popupOpened]);
 
   return (
     <Dialog onOpenChange={setPopupOpened}>

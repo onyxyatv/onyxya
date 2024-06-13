@@ -1,7 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { User } from "../models/user";
 import { Button } from "../ui/button";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const userColumns: ColumnDef<User>[] = [
   {
@@ -41,6 +42,19 @@ export const userColumns: ColumnDef<User>[] = [
     accessorKey: "isActive", header: "Status",
     cell: ({ getValue }) => {
       return ((getValue() === true) ? "Active" : "Inactive")
+    }
+  },
+  {
+    accessorKey: "access", header: "Action",
+    cell: ({ row }) => {
+      const userId = row._valuesCache.id;
+      return (
+        <Link to={`/settings/user/${userId}`}>
+          <Button variant="outline">
+            Edit <ChevronRight className="h-4" />
+          </Button>
+        </Link>
+      );
     }
   },
 ];

@@ -5,16 +5,13 @@ import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './db/database.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { MediaCardModule } from './mediacart/mediacard.module';
+import { PermissionsModule } from './permissions/permissions.module';
 
 @Module({
-  imports: [
-    DatabaseModule, UsersModule,
-    MediaCardModule
-  ],
+  imports: [DatabaseModule, UsersModule, MediaCardModule, PermissionsModule],
   controllers: [AppController],
   providers: [AppService],
 })
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('');

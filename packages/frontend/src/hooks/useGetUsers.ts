@@ -1,11 +1,11 @@
 import axios, { HttpStatusCode } from "axios";
 import { api_url } from "../../config.json";
 import { useEffect, useState } from "react";
+import { User } from "@/components/models/user";
 
-function useGetUsers(): Array<any> {
+function useGetUsers(): Array<User> {
+  const [users, setUsers] = useState([]);
   try {
-    const [users, setUsers] = useState([]);
-
     useEffect(() => {
       const getUsers = async () => {
         const token: string | null = localStorage.getItem("onyxyaToken");

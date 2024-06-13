@@ -3,9 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { UsersDataTable } from "./userDataTable";
 import { userColumns } from "./userColumns";
 import CreateUserPopup from "./createUserPopup";
+import { User } from "@/components/models/user";
 
 const AdminSettings = () => {
-  const usersList: Array<any> = useGetUsers();
+  const usersList: Array<User> = useGetUsers();
 
   return (
     <section>
