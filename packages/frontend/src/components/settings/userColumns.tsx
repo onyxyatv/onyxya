@@ -39,5 +39,8 @@ export const userColumns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "isActive", header: "Status",
+    cell: ({ getValue }) => {
+      return ((getValue() === true) ? "Active" : "Inactive")
+    }
   },
 ];
