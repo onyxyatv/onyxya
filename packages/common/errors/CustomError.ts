@@ -41,5 +41,10 @@ export class NoContentError extends CustomError {
   constructor(message = 'No Content') {
     super(message, 204);
   }
+}
 
+export class ConflictError extends CustomError {
+  constructor(message = 'Conflict') {
+    super(message, 409);
+  }
 }

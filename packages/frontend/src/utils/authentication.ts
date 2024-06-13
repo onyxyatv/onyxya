@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import api_url from "../../config.json";
+import { api_url } from "../../config.json";
 
 const Authentication = async (): Promise<boolean> => {
   try {

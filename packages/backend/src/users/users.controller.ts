@@ -39,7 +39,15 @@ export class UserController {
   @Get('/me')
   async getMyProfile(@Request() req: any, @Res() res: Response): Promise<object> {
     const userId: number = req.user.id;
-    const myProfileData: any = await this.userService.getMyProfile(userId);
+    const myProfileData: any = await this.userService.getProfile(userId);
     return res.status(myProfileData.statusCode).json(myProfileData);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/users/user/:id')
+  async getById(@Request() req: any, @Res() res: Response): Promise<object> {
+    const userId: number = req.params.id;
+    const user: any = await this.userService.getProfile(userId);
+    return res.status(200).json(user);
   }
 }

@@ -1,4 +1,4 @@
-import { BadRequestError, InternalServerError, NotFoundError } from '@common/errors/CustomError';
+import { BadRequestError, ConflictError, InternalServerError, NotFoundError } from '@common/errors/CustomError';
 import { LoginUser } from '@common/validation/auth/login.schema';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -67,7 +67,7 @@ export class UserService {
 
   async createUser(createUser: CreateUser): Promise<object> {
     const checkUser = await this.usersRepository.findOneBy({ username: createUser.username });
-    if (checkUser !== null) throw new BadRequestError("User with that username already exists!");
+    if (checkUser !== null) throw new ConflictError("User with that username already exists!");
 
     const salt: string = UtilService.generateSalt();
     const hashedPassword: string = sha512(salt + createUser.password + salt);
@@ -78,7 +78,7 @@ export class UserService {
     throw new InternalServerError("Error received from server during user creation!");
   }
 
-  async getMyProfile(userId: number): Promise<object> {
+  async getProfile(userId: number): Promise<object> {
     if (userId) {
       const user: User = await this.usersRepository.findOneBy({ id: userId });
 

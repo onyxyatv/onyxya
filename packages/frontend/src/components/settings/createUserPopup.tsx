@@ -1,5 +1,6 @@
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -13,8 +14,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUser, createUserSchema } from "@common/validation/auth/createUser.schema";
-import axios, { AxiosResponse } from "axios";
-import { useState } from "react";
+import axios, { AxiosResponse, HttpStatusCode } from "axios";
+import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { api_url } from "../../../config.json";
 import { Input } from "../ui/input";
@@ -22,7 +23,9 @@ import { Select, SelectContent, SelectItem, SelectValue } from "../ui/select";
 import { SelectTrigger } from "@radix-ui/react-select";
 
 const CreateUserPopup = () => {
+  const [popupOpened, setPopupOpened] = useState(false);
   const [error, setError] = useState("");
+  const [errorText, setErrorText] = useState("No more details");
 
   const form = useForm<CreateUser>({
     resolver: zodResolver(createUserSchema),
@@ -36,16 +39,23 @@ const CreateUserPopup = () => {
 
   const handleCreateUser = async (values: CreateUser) => {
     try {
-      console.log(values);
       const res: AxiosResponse<any, any> = await axios.post(api_url + "/users/new", values, { withCredentials: true });
-      console.log(res.status);
-    } catch (error) {
-      setError("User creation failed. Please try again.");
+      if (res.status === HttpStatusCode.Ok) {
+        console.log("ee");
+      }
+    } catch (error: any) {
+      const errorMessage: string = (error.response !== undefined) ? error.response.statusText : "No More details";
+      setError('User creation failed. Please try again');
+      setErrorText(`Error status : ${errorMessage}`);
     }
   }
 
+  useEffect(() => {
+    if (!popupOpened) form.reset();
+  }, [popupOpened]);
+
   return (
-    <Dialog>
+    <Dialog onOpenChange={setPopupOpened}>
       <DialogTrigger>
         <Button>
           <CirclePlus className="mr-2" /> Add a user
@@ -125,7 +135,9 @@ const CreateUserPopup = () => {
                     </div>
 
                     <div className="mt-3 flex flex-row justify-around">
-                      <Button type="reset" variant="destructive">Cancel</Button>
+                      <DialogClose>
+                        <Button type="reset" variant="destructive">Cancel</Button>
+                      </DialogClose>
                       <Button variant="outline" className="bg-green-300 hover:bg-green-500">Confirm</Button>
                     </div>
                   </form>
@@ -139,6 +151,8 @@ const CreateUserPopup = () => {
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>
                       {error}
+                      <br />
+                      {errorText}
                     </AlertDescription>
                   </Alert>
                 }

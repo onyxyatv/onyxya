@@ -4,7 +4,7 @@ import { UsersDataTable } from "./userDataTable";
 import { userColumns } from "./userColumns";
 import CreateUserPopup from "./createUserPopup";
 
-const AdminSettings: React.FC = () => {
+const AdminSettings = () => {
   const usersList: Array<any> = useGetUsers();
 
   return (
