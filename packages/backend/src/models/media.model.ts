@@ -13,7 +13,7 @@ export class Media {
   @Column()
   name: string;
   @Column()
-  link: string;
+  path: string;
   @Column()
   extension: string;
   @Column('bigint')
@@ -29,14 +29,14 @@ export class Media {
 
   constructor(
     name: string,
-    link: string,
+    path: string,
     extension: string,
     size: number,
     mimeType: string,
     inode: number,
   ) {
     this.name = name;
-    this.link = link;
+    this.path = path;
     this.extension = extension;
     this.size = size;
     this.mimeType = mimeType;

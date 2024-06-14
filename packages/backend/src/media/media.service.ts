@@ -4,7 +4,6 @@ import * as path from 'path';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Media } from '../models/media.model';
-import * as chokidar from 'chokidar';
 import { music_folder } from '../../config.json';
 
 @Injectable()
@@ -16,7 +15,7 @@ export class MediaService implements OnModuleInit {
 
   async onModuleInit() {
     await this.syncMedia();
-    this.watchMediaFolder();
+    // this.watchMediaFolder();
   }
 
   /**
@@ -25,39 +24,38 @@ export class MediaService implements OnModuleInit {
   async syncMedia() {
     const files = await fs.readdir(music_folder);
     const existingMedia = await this.mediaRepository.find();
-    const existingInodes = existingMedia.map((media) => media.inode);
 
-    const newFiles = await Promise.all(
-      files.filter(async (file) => {
-        const filePath = path.join(music_folder, file);
-        const stats = await fs.stat(filePath);
-        return !existingInodes.includes(stats.ino);
-      }),
-    );
-
-    const deletedFiles = existingMedia.filter(
-      (media) => !files.includes(path.basename(media.link)),
-    );
-
-    for (const file of newFiles) {
-      await this.addMedia(file);
-    }
-
-    for (const media of deletedFiles) {
-      await this.removeMedia(media.inode);
-    }
-
-    // Check for renamed files
+    // Fichier ajouté
     for (const file of files) {
       const filePath = path.join(music_folder, file);
       const stats = await fs.stat(filePath);
-      const media = existingMedia.find((m) => m.inode === stats.ino);
-      if (media && media.name !== file) {
-        await this.updateMediaName(media, file);
+      if (stats.isFile()) {
+        const mediaExists = await this.mediaRepository.findOne({
+          where: { inode: stats.ino },
+        });
+        if (!mediaExists) {
+          await this.addMedia(file);
+        }
       }
     }
-  }
 
+    // Fichier renommé
+    for (const file of files) {
+      const filePath = path.join(music_folder, file);
+      const stats = await fs.stat(filePath);
+      for (const media of existingMedia) {
+        if (stats.ino === media.inode && file !== media.name) {
+          await this.updateMediaName(stats.ino, file);
+        }
+      }
+    }
+
+    return {
+      message: 'Music synchronized',
+      number: files.length,
+      files: files,
+    };
+  }
   async addMedia(file: string) {
     const filePath = path.join(music_folder, file);
     const stats = await fs.stat(filePath);
@@ -87,18 +85,20 @@ export class MediaService implements OnModuleInit {
     const media = await this.mediaRepository.findOne({
       where: { inode: inode },
     });
-
-    console.log(media);
-
     if (media) {
       await this.mediaRepository.remove(media);
     }
   }
 
-  async updateMediaName(media: Media, newName: string) {
-    media.name = newName;
-    media.link = path.join(music_folder, newName);
-    await this.mediaRepository.save(media);
+  async updateMediaName(inode: number, newName: string) {
+    const media = await this.mediaRepository.findOne({ where: { inode } });
+    if (media) {
+      media.name = newName;
+      await this.mediaRepository.save(media);
+      console.log(`Media with inode ${inode} has been renamed to ${newName}`);
+    } else {
+      console.log(`No media found with inode ${inode}`);
+    }
   }
 
   getMimeType(extension: string): string | null {
@@ -112,40 +112,5 @@ export class MediaService implements OnModuleInit {
       default:
         return null;
     }
-  }
-
-  /**
-   * Watches the media folder for changes and updates the database accordingly.
-   */
-  watchMediaFolder() {
-    const watcher = chokidar.watch(music_folder, { persistent: true });
-
-    watcher
-      .on('add', async (filePath) => {
-        const file = path.basename(filePath);
-        await this.addMedia(file);
-        console.log(`File ${file} has been added`);
-      })
-      .on('unlink', async (filePath) => {
-        const stats = await fs.stat(filePath).catch(() => null);
-        console.log(stats);
-        if (stats) {
-          await this.removeMedia(stats.ino);
-        }
-        console.log(`File ${filePath} has been removed`);
-      })
-      .on('rename', async (oldPath, newPath) => {
-        const oldStats = await fs.stat(oldPath).catch(() => null);
-        if (oldStats) {
-          const media = await this.mediaRepository.findOne({
-            where: { inode: oldStats.ino },
-          });
-          if (media) {
-            const newName = path.basename(newPath);
-            await this.updateMediaName(media, newName);
-            console.log(`File ${oldPath} has been renamed to ${newName}`);
-          }
-        }
-      });
   }
 }
