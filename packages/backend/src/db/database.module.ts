@@ -8,13 +8,14 @@ import { CreatePermissions20240614130000 } from './migrations/createPermissions.
 import { CreateRolesPermissions20240614131535 } from './migrations/createRolesPermissions';
 import { CreateRoles20240614120000 } from './migrations/createRoles.migration';
 import { Role } from 'src/models/role.model';
+import { Media } from '../models/media.model';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'onyxya.sqlite',
-      entities: [User, Role, Permission, MediaCard],
+      entities: [User, Role, Permission, Media, MediaCard],
       migrations: [
         CreateRoles20240614120000,
         CreatePermissions20240614130000,
