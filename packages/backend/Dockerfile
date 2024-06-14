@@ -1,4 +1,4 @@
-FROM node:lts-alpine as build
+FROM node:20.14-alpine3.20 as build
 
 WORKDIR /home/onyxya/backend
 
@@ -14,7 +14,7 @@ USER node
 
 RUN npm run build
 
-FROM node:lts-alpine as production
+FROM node:20.14-alpine3.20 as production
 
 WORKDIR /home/onyxya/backend
 
