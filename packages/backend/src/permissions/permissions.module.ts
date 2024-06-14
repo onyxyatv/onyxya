@@ -4,9 +4,10 @@ import { AuthGuard } from 'src/middlewares/auth.guard';
 import { PermissionsService } from './permissions.service';
 import { PermissionsController } from './permissions.controller';
 import { Permission } from 'src/models/permission.model';
+import { User } from 'src/models/user.model';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Permission])],
+  imports: [TypeOrmModule.forFeature([Permission, User])],
   controllers: [PermissionsController],
   providers: [PermissionsService, AuthGuard],
 })

@@ -1,11 +1,11 @@
 import useGetUsers from "@/hooks/useGetUsers";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { UsersDataTable } from "./userDataTable";
-import { userColumns } from "./userColumns";
-import CreateUserPopup from "./createUserPopup";
+import { UsersDataTable } from "./users/userDataTable";
+import { userColumns } from "./users/userColumns";
+import CreateUserPopup from "./users/createUserPopup";
 import { User } from "@/components/models/user";
 
-const AdminSettings = () => {
+const UserAdminSettings = () => {
   const usersList: Array<User> = useGetUsers();
 
   return (
@@ -30,4 +30,4 @@ const AdminSettings = () => {
   );
 }
 
-export default AdminSettings;
+export default UserAdminSettings;

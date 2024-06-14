@@ -1,9 +1,13 @@
 import Header from "@/components/header/header";
-import AdminSettings from "@/components/settings/admin";
+import UserAdminSettings from "@/components/settings/userAdmin";
 import GlobalSettings from "@/components/settings/globalSettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import RolesAdminSettings from "@/components/settings/rolesAdmin";
+//import { User } from "@/components/models/user";
 
 const Settings = () => {
+  //const authUser: User | null = null; //useUser()
+
   return (
     <div>
       <Header />
@@ -12,14 +16,21 @@ const Settings = () => {
         <Tabs defaultValue="globalSettings" className="mt-1">
           <TabsList>
             <TabsTrigger value="globalSettings">Global settings</TabsTrigger>
-            <TabsTrigger value="administration">Administration</TabsTrigger>
-            <TabsTrigger value="support">Support</TabsTrigger>
+            {/* TODO -> admin check */}
+            <TabsTrigger value="users-administration">Users Administration</TabsTrigger>
+            <TabsTrigger value="roles-administration">Roles Administration</TabsTrigger>
           </TabsList>
           <TabsContent value="globalSettings">
             <GlobalSettings />
           </TabsContent>
-          <TabsContent value="administration">
-            <AdminSettings />
+          {
+            //(authUser === null || authUser.role !== 'admin') &&
+            <TabsContent value="users-administration">
+              <UserAdminSettings />
+            </TabsContent>
+          }
+          <TabsContent value="roles-administration">
+            <RolesAdminSettings />
           </TabsContent>
         </Tabs>
       </section>

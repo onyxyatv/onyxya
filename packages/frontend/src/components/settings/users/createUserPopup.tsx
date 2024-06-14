@@ -7,19 +7,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { AlertCircle, ChevronDown, CirclePlus } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "../ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "../../ui/card";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../../ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUser, createUserSchema } from "@common/validation/auth/createUser.schema";
 import axios, { AxiosResponse, HttpStatusCode } from "axios";
 import { useEffect, useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { api_url } from "../../../config.json";
-import { Input } from "../ui/input";
-import { Select, SelectContent, SelectItem, SelectValue } from "../ui/select";
+import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
+import { api_url } from "../../../../config.json";
+import { Input } from "../../ui/input";
+import { Select, SelectContent, SelectItem, SelectValue } from "../../ui/select";
 import { SelectTrigger } from "@radix-ui/react-select";
 
 const CreateUserPopup = () => {

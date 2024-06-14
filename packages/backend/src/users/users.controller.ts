@@ -18,10 +18,15 @@ import { ZodValidationPipe } from 'src/pipes/zod.pipe';
 import { UserService } from './users.service';
 import { User } from 'src/models/user.model';
 import { AuthGuard } from 'src/middlewares/auth.guard';
+import { PermissionsGuard } from 'src/middlewares/permissions.guard';
+import { PermissionsService } from 'src/permissions/permissions.service';
 
 @Controller()
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly permissionsService: PermissionsService,
+  ) {}
 
   @UseGuards(AuthGuard)
   @Get('/users')
@@ -61,11 +66,20 @@ export class UserController {
     return res.status(myProfileData.statusCode).json(myProfileData);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
   @Get('/users/user/:id')
   async getById(@Request() req: any, @Res() res: Response): Promise<object> {
     const userId: number = req.params.id;
     const user: any = await this.userService.getProfile(userId);
     return res.status(200).json(user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/users/user/:id/permissions')
+  async givePerm(@Request() req: any, @Res() res: Response): Promise<object> {
+    const userId: number = req.params.id;
+    const resService: { success: boolean; statusCode: number } =
+      await this.permissionsService.givePermToUser(userId, 1);
+    return res.status(resService.statusCode).json(resService);
   }
 }

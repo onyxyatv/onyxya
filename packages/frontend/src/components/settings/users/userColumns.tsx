@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { User } from "../models/user";
-import { Button } from "../ui/button";
+import { User } from "@/components/models/user";
+import { Button } from "@/components/ui/button";
 import { ArrowUpDown, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 

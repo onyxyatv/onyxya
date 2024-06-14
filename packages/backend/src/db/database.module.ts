@@ -3,17 +3,25 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MediaCard } from 'src/models/mediacard.model';
 import { Permission } from 'src/models/permission.model';
 import { User } from 'src/models/user.model';
-
-console.log(__dirname);
+import { syncDbStatus } from '../config.json';
+import { CreatePermissions20240614130000 } from './migrations/createPermissions.migration';
+import { CreateRolesPermissions20240614131535 } from './migrations/createRolesPermissions';
+import { CreateRoles20240614120000 } from './migrations/createRoles.migration';
+import { Role } from 'src/models/role.model';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'onyxya.sqlite',
-      entities: [User, Permission, MediaCard],
-      migrations: [__dirname + '/migrations/*.ts'],
-      synchronize: true,
+      entities: [User, Role, Permission, MediaCard],
+      migrations: [
+        CreateRoles20240614120000,
+        CreatePermissions20240614130000,
+        CreateRolesPermissions20240614131535,
+      ],
+      synchronize: syncDbStatus,
+      migrationsRun: true,
     }),
   ],
 })

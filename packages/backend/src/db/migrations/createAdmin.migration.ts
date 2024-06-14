@@ -1,6 +1,6 @@
-import { sha512 } from "js-sha512";
-import UtilService from "src/services/util.service";
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { sha512 } from 'js-sha512';
+import UtilService from 'src/services/util.service';
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateAdmin1717278035 implements MigrationInterface {
   async up(queryRunner: QueryRunner): Promise<void> {
@@ -20,7 +20,8 @@ export class CreateAdmin1717278035 implements MigrationInterface {
 
   async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `DELETE FROM user WHERE username = ? AND role = 'admin'`, [process.env.ONYXYA_ADMIN_USERNAME],
-    )
+      `DELETE FROM user WHERE username = ? AND role = 'admin'`,
+      [process.env.ONYXYA_ADMIN_USERNAME],
+    );
   }
 }
