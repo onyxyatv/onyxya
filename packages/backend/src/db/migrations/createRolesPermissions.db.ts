@@ -1,9 +1,8 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { QueryRunner } from 'typeorm';
 import { rolesPermissions } from '../permissions';
 
-// eslint-disable-next-line prettier/prettier
-export class CreateRolesPermissions20240614131535 implements MigrationInterface {
-  async up(queryRunner: QueryRunner): Promise<void> {
+export class CreateRolesPermissionsDb {
+  static async up(queryRunner: QueryRunner): Promise<void> {
     this.down(queryRunner).then(async () => {
       for (const role in rolesPermissions) {
         const permissions = rolesPermissions[role];
@@ -17,7 +16,18 @@ export class CreateRolesPermissions20240614131535 implements MigrationInterface 
     });
   }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
+  static async addRolePermission(
+    queryRunner: QueryRunner,
+    roleName: string,
+    permissionName: string,
+  ): Promise<void> {
+    await queryRunner.query(
+      'INSERT INTO role_permissions (role_id, permission_id) VALUES ((SELECT id FROM role WHERE name = ?), (SELECT id FROM permission WHERE name = ?))',
+      [roleName, permissionName],
+    );
+  }
+
+  static async down(queryRunner: QueryRunner): Promise<void> {
     for (const role in rolesPermissions) {
       const permissions = rolesPermissions[role];
       for (const permission in permissions) {

@@ -8,7 +8,6 @@ import { MediaModule } from './media/media.module';
 import { MediaCardModule } from './mediacart/mediacard.module';
 import { PermissionsModule } from './permissions/permissions.module';
 
-
 @Module({
   imports: [
     DatabaseModule,

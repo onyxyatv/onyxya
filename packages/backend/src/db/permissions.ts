@@ -1,19 +1,29 @@
+export enum Permissions {
+  ReadMedias = 'read_medias',
+  EditMedia = 'edit_media',
+  CreateUser = 'create_user',
+}
+
 export const permissions = [
   {
-    name: 'read_medias',
+    name: Permissions.ReadMedias,
     description: 'Play movies, series and music',
   },
   {
-    name: 'edit_media',
+    name: Permissions.EditMedia,
     description: 'Modify the media information sheet',
   },
   {
-    name: 'create_user',
+    name: Permissions.CreateUser,
     description: 'Create a new user account',
   },
 ];
 
 export const rolesPermissions = {
-  admin: ['read_medias', 'edit_media', 'create_user'],
-  user: ['read_medias'],
+  admin: [
+    Permissions.ReadMedias,
+    Permissions.EditMedia,
+    Permissions.CreateUser,
+  ],
+  user: [Permissions.ReadMedias],
 };

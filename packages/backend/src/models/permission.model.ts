@@ -19,6 +19,9 @@ export class Permission {
   @ManyToMany(() => User, (user) => user.permissions)
   users: User[];
 
-  @ManyToMany(() => Role, (role) => role.permissions)
+  @ManyToMany(() => Role, (role) => role.permissions, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   roles: Role[];
 }

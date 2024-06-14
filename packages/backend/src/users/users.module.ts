@@ -6,9 +6,10 @@ import { User } from 'src/models/user.model';
 import { AuthGuard } from 'src/middlewares/auth.guard';
 import { PermissionsService } from 'src/permissions/permissions.service';
 import { Permission } from 'src/models/permission.model';
+import { Role } from 'src/models/role.model';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Permission])],
+  imports: [TypeOrmModule.forFeature([User, Permission, Role])],
   controllers: [UserController],
   providers: [UserService, AuthGuard, PermissionsService],
 })

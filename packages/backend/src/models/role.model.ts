@@ -20,6 +20,8 @@ export class Role {
 
   @ManyToMany(() => Permission, (permission) => permission.roles, {
     cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinTable({
     name: 'role_permissions',

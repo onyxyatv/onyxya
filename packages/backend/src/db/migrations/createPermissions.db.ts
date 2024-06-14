@@ -1,8 +1,8 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { QueryRunner } from 'typeorm';
 import { permissions } from '../permissions';
 
-export class CreatePermissions20240614130000 implements MigrationInterface {
-  async up(queryRunner: QueryRunner): Promise<void> {
+export class CreatePermissionsDb {
+  static async up(queryRunner: QueryRunner): Promise<void> {
     for (const permission of permissions) {
       await queryRunner.query(
         'INSERT INTO permission (name, description) VALUES (?,?)',
@@ -11,7 +11,7 @@ export class CreatePermissions20240614130000 implements MigrationInterface {
     }
   }
 
-  async down(queryRunner: QueryRunner): Promise<void> {
+  static async down(queryRunner: QueryRunner): Promise<void> {
     for (const permission of permissions) {
       await queryRunner.query('DELETE FROM permission WHERE name = ?', [
         permission.name,
