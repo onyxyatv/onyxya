@@ -15,7 +15,6 @@ export class MediaService implements OnModuleInit {
 
   async onModuleInit() {
     await this.syncMedia();
-    // this.watchMediaFolder();
   }
 
   /**
@@ -68,7 +67,7 @@ export class MediaService implements OnModuleInit {
     }
 
     return {
-      message: 'Music synchronized',
+      message: 'Media synchronized',
       number: files.length,
       files: files,
     };
@@ -133,7 +132,7 @@ export class MediaService implements OnModuleInit {
   }
 
   /**
-   * This function returns the MIME type of a media file based on its extension.
+   * This function returns the MIME type of media file based on its extension.
    * @param extension extension of the media file.
    * @returns MIME type of the media file.
    * @returns null if the MIME type is not supported.
