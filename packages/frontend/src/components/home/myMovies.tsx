@@ -2,7 +2,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import { ChevronRight } from "lucide-react"
 
-const MyMovies = () => {
+const MyMovies: React.FC = () => {
   const movies: any = [
     {
       "name": "Leon",
