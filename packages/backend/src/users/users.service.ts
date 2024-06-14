@@ -5,9 +5,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { sha512 } from 'js-sha512';
 import { User } from 'src/models/user.model';
 import { Repository } from 'typeorm';
-import { sign } from "jsonwebtoken";
+import { sign } from 'jsonwebtoken';
 import { CreateUser } from '@common/validation/auth/createUser.schema';
-import UtilService from 'src/utils/util.service';
+import UtilService from '../services/util.service';
 const secret: string = process.env.JWT_SECRET_KEY;
 
 @Injectable()

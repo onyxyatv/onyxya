@@ -1,4 +1,5 @@
 class UtilService {
+
     static generateSalt(): string {
         const max: number = 999999;
         const min: number = 100001;

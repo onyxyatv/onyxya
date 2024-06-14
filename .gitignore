@@ -5,4 +5,5 @@
 *.sqlite
 .npm
 package-lock.json
+media-folder
 .node_repl_history
