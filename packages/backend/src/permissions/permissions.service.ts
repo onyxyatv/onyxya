@@ -29,7 +29,9 @@ export class PermissionsService implements OnModuleInit {
 
     if (rolesDb.length === 0) {
       // If roles 'admin' and 'user' does not already exists
-      await CreateRoleDb.up(this.userRepository.queryRunner);
+      await CreateRoleDb.initRoles(
+        this.rolesRepository.manager.connection.createQueryRunner(),
+      );
     }
 
     const permsNameList = permissionsDb.map((permission) => permission.name);

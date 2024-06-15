@@ -12,7 +12,7 @@ import { PermissionsGuard } from 'src/middlewares/permissions.guard';
 export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
 
-  @NeedPermissions(Permissions.ReadMedias)
+  @NeedPermissions(Permissions.ReadPermissions)
   @Get()
   async getAll(@Res() res: Response): Promise<object> {
     // eslint-disable-next-line prettier/prettier
@@ -23,6 +23,7 @@ export class PermissionsController {
     });
   }
 
+  @NeedPermissions(Permissions.ReadRolePermissions)
   @Get('/roles')
   // eslint-disable-next-line prettier/prettier
   async getPermissionsOfRole(@Req() req: Request, @Res() res: Response): Promise<object> {

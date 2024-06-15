@@ -2,7 +2,7 @@ import { QueryRunner } from 'typeorm';
 import { rolesPermissions } from '../permissions';
 
 export class CreateRoleDb {
-  static async up(queryRunner: QueryRunner): Promise<void> {
+  static async initRoles(queryRunner: QueryRunner): Promise<void> {
     for (const role in rolesPermissions) {
       const res = await queryRunner.query(
         'SELECT id FROM role WHERE name = ?',
