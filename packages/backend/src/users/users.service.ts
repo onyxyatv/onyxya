@@ -13,6 +13,7 @@ import { sign } from 'jsonwebtoken';
 import { CreateUser } from '@common/validation/auth/createUser.schema';
 import UtilService from 'src/services/util.service';
 import { Permission } from 'src/models/permission.model';
+import { Role } from 'src/models/role.model';
 const secret: string = process.env.JWT_SECRET_KEY;
 
 @Injectable()
@@ -20,15 +21,19 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Role)
+    private rolesRepository: Repository<Role>,
   ) {}
 
   getAllUsers(): Promise<Array<User> | null> {
     try {
       return this.usersRepository.find({
+        relations: {
+          role: true,
+        },
         select: {
           id: true,
           username: true,
-          role: true,
           isActive: true,
           password: false,
           salt: false,
@@ -83,14 +88,13 @@ export class UserService {
     if (checkUser !== null)
       throw new ConflictError('User with that username already exists!');
 
+    const role: Role = await this.rolesRepository.findOneBy({
+      name: createUser.role,
+    });
+
     const salt: string = UtilService.generateSalt();
     const hashedPassword: string = sha512(salt + createUser.password + salt);
-    const user = new User(
-      createUser.username,
-      hashedPassword,
-      createUser.role,
-      salt,
-    );
+    const user = new User(createUser.username, hashedPassword, role, salt);
     const resDb = await this.usersRepository.save(user);
     if (resDb !== null && resDb.isActive === true)
       return { success: true, statusCode: HttpStatus.CREATED };
@@ -120,9 +124,12 @@ export class UserService {
 
   async getUserPermissions(userId: number): Promise<Permission[]> {
     if (userId) {
-      const user: User = await this.usersRepository.findOneBy({ id: userId });
-      console.log(user);
-      return [];
+      const user: User = await this.usersRepository.findOne({
+        where: { id: userId },
+        relations: ['role', 'role.permissions', 'permissions'],
+      });
+      const finalPermissions = [...user.permissions, ...user.role.permissions];
+      return finalPermissions;
     }
     throw new NotFoundError('User with that id does not exists!');
   }

@@ -1,4 +1,8 @@
-import { UnauthorizedError } from '@common/errors/CustomError';
+import {
+  ForbiddenError,
+  InternalServerError,
+  UnauthorizedError,
+} from '@common/errors/CustomError';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Permission } from 'src/models/permission.model';
@@ -14,14 +18,32 @@ export class PermissionsGuard implements CanActivate {
       const req: any = context.switchToHttp().getRequest();
       const user: any = req.user;
 
-      const fetchUserPerms = async () => {
+      const needPermissions = Reflect.getMetadata(
+        'permissions',
+        context.getHandler(),
+      );
+
+      const fetchUserPerms = async (): Promise<boolean> => {
+        if (needPermissions === undefined) {
+          throw new InternalServerError(
+            'Server Error : Permission needed not found',
+          );
+        }
+        // eslint-disable-next-line prettier/prettier
         const userPermissions: Permission[] = await this.usersService.getUserPermissions(user.id);
-        console.log(userPermissions);
+        const permissionsNamesList = userPermissions.map((perm) => perm.name);
+        for (const needed of needPermissions) {
+          if (!permissionsNamesList.includes(needed))
+            throw new ForbiddenError('Missing permission to do this action');
+        }
+        return true;
       };
-      fetchUserPerms();
-      return true;
+
+      return Promise.resolve(fetchUserPerms());
     } catch (error) {
-      throw new UnauthorizedError('User not found or permission missing');
+      throw new UnauthorizedError(
+        'User not found or permission needed missing',
+      );
     }
   }
 }

@@ -1,8 +1,8 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { QueryRunner } from 'typeorm';
 import { rolesPermissions } from '../permissions';
 
-export class CreateRoles20240614120000 implements MigrationInterface {
-  async up(queryRunner: QueryRunner): Promise<void> {
+export class CreateRoleDb {
+  static async initRoles(queryRunner: QueryRunner): Promise<void> {
     for (const role in rolesPermissions) {
       const res = await queryRunner.query(
         'SELECT id FROM role WHERE name = ?',
