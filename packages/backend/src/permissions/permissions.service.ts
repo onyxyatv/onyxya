@@ -2,7 +2,7 @@ import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permission } from 'src/models/permission.model';
 import { User } from 'src/models/user.model';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { permissions, rolesPermissions } from 'src/db/permissions';
 import { Role } from 'src/models/role.model';
 import { CreateRoleDb } from 'src/db/migrations/createRoles.db';
@@ -45,6 +45,16 @@ export class PermissionsService implements OnModuleInit {
       }
     }
 
+    const permsConfigList = permissionsConfig.map(
+      (permission) => permission.name,
+    );
+    for (const permDb of permissionsDb) {
+      if (!permsConfigList.includes(permDb.name)) {
+        // If the permission does not exist in the config it is then deleted from db
+        await this.permissionsRepository.delete(permDb);
+      }
+    }
+
     await this.synchronizeRolesPermisisons();
   }
 
@@ -53,21 +63,38 @@ export class PermissionsService implements OnModuleInit {
    */
   private async synchronizeRolesPermisisons(): Promise<void> {
     try {
+      const queryRunner: QueryRunner =
+        this.rolesRepository.manager.connection.createQueryRunner();
       const rolesPermissionsDb: Array<Role> = await this.rolesRepository.find({
         relations: ['permissions'],
       });
       const rolesPermissionsConfig: any = rolesPermissions;
-      for (const role of rolesPermissionsDb) {
+
+      for (const roleDb of rolesPermissionsDb) {
         // Get an array of permissions names already owned by the role
-        const permissionsNamesList = role.permissions.map((perm) => perm.name);
+        const permissionsNamesListDb = roleDb.permissions.map(
+          (perm) => perm.name,
+        );
 
         // Browse the config list to find any missing values
-        for (const permConfig of rolesPermissionsConfig[role.name]) {
-          if (!permissionsNamesList.includes(permConfig)) {
+        for (const permConfig of rolesPermissionsConfig[roleDb.name]) {
+          if (!permissionsNamesListDb.includes(permConfig)) {
             await CreateRolesPermissionsDb.addRolePermission(
-              this.rolesRepository.manager.connection.createQueryRunner(),
-              role.name,
+              queryRunner,
+              roleDb.name,
               permConfig,
+            );
+          }
+        }
+
+        // Go to each role's perm in db
+        for (const rolePermDb of roleDb.permissions) {
+          if (!rolesPermissionsConfig[roleDb.name].includes(rolePermDb.name)) {
+            // If the permission does not exist in the config, then we delete it from db
+            await CreateRolesPermissionsDb.removeRolePermission(
+              queryRunner,
+              roleDb.name,
+              rolePermDb.id,
             );
           }
         }

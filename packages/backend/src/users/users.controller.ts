@@ -20,6 +20,8 @@ import { User } from 'src/models/user.model';
 import { AuthGuard } from 'src/middlewares/auth.guard';
 import { PermissionsGuard } from 'src/middlewares/permissions.guard';
 import { PermissionsService } from 'src/permissions/permissions.service';
+import { NeedPermissions } from 'src/permissions/permissions.decorator';
+import { Permissions } from 'src/db/permissions';
 
 @Controller()
 export class UserController {
@@ -66,6 +68,7 @@ export class UserController {
     return res.status(myProfileData.statusCode).json(myProfileData);
   }
 
+  @NeedPermissions(Permissions.AdminUsers)
   @UseGuards(AuthGuard, PermissionsGuard)
   @Get('/users/user/:id')
   async getById(@Request() req: any, @Res() res: Response): Promise<object> {

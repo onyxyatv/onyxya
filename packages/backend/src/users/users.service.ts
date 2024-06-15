@@ -106,7 +106,10 @@ export class UserService {
 
   async getProfile(userId: number): Promise<object> {
     if (userId) {
-      const user: User = await this.usersRepository.findOneBy({ id: userId });
+      const user: User = await this.usersRepository.findOne({
+        where: { id: userId },
+        relations: { role: true },
+      });
 
       if (user !== null) {
         const returnedData = {
