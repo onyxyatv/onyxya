@@ -2,15 +2,18 @@ import Header from "@/components/header/header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/components/ui/card";
 import UserCardDetails from "@/components/settings/editUser/userCard";
 import FrontUserService from "@/utils/frontUserService";
+import { User } from "@/components/models/user";
 
 
 const EditUser = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { id }: any = useParams();
   const [userId, setUserId] = useState(id);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser]: any = useState(null);
   const navigate = useNavigate();
 
@@ -21,18 +24,18 @@ const EditUser = () => {
     } else {
       setUserId(checkId);
       const fetchUser = async () => {
-        const user: any = await FrontUserService.getUserById(checkId);
+        const user: User = await FrontUserService.getUserById(checkId);
         setUser(user);
       }
       fetchUser();
     }
-  }, []);
+  }, [id]);
 
   return (
     <div>
       <Header />
       <section className="mt-2 m-auto max-w-7xl">
-        <ArrowLeft className="w-5 hover:cursor-pointer" onClick={() => navigate("/settings")} />
+        <ArrowLeft className="w-5 hover:cursor-pointer" onClick={() => navigate("/settings/users-administration")} />
         <h2 className="text-2xl font-bold">Edit user #{id}</h2>
         {
           userId !== null && user !== null &&

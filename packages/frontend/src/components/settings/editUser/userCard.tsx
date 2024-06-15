@@ -1,17 +1,17 @@
-import { AlertCircle } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { EditUser, editUserSchema } from "@common/validation/auth/editUser.schema";
-import axios, { AxiosResponse, HttpStatusCode } from "axios";
-import { useEffect, useState } from "react";
-import { api_url } from "../../../../config.json";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import DeleteUserDialog from "./deleteUserDialog";
+import { AlertCircle } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { EditUser, editUserSchema } from '@common/validation/auth/editUser.schema';
+import axios, { AxiosResponse, HttpStatusCode } from 'axios';
+import { useEffect, useState } from 'react';
+import { api_url } from '../../../../config.json';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import DeleteUserDialog from './deleteUserDialog';
 
 const UserCardDetails = (props: { user: any }) => {
   const [error, setError] = useState("");
@@ -43,7 +43,7 @@ const UserCardDetails = (props: { user: any }) => {
 
   useEffect(() => {
     console.log(props.user);
-  }, []);
+  }, [props.user]);
 
   return (
     <Card>

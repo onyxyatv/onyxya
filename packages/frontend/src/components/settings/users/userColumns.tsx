@@ -36,7 +36,14 @@ export const userColumns: ColumnDef<User>[] = [
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
-    }
+    },
+    cell: ({ getValue }) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const role: any = getValue();
+      return (
+        <p>{role.name}</p>
+      );
+    },
   },
   {
     accessorKey: "isActive", header: "Status",

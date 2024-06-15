@@ -30,11 +30,8 @@ export class PermissionsController {
     const query = req.query;
     // eslint-disable-next-line prettier/prettier
     const role: string | undefined = query.role ? String(query.role) : undefined;
-    const permissions: Array<Permission> =
+    const permissions: object =
       await this.permissionsService.getRolePermissions(role);
-    return res.status(200).json({
-      count: permissions.length,
-      permissions: permissions,
-    });
+    return res.status(200).json(permissions);
   }
 }

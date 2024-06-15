@@ -133,7 +133,26 @@ export class PermissionsService implements OnModuleInit {
         where: { name: roleName },
         relations: ['permissions'],
       });
-      if (role !== null) return role.permissions;
+
+      if (role !== null) {
+        // eslint-disable-next-line prettier/prettier
+        const permissions: Array<Permission> = await this.permissionsRepository.find();
+        const ownedPermsNames = role.permissions.map((perm) => perm.name);
+        const missingPermissions = permissions.filter(
+          (perm) => !ownedPermsNames.includes(perm.name),
+        );
+
+        return {
+          owned: {
+            count: role.permissions.length,
+            permissions: role.permissions,
+          },
+          missing: {
+            count: missingPermissions.length,
+            permissions: missingPermissions,
+          },
+        };
+      }
     }
 
     throw new NotFoundError('Role with that name not found');
