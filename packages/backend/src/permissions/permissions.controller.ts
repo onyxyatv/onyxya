@@ -3,12 +3,16 @@ import { PermissionsService } from './permissions.service';
 import { AuthGuard } from 'src/middlewares/auth.guard';
 import { Permission } from 'src/models/permission.model';
 import { Request, Response } from 'express';
+import { NeedPermissions } from './permissions.decorator';
+import { Permissions } from 'src/db/permissions';
+import { PermissionsGuard } from 'src/middlewares/permissions.guard';
 
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, PermissionsGuard)
 @Controller('/permissions')
 export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
 
+  @NeedPermissions(Permissions.ReadMedias)
   @Get()
   async getAll(@Res() res: Response): Promise<object> {
     // eslint-disable-next-line prettier/prettier

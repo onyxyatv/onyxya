@@ -14,12 +14,22 @@ export class PermissionsGuard implements CanActivate {
       const req: any = context.switchToHttp().getRequest();
       const user: any = req.user;
 
-      const fetchUserPerms = async () => {
+      const needPermissions = Reflect.getMetadata(
+        'permissions',
+        context.getHandler(),
+      );
+
+      const fetchUserPerms = async (): Promise<boolean> => {
+        // eslint-disable-next-line prettier/prettier
         const userPermissions: Permission[] = await this.usersService.getUserPermissions(user.id);
-        console.log(userPermissions);
+        const permissionsNamesList = userPermissions.map((perm) => perm.name);
+        for (const needed of needPermissions) {
+          if (!permissionsNamesList.includes(needed)) return false;
+        }
+        return true;
       };
-      fetchUserPerms();
-      return true;
+
+      return Promise.resolve(fetchUserPerms());
     } catch (error) {
       throw new UnauthorizedError('User not found or permission missing');
     }

@@ -3,9 +3,11 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Permission } from './permission.model';
+import { User } from './user.model';
 
 @Entity()
 export class Role {
@@ -17,6 +19,9 @@ export class Role {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToMany(() => User, (user) => user.role)
+  users: User[];
 
   @ManyToMany(() => Permission, (permission) => permission.roles, {
     cascade: true,
