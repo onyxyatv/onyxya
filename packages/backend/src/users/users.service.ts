@@ -131,6 +131,8 @@ export class UserService {
         where: { id: userId },
         relations: ['role', 'role.permissions', 'permissions'],
       });
+      user.permissions.forEach((userPerm) => (userPerm['isUser'] = true));
+      user.role.permissions.forEach((rolePerm) => (rolePerm['isUser'] = false));
       const finalPermissions = [...user.permissions, ...user.role.permissions];
       return finalPermissions;
     }

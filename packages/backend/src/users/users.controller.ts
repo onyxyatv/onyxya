@@ -22,6 +22,7 @@ import { PermissionsGuard } from 'src/middlewares/permissions.guard';
 import { PermissionsService } from 'src/permissions/permissions.service';
 import { NeedPermissions } from 'src/permissions/permissions.decorator';
 import { Permissions } from 'src/db/permissions';
+import { Permission } from 'src/models/permission.model';
 
 @Controller()
 export class UserController {
@@ -81,8 +82,10 @@ export class UserController {
   @Get('/users/user/:id/permissions')
   async givePerm(@Request() req: any, @Res() res: Response): Promise<object> {
     const userId: number = req.params.id;
-    const resService: { success: boolean; statusCode: number } =
-      await this.permissionsService.givePermToUser(userId, 1);
-    return res.status(resService.statusCode).json(resService);
+    const userPermissions: Array<Permission> =
+      await this.userService.getUserPermissions(userId);
+    return res
+      .status(200)
+      .json({ count: userPermissions.length, permissions: userPermissions });
   }
 }

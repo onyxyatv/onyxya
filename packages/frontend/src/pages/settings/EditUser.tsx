@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/co
 import UserCardDetails from "@/components/settings/editUser/userCard";
 import FrontUserService from "@/utils/frontUserService";
 import { User } from "@/components/models/user";
+import UserPermissionsList from "@/components/settings/editUser/userPermissions";
 
 
 const EditUser = () => {
@@ -42,7 +43,7 @@ const EditUser = () => {
           <Card>
             <CardHeader>
               <CardDescription className="text-center text-2xl font-bold">
-                  {user.username[0].toUpperCase() + user.username.slice(1)}'s card
+                {user.username[0].toUpperCase() + user.username.slice(1)}'s card
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -51,7 +52,12 @@ const EditUser = () => {
                 <UserCardDetails user={user} />
               }
             </CardContent>
-            <CardFooter>
+            <CardFooter className="min-w-max flex flex-col">
+              <h3 className="text-xl font-bold text-gray-700">Permissions</h3>
+              <p>
+                Permissions obtained via the role are not removable.
+              </p>
+              <UserPermissionsList userId={user.id} userName={user.username} />
             </CardFooter>
           </Card>
         }

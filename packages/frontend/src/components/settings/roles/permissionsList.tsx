@@ -27,12 +27,17 @@ const PermissionsList = (props: { role: any; }) => {
 
   useEffect(() => {
     fetchPermissionsList();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roleName]);
 
   return (
     <Table>
-      <TableCaption>Permissions list of this role</TableCaption>
+      <TableCaption>
+        Permissions list of this role
+        {
+          roleName === 'admin' && <p>Admin role own all permissions</p>
+        }
+      </TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
