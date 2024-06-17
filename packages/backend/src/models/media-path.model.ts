@@ -6,6 +6,7 @@ export class MediaPath {
   id: number;
   @Column()
   path: string;
+
   constructor(path: string) {
     this.path = path;
   }
