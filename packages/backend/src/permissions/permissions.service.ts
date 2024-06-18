@@ -1,13 +1,13 @@
+import { NotFoundError } from '@common/errors/CustomError';
 import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateRoleDb } from 'src/db/migrations/createRoles.db';
+import { CreateRolesPermissionsDb } from 'src/db/migrations/createRolesPermissions.db';
+import { permissions, rolesPermissions } from 'src/db/permissions';
 import { Permission } from 'src/models/permission.model';
+import { Role } from 'src/models/role.model';
 import { User } from 'src/models/user.model';
 import { Repository } from 'typeorm';
-import { permissions, rolesPermissions } from 'src/db/permissions';
-import { Role } from 'src/models/role.model';
-import { CreateRoleDb } from 'src/db/migrations/createRoles.db';
-import { NotFoundError } from '@common/errors/CustomError';
-import { CreateRolesPermissionsDb } from 'src/db/migrations/createRolesPermissions.db';
 
 @Injectable()
 export class PermissionsService implements OnModuleInit {
@@ -22,9 +22,11 @@ export class PermissionsService implements OnModuleInit {
 
   async onModuleInit(): Promise<void> {
     // eslint-disable-next-line prettier/prettier
-    const permissionsDb: Array<Permission> = await this.permissionsRepository.find();
+    const permissionsDb: Array<Permission> =
+      await this.permissionsRepository.find();
     // eslint-disable-next-line prettier/prettier
-    const permissionsConfig: Array<{ name: string; description: string }> = permissions;
+    const permissionsConfig: Array<{ name: string; description: string }> =
+      permissions;
     const rolesDb: Array<Role> = await this.rolesRepository.find();
 
     if (rolesDb.length === 0) {
