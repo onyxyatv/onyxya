@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './db/database.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { MediaModule } from './media/media.module';
+import { MediaPathModule } from './media-path/media-path.module';
 import { MediaCardModule } from './mediacart/mediacard.module';
 import { PermissionsModule } from './permissions/permissions.module';
 
@@ -15,6 +16,7 @@ import { PermissionsModule } from './permissions/permissions.module';
     MediaCardModule,
     PermissionsModule,
     MediaModule,
+    MediaPathModule,
   ],
   controllers: [AppController],
   providers: [AppService],
