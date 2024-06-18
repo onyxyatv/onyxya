@@ -1,22 +1,40 @@
-import { Body, Controller, Get, HttpStatus, Post, Request, Res, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  Res,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { loginSchema, LoginUser } from '@common/validation/auth/login.schema';
-import { createUserSchema, CreateUser } from '@common/validation/auth/createUser.schema';
+import {
+  createUserSchema,
+  CreateUser,
+} from '@common/validation/auth/createUser.schema';
 import { Response } from 'express';
 import { ZodValidationPipe } from 'src/pipes/zod.pipe';
 import { UserService } from './users.service';
 import { User } from 'src/models/user.model';
 import { AuthGuard } from 'src/middlewares/auth.guard';
+import { PermissionsGuard } from 'src/middlewares/permissions.guard';
+import { PermissionsService } from 'src/permissions/permissions.service';
 
 @Controller()
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(
+    private readonly userService: UserService,
+    private readonly permissionsService: PermissionsService,
+  ) {}
 
+  @UseGuards(AuthGuard)
   @Get('/users')
   async getAll(@Res() res: Response): Promise<object> {
     const users: Array<User> = await this.userService.getAllUsers();
     return res.status(200).json({
       count: users.length,
-      users: users
+      users: users,
     }); // Example -> { count: 0, users: [] }
   }
 
@@ -24,28 +42,44 @@ export class UserController {
   @UsePipes(new ZodValidationPipe(loginSchema))
   async login(@Res() res: Response, @Body() body: LoginUser): Promise<object> {
     const resLogin: any = await this.userService.login(body);
-    if (resLogin.statusCode === HttpStatus.OK) {
-      res.cookie("onyxyaToken", resLogin.jwt, {
-        httpOnly: false,
-        maxAge: (10000*360*128),
-        path: "/"
-      });
-    }
     return res.status(resLogin.statusCode).json(resLogin);
   }
 
   @Post('/users/new')
   @UsePipes(new ZodValidationPipe(createUserSchema))
-  async createUser(@Res() res: Response, @Body() createUser: CreateUser): Promise<object> {
+  async createUser(
+    @Res() res: Response,
+    @Body() createUser: CreateUser,
+  ): Promise<object> {
     const resCreatedUser: any = await this.userService.createUser(createUser);
     return res.status(resCreatedUser.statusCode).json(resCreatedUser);
   }
 
   @UseGuards(AuthGuard)
   @Get('/me')
-  async getMyProfile(@Request() req: any, @Res() res: Response): Promise<object> {
+  async getMyProfile(
+    @Request() req: any,
+    @Res() res: Response,
+  ): Promise<object> {
     const userId: number = req.user.id;
-    const myProfileData: any = await this.userService.getMyProfile(userId);
+    const myProfileData: any = await this.userService.getProfile(userId);
     return res.status(myProfileData.statusCode).json(myProfileData);
+  }
+
+  @UseGuards(AuthGuard, PermissionsGuard)
+  @Get('/users/user/:id')
+  async getById(@Request() req: any, @Res() res: Response): Promise<object> {
+    const userId: number = req.params.id;
+    const user: any = await this.userService.getProfile(userId);
+    return res.status(200).json(user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/users/user/:id/permissions')
+  async givePerm(@Request() req: any, @Res() res: Response): Promise<object> {
+    const userId: number = req.params.id;
+    const resService: { success: boolean; statusCode: number } =
+      await this.permissionsService.givePermToUser(userId, 1);
+    return res.status(resService.statusCode).json(resService);
   }
 }

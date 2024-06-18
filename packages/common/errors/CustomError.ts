@@ -21,13 +21,13 @@ export class BadRequestError extends CustomError {
 
 export class UnauthorizedError extends CustomError {
   constructor(message = "Unauthorized") {
-    super(message,401);
+    super(message, 401);
   }
 }
 
 export class ForbiddenError extends CustomError {
   constructor(message = "Forbidden") {
-    super(message,403);
+    super(message, 403);
   }
 }
 
@@ -41,5 +41,10 @@ export class NoContentError extends CustomError {
   constructor(message = 'No Content') {
     super(message, 204);
   }
+}
 
+export class ConflictError extends CustomError {
+  constructor(message = 'Conflict') {
+    super(message, 409);
+  }
 }

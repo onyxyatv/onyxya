@@ -1,4 +1,8 @@
-import { BadRequestError, InternalServerError, NotFoundError } from '@common/errors/CustomError';
+import {
+  ConflictError,
+  InternalServerError,
+  NotFoundError,
+} from '@common/errors/CustomError';
 import { LoginUser } from '@common/validation/auth/login.schema';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,7 +11,9 @@ import { User } from 'src/models/user.model';
 import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
 import { CreateUser } from '@common/validation/auth/createUser.schema';
-import UtilService from '../services/util.service';
+import UtilService from 'src/services/util.service';
+import { Permission } from 'src/models/permission.model';
+import { Role } from 'src/models/role.model';
 const secret: string = process.env.JWT_SECRET_KEY;
 
 @Injectable()
@@ -15,32 +21,41 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-  ) { };
+    @InjectRepository(Role)
+    private rolesRepository: Repository<Role>,
+  ) {}
 
   getAllUsers(): Promise<Array<User> | null> {
     try {
       return this.usersRepository.find({
+        relations: {
+          role: true,
+        },
         select: {
           id: true,
           username: true,
-          role: true,
           isActive: true,
           password: false,
-          salt: false
-        }
+          salt: false,
+        },
       });
     } catch (error) {
       console.log('Error at @getAllUsers : ', error);
-      return null; // Will generate automatically a 500 internal server error 
+      return null; // Will generate automatically a 500 internal server error
     }
   }
 
   async login(loginData: LoginUser): Promise<object> {
-    const checkUser = await this.usersRepository.findOneBy({ username: loginData.username });
+    const checkUser = await this.usersRepository.findOneBy({
+      username: loginData.username,
+    });
     if (checkUser !== null) {
-      const hashedPassword: string = sha512(checkUser.salt + loginData.password + checkUser.salt);
+      const hashedPassword: string = sha512(
+        checkUser.salt + loginData.password + checkUser.salt,
+      );
       const user: User = await this.usersRepository.findOneBy({
-        username: loginData.username, password: hashedPassword
+        username: loginData.username,
+        password: hashedPassword,
       });
 
       if (user !== null) {
@@ -49,7 +64,7 @@ export class UserService {
       }
     }
 
-    throw new NotFoundError("User with that credentials not found");
+    throw new NotFoundError('User with that credentials not found');
   }
 
   generateUserJwt(user: User): string {
@@ -57,40 +72,65 @@ export class UserService {
       {
         id: user.id,
         username: user.username,
-        role: user.role
+        role: user.role,
       },
-      secret, { expiresIn: "168h" }
+      secret,
+      { expiresIn: '168h' },
     );
 
     return userJwt;
   }
 
   async createUser(createUser: CreateUser): Promise<object> {
-    const checkUser = await this.usersRepository.findOneBy({ username: createUser.username });
-    if (checkUser !== null) throw new BadRequestError("User with that username already exists!");
+    const checkUser = await this.usersRepository.findOneBy({
+      username: createUser.username,
+    });
+    if (checkUser !== null)
+      throw new ConflictError('User with that username already exists!');
+
+    const role: Role = await this.rolesRepository.findOneBy({
+      name: createUser.role,
+    });
 
     const salt: string = UtilService.generateSalt();
     const hashedPassword: string = sha512(salt + createUser.password + salt);
-    const user = new User(createUser.username, hashedPassword, createUser.role, salt);
+    const user = new User(createUser.username, hashedPassword, role, salt);
     const resDb = await this.usersRepository.save(user);
-    if (resDb !== null && resDb.isActive === true) return { success: true, statusCode: HttpStatus.CREATED };
+    if (resDb !== null && resDb.isActive === true)
+      return { success: true, statusCode: HttpStatus.CREATED };
 
-    throw new InternalServerError("Error received from server during user creation!");
+    throw new InternalServerError(
+      'Error received from server during user creation!',
+    );
   }
 
-  async getMyProfile(userId: number): Promise<object> {
+  async getProfile(userId: number): Promise<object> {
     if (userId) {
       const user: User = await this.usersRepository.findOneBy({ id: userId });
 
       if (user !== null) {
-        let returnedData = {
-          id: user.id, username: user.username,
-          role: user.role, isActive: user.isActive,
-          statusCode: HttpStatus.OK
+        const returnedData = {
+          id: user.id,
+          username: user.username,
+          role: user.role,
+          isActive: user.isActive,
+          statusCode: HttpStatus.OK,
         };
         return returnedData;
       }
     }
-    throw new NotFoundError("User with that id does not exists!");
+    throw new NotFoundError('User with that id does not exists!');
+  }
+
+  async getUserPermissions(userId: number): Promise<Permission[]> {
+    if (userId) {
+      const user: User = await this.usersRepository.findOne({
+        where: { id: userId },
+        relations: ['role', 'role.permissions', 'permissions'],
+      });
+      const finalPermissions = [...user.permissions, ...user.role.permissions];
+      return finalPermissions;
+    }
+    throw new NotFoundError('User with that id does not exists!');
   }
 }

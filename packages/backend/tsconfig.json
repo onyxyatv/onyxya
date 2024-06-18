@@ -20,6 +20,7 @@
     "resolveJsonModule": true,
     "paths": {
       "@common/*": ["../common/*"]
-    }
+    },
+    "resolveJsonModule": true,
   }
 }

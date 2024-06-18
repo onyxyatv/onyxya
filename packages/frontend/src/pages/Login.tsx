@@ -12,13 +12,13 @@ import { Button } from "@/components/ui/button.tsx";
 import { useForm } from "react-hook-form";
 import { LoginUser, loginSchema } from "@common/validation/auth/login.schema.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { api_url } from "../../config.json";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert.tsx";
-import {AlertCircle, Terminal} from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
 /**
  * This component is used to render the login page.
@@ -41,11 +41,11 @@ const Login = () => {
   const handleSubmit = async (values: LoginUser) => {
     setIsSubmitting(true);
     try {
-      const res = await axios.post(api_url + "login", values, {
-        withCredentials: true
-      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res: AxiosResponse<any> = await axios.post(api_url + "/login", values, { withCredentials: true });
       if (res.status === 200) {
-        window.location.href = "/dashboard";
+        localStorage.setItem("onyxyaToken", res.data.jwt);
+        window.location.href = "/home";
       }
       setIsSubmitting(false);
     } catch (e) {

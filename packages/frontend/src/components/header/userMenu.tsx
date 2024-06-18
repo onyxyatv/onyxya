@@ -7,11 +7,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { FC } from "react";
-import { Button } from "../ui/button";
+import { FunctionComponent } from "react";
 import { CircleUser, LogOut, Settings } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const UserMenu: FC = () => {
+const UserMenu: FunctionComponent = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="mr-2">
@@ -24,10 +24,10 @@ const UserMenu: FC = () => {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <CircleUser className="mr-1 h-5" /> Profile  
+          <CircleUser className="mr-1 h-5" /> Profile
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Settings className="mr-1 h-5" /> Parameters
+          <Settings className="mr-1 h-5" href="/settings" to="/settings" /> <Link to="/settings">Parameters</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <LogOut className="mr-1 h-5" /> Disconnect

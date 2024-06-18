@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
-import { FC } from "react";
+import { FunctionComponent } from "react";
 import { CirclePlus } from "lucide-react";
 import { NavigationMenu } from "../ui/navigation-menu";
 import { NavigationMenuItem, NavigationMenuList } from "@radix-ui/react-navigation-menu";
 import UserMenu from "./userMenu";
 
-const Header: FC = () => {
+const Header: FunctionComponent = () => {
   return (
     <header className="flex bg-slate-600 p-4">
       <h1>OnyxyaTv</h1>
