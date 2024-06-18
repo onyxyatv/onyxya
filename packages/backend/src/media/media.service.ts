@@ -2,8 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { promises as fs } from 'fs';
 import * as path from 'path';
-import { Repository } from 'typeorm';
-import { music_folder } from '../../config.json';
+import { Like, Repository } from 'typeorm';
 import { MediaPathService } from '../media-path/media-path.service';
 import { Media } from '../models/media.model';
 
@@ -16,52 +15,55 @@ export class MediaService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    // await this.syncMedia();
+    await this.syncMedia();
   }
 
   /**
    * This function get all media path in db and use it to sync media .
-   * @returns a message with the number of files synchronized.
+   * @returns success if all media path are synced.
    */
   async syncMedia() {
     const mediaPaths = await this.mediaPathService.findAll();
     if (mediaPaths.length === 0) {
       return {
-        message: 'No media path found',
+        success: false,
       };
     }
 
     for (const mediaPath of mediaPaths) {
       const sync = await this.syncFolder(mediaPath.path);
-      if (sync.files) {
+      if (sync.success) {
         console.log(`Synced ${sync.files} in ${mediaPath.path}`);
-      } else {
-        console.log(sync.error);
       }
     }
 
     return {
-      message: 'Media synchronized',
+      success: true,
     };
   }
 
   /**
    * Synchronizes the media folder with the database.
-   * @returns a message with the number of files synchronized.
-   * @returns a list of files synchronized.
+   * @param folder path of the folder to be synchronized.
+   * @returns success if the folder is synchronized.
+   * @returns files list of files in the folder.
    */
   async syncFolder(folder: string) {
     let files: string[];
     try {
       files = await fs.readdir(folder);
     } catch (error) {
-      console.log(`Folder not found: ${folder}`);
+      console.log(`Error reading folder ${folder}`);
       return {
-        error: 'Folder not found',
+        success: false,
       };
     }
 
-    let existingMedia = await this.mediaRepository.find();
+    let existingMedia = await this.mediaRepository.find({
+      where: {
+        path: Like(`${folder}%`),
+      },
+    });
 
     // New file
     for (const file of files) {
@@ -72,11 +74,17 @@ export class MediaService implements OnModuleInit {
           where: { inode: stats.ino },
         });
         if (!mediaExists) {
-          await this.addMedia(file);
-          existingMedia = await this.mediaRepository.find();
+          await this.addMedia(file, folder);
         }
       }
     }
+
+    // Update existingMedia after adding new files
+    existingMedia = await this.mediaRepository.find({
+      where: {
+        path: Like(`${folder}%`),
+      },
+    });
 
     // File renamed
     for (const file of files) {
@@ -85,10 +93,16 @@ export class MediaService implements OnModuleInit {
       for (const media of existingMedia) {
         if (stats.ino === media.inode && file !== media.name) {
           await this.updateMediaName(stats.ino, file);
-          existingMedia = await this.mediaRepository.find();
         }
       }
     }
+
+    // Update existingMedia after renaming files
+    existingMedia = await this.mediaRepository.find({
+      where: {
+        path: Like(`${folder}%`),
+      },
+    });
 
     // File deleted
     for (const media of existingMedia) {
@@ -97,16 +111,14 @@ export class MediaService implements OnModuleInit {
         const stats = await fs.stat(filePath);
         if (stats.ino !== media.inode) {
           await this.removeMedia(media.inode);
-          existingMedia = await this.mediaRepository.find();
         }
       } catch (error) {
         await this.removeMedia(media.inode);
-        existingMedia = await this.mediaRepository.find();
       }
     }
 
-    // Return the number of file synchronized
     return {
+      success: true,
       files,
     };
   }
@@ -114,9 +126,10 @@ export class MediaService implements OnModuleInit {
   /**
    * This function adds a media file to the database.
    * @param file name of the file to be added.
+   * @param folder path of the folder containing the file.
    */
-  async addMedia(file: string) {
-    const filePath = path.join(music_folder, file);
+  async addMedia(file: string, folder: string) {
+    const filePath = path.join(folder, file);
     const stats = await fs.stat(filePath);
     if (stats.isFile()) {
       const extension = path.extname(file);
@@ -163,7 +176,6 @@ export class MediaService implements OnModuleInit {
     if (media) {
       media.name = newName;
       await this.mediaRepository.save(media);
-      console.log(`Media with inode ${inode} has been renamed to ${newName}`);
     } else {
       console.log(`No media found with inode ${inode}`);
     }
