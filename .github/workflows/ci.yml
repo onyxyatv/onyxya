@@ -22,13 +22,13 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        run: cd packages/frontend && npm install
+        run: npm install
 
       - name: Run ESLint
-        run: cd packages/frontend && npm run lint
+        run: npm -w @onyxyatv/frontend run lint
 
       - name: Build React App
-        run: cd packages/frontend && npm run build
+        run: npm -w @onyxyatv/frontend run build
 
   lint-and-test-nest:
     runs-on: ubuntu-latest
@@ -40,19 +40,19 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "20"
 
       - name: Install dependencies
-        run: cd packages/backend && npm install
+        run: npm install
 
       - name: Run ESLint
-        run: cd packages/backend && npm run lint
+        run: npm -w @onyxyatv/backend run lint
 
       - name: Run Prettier
-        run: cd packages/backend && npm run format
+        run: npm -w @onyxyatv/backend run format
 
       - name: Build NestJS App
-        run: cd packages/backend && npm run build
+        run: npm -w @onyxyatv/backend run build
 
   docker-validation:
     runs-on: ubuntu-latest
@@ -65,7 +65,7 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Build Docker images
-        run: docker-compose -f docker-compose.yml build
+        run: docker-compose -f compose.prod.yml build
 
       - name: Run Docker Compose
-        run: docker-compose -f docker-compose.yml up -d
+        run: docker-compose -f compose.prod.yml up -d
