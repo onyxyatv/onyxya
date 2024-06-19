@@ -44,7 +44,6 @@ const CreateUserPopup = () => {
         console.log("ee");
       }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMessage: string = (error.response !== undefined) ? error.response.statusText : "No More details";
       setError('User creation failed. Please try again');
