@@ -30,7 +30,7 @@ export class PermissionsGuard implements CanActivate {
           );
         }
         // eslint-disable-next-line prettier/prettier
-        const userPermissions: Permission[] = await this.usersService.getUserPermissions(user.id);
+        const userPermissions: Permission[] = await this.usersService.getUserOwnedPermissions(user.id);
         const permissionsNamesList = userPermissions.map((perm) => perm.name);
         for (const needed of needPermissions) {
           if (!permissionsNamesList.includes(needed))

@@ -33,7 +33,7 @@ const EditUser = () => {
   }, [id]);
 
   return (
-    <div>
+    <div className="mb-3">
       <Header />
       <section className="mt-2 m-auto max-w-7xl">
         <ArrowLeft className="w-5 hover:cursor-pointer" onClick={() => navigate("/settings/users-administration")} />

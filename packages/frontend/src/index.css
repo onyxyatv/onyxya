@@ -58,7 +58,7 @@
   }
 }
 
-html {
+html, .custom-scrollbar-thin {
   scrollbar-width: thin;
   overflow-y: auto;
   scrollbar-color: rgb(147 197 253) white;

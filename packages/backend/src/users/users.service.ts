@@ -23,6 +23,8 @@ export class UserService {
     private usersRepository: Repository<User>,
     @InjectRepository(Role)
     private rolesRepository: Repository<Role>,
+    @InjectRepository(Permission)
+    private permissionsRepository: Repository<Permission>,
   ) {}
 
   getAllUsers(): Promise<Array<User> | null> {
@@ -125,7 +127,42 @@ export class UserService {
     throw new NotFoundError('User with that id does not exists!');
   }
 
-  async getUserPermissions(userId: number): Promise<Permission[]> {
+  async getUserPermissions(userId: number): Promise<Array<Permission>> {
+    if (userId) {
+      const user: User = await this.usersRepository.findOne({
+        where: { id: userId },
+        relations: ['role', 'role.permissions', 'permissions'],
+      });
+
+      // eslint-disable-next-line prettier/prettier
+      user.permissions.forEach((userPerm) => (userPerm['isUser'] = true));
+      user.role.permissions.forEach((rolePerm) => (rolePerm['isUser'] = false));
+      const finalPermissions = [...user.permissions, ...user.role.permissions];
+
+      // eslint-disable-next-line prettier/prettier
+      const allPermissions: Array<Permission> = await this.permissionsRepository.find({
+          relations: ['roles'],
+        });
+      const ownedPermsNames = finalPermissions.map((perm) => perm.name);
+      allPermissions.forEach((permission) => {
+        // eslint-disable-next-line prettier/prettier
+        permission['owned'] = (ownedPermsNames.includes(permission.name)) ? true : false;
+        if (permission['owned']) {
+          permission['isUser'] = permission.roles
+            .map((role) => role.name)
+            .includes(user.role.name)
+            ? false
+            : true;
+        }
+        delete permission.roles;
+      });
+
+      return allPermissions;
+    }
+    throw new NotFoundError('User with that id does not exists!');
+  }
+
+  async getUserOwnedPermissions(userId: number): Promise<Permission[]> {
     if (userId) {
       const user: User = await this.usersRepository.findOne({
         where: { id: userId },

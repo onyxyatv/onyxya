@@ -80,10 +80,28 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Get('/users/user/:id/permissions')
-  async givePerm(@Request() req: any, @Res() res: Response): Promise<object> {
+  async getUserFullPermissions(
+    @Request() req: any,
+    @Res() res: Response,
+  ): Promise<object> {
+    const userId: number = req.params.id;
+    // eslint-disable-next-line prettier/prettier
+    const userPermissions: Array<Permission> = await this.userService.getUserPermissions(userId);
+    return res.status(200).json({
+      count: userPermissions.length,
+      permissions: userPermissions,
+    });
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/users/user/:id/permissions/owned')
+  async getUserOwnedPermissions(
+    @Request() req: any,
+    @Res() res: Response,
+  ): Promise<object> {
     const userId: number = req.params.id;
     const userPermissions: Array<Permission> =
-      await this.userService.getUserPermissions(userId);
+      await this.userService.getUserOwnedPermissions(userId);
     return res
       .status(200)
       .json({ count: userPermissions.length, permissions: userPermissions });
