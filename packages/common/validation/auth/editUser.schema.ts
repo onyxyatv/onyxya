@@ -7,12 +7,12 @@ const rolesEnum = z.enum(['admin', 'user']);
 export const editUserSchema = z.object({
     username: z.string().min(usernameMinLength, {
         message: `Username must be at least ${usernameMinLength} characters.`
-    }).max(usernameMaxLength),
+    }).max(usernameMaxLength).optional(),
     password: z.string().min(passwordMinLength, {
         message: `Password must be at least ${passwordMinLength} characters.`
-    }).max(passwordMaxLength),
-    role: rolesEnum,
-    isActive: z.boolean()
+    }).max(passwordMaxLength).optional(),
+    role: rolesEnum.optional(),
+    isActive: z.boolean().optional()
 });
 
 export type EditUser = z.infer<typeof editUserSchema>;

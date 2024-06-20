@@ -1,4 +1,4 @@
-import FrontUserService from "@/utils/frontUserService";
+import FrontUtilService from "@/utils/frontUtilService";
 import { useEffect, useState } from "react";
 import {
   Table,
@@ -18,7 +18,7 @@ const PermissionsList = (props: { role: any; }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchPermissionsList = async () => {
     const endpoint: string = `/permissions/roles?role=${roleName}`;
-    const data: any = await FrontUserService.getDataFromApi(endpoint);
+    const data: any = await FrontUtilService.getDataFromApi(endpoint);
     if (data !== null) setPermissions({
       owned: data.owned.permissions,
       missing: data.missing.permissions

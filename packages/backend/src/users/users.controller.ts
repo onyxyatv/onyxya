@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Request,
   Res,
@@ -23,6 +24,11 @@ import { PermissionsService } from 'src/permissions/permissions.service';
 import { NeedPermissions } from 'src/permissions/permissions.decorator';
 import { Permissions } from 'src/db/permissions';
 import { Permission } from 'src/models/permission.model';
+import { CustomResponse } from '@common/errors/customResponses';
+import {
+  editUserSchema,
+  EditUser,
+} from '@common/validation/auth/editUser.schema';
 
 @Controller()
 export class UserController {
@@ -31,7 +37,8 @@ export class UserController {
     private readonly permissionsService: PermissionsService,
   ) {}
 
-  @UseGuards(AuthGuard)
+  @NeedPermissions(Permissions.AdminUsers)
+  @UseGuards(AuthGuard, PermissionsGuard)
   @Get('/users')
   async getAll(@Res() res: Response): Promise<object> {
     const users: Array<User> = await this.userService.getAllUsers();
@@ -65,7 +72,7 @@ export class UserController {
     @Res() res: Response,
   ): Promise<object> {
     const userId: number = req.user.id;
-    const myProfileData: any = await this.userService.getProfile(userId);
+    const myProfileData: any = await this.userService.getUser(userId);
     return res.status(myProfileData.statusCode).json(myProfileData);
   }
 
@@ -74,8 +81,23 @@ export class UserController {
   @Get('/users/user/:id')
   async getById(@Request() req: any, @Res() res: Response): Promise<object> {
     const userId: number = req.params.id;
-    const user: any = await this.userService.getProfile(userId);
+    const user: any = await this.userService.getUser(userId);
     return res.status(200).json(user);
+  }
+
+  @UseGuards(AuthGuard)
+  @UsePipes(new ZodValidationPipe(editUserSchema))
+  @Patch('/users/user/:id')
+  async editUser(
+    @Request() req: any,
+    @Res() res: Response,
+    editedUser: EditUser,
+  ): Promise<object> {
+    const userIdEdited: number = req.params.id;
+    const user: User = req.user;
+    // eslint-disable-next-line prettier/prettier
+    const resService: CustomResponse = await this.userService.editUser(userIdEdited, user, editedUser);
+    return res.status(resService.statusCode).json(resService);
   }
 
   @UseGuards(AuthGuard)

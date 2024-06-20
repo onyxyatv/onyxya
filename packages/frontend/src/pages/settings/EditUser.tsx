@@ -5,10 +5,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/components/ui/card";
 import UserCardDetails from "@/components/settings/editUser/userCard";
-import FrontUserService from "@/utils/frontUserService";
+import FrontUtilService from "@/utils/frontUtilService";
 import { User } from "@/components/models/user";
 import UserPermissionsList from "@/components/settings/editUser/userPermissions";
-
 
 const EditUser = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,7 +24,7 @@ const EditUser = () => {
     } else {
       setUserId(checkId);
       const fetchUser = async () => {
-        const user: User = await FrontUserService.getUserById(checkId);
+        const user: User = await FrontUtilService.getUserById(checkId);
         setUser(user);
       }
       fetchUser();

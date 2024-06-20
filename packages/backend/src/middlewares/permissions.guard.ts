@@ -23,6 +23,11 @@ export class PermissionsGuard implements CanActivate {
         context.getHandler(),
       );
 
+      // const hasPermissions = Reflect.getMetadata(
+      //     'hasPermissions',
+      //     context.getHandler(),
+      // );
+
       const fetchUserPerms = async (): Promise<boolean> => {
         if (needPermissions === undefined) {
           throw new InternalServerError(

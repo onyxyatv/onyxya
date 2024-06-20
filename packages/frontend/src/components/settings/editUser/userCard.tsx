@@ -30,7 +30,10 @@ const UserCardDetails = (props: { user: any }) => {
 
   const handleEditUser = async (values: EditUser) => {
     try {
-      const res: AxiosResponse<any, any> = await axios.post(api_url + "/users/new", values, { withCredentials: true });
+      const res: AxiosResponse<any, any> = await axios.patch(api_url + `/users/user/${props.user.id}`, 
+        values,
+        { withCredentials: true }
+      );
       if (res.status === HttpStatusCode.Ok) {
         console.log("ee");
       }
@@ -93,7 +96,7 @@ const UserCardDetails = (props: { user: any }) => {
                     <FormLabel>Role</FormLabel>
                     <FormControl>
                       <div>
-                        <Select defaultValue={props.user.role}>
+                        <Select defaultValue={props.user.role.name}>
                           <SelectTrigger className="p-2 rounded-md border-slate-200 border-2 bg-slate-100">
                             <div className="flex flex-row items-center justify-center">
                               <SelectValue {...field} />

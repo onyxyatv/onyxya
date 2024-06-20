@@ -14,6 +14,9 @@ import { CreateUser } from '@common/validation/auth/createUser.schema';
 import UtilService from 'src/services/util.service';
 import { Permission } from 'src/models/permission.model';
 import { Role } from 'src/models/role.model';
+import { CustomResponse, OkResponse } from '@common/errors/customResponses';
+import { EditUser } from '@common/validation/auth/editUser.schema';
+import { Permissions } from 'src/db/permissions';
 const secret: string = process.env.JWT_SECRET_KEY;
 
 @Injectable()
@@ -106,11 +109,11 @@ export class UserService {
     );
   }
 
-  async getProfile(userId: number): Promise<object> {
+  async getUser(userId: number): Promise<object> {
     if (userId) {
       const user: User = await this.usersRepository.findOne({
         where: { id: userId },
-        relations: { role: true },
+        relations: { role: true, permissions: true },
       });
 
       if (user !== null) {
@@ -174,5 +177,42 @@ export class UserService {
       return finalPermissions;
     }
     throw new NotFoundError('User with that id does not exists!');
+  }
+
+  async userHasPermission(
+    user: User,
+    permission: Permissions,
+  ): Promise<boolean> {
+    if (user && user.id) {
+      const fullUser = await this.usersRepository.findOne({
+        where: { id: user.id },
+        relations: ['role', 'permissions', 'role.permissions'],
+      });
+      let userPermissions = [];
+      if (userPermissions !== undefined)
+        userPermissions = fullUser.permissions.map((perm) => perm.name);
+      // eslint-disable-next-line prettier/prettier
+      const userRolePermissions = fullUser.role.permissions.map((perm) => perm.name);
+      const finalPermissions = [...userPermissions, ...userRolePermissions];
+      if (finalPermissions.includes(permission)) return true;
+    }
+    return false;
+  }
+
+  async editUser(
+    userIdEdited: number,
+    authUser: User,
+    editedUser: EditUser,
+  ): Promise<CustomResponse> {
+    // eslint-disable-next-line prettier/prettier
+    const user: User = await this.usersRepository.findOne({ where: { id: userIdEdited }});
+    if (
+      authUser.id === user.id ||
+      this.userHasPermission(authUser, Permissions.AdminUsers)
+    ) {
+      const editedUserKeys = Object.keys(editedUser);
+      console.log(editedUserKeys);
+    }
+    return new OkResponse();
   }
 }

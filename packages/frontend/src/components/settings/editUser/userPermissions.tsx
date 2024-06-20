@@ -1,4 +1,4 @@
-import FrontUserService from "@/utils/frontUserService";
+import FrontUtilService from "@/utils/frontUtilService";
 import { useEffect, useState } from "react";
 import {
   Table,
@@ -22,7 +22,7 @@ const UserPermissionsList = (props: { userId: number, userName: string }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchUserPermissionsList = async () => {
     const endpoint: string = `/users/user/${userId}/permissions`;
-    const data: any = await FrontUserService.getDataFromApi(endpoint);
+    const data: any = await FrontUtilService.getDataFromApi(endpoint);
     if (data !== null) {
       setPermissions(data.permissions);
     } else {
@@ -65,9 +65,8 @@ const UserPermissionsList = (props: { userId: number, userName: string }) => {
           {
             permData.length > 0 &&
             permData.map((permission: any) => {
-              console.log(permission);
               return (
-                <TableRow className={permission.isUser === false ? 'bg-gray-400 hover:bg-gray-500' : ''}>
+                <TableRow className={(permission.isUser === false) ? 'bg-gray-400 hover:bg-gray-500' : ''}>
                   <TableCell>
                     {
                       permission.owned && permission.isUser &&
@@ -75,7 +74,7 @@ const UserPermissionsList = (props: { userId: number, userName: string }) => {
                     }
                     {
                       permission.owned && !permission.isUser &&
-                      <Checkbox checked={true} />
+                      <Checkbox className="hover:cursor-not-allowed" checked={true} />
                     }
                     {
                       !permission.owned && <Checkbox onCheckedChange={setPermStatus} />

@@ -1,7 +1,7 @@
 import axios, { AxiosResponse, HttpStatusCode } from "axios";
 import { api_url } from "../../config.json";
 
-class FrontUserService {
+class FrontUtilService {
   static token: string | null = localStorage.getItem("onyxyaToken");
 
   public static async getDataFromApi(endpoint: string): Promise<any | null> {
@@ -31,4 +31,4 @@ class FrontUserService {
   }
 }
 
-export default FrontUserService;
+export default FrontUtilService;

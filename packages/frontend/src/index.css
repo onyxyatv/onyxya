@@ -58,8 +58,12 @@
   }
 }
 
+*, body {
+  margin: 0;
+  padding: 0;
+}
+
 html, .custom-scrollbar-thin {
   scrollbar-width: thin;
-  overflow-y: auto;
-  scrollbar-color: rgb(147 197 253) white;
+  scrollbar-color: rgb(113, 114, 116) white;
 }
