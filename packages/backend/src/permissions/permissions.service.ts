@@ -6,8 +6,17 @@ import { QueryRunner, Repository } from 'typeorm';
 import { permissions, rolesPermissions } from 'src/db/permissions';
 import { Role } from 'src/models/role.model';
 import { CreateRoleDb } from 'src/db/migrations/createRoles.db';
-import { NotFoundError } from '@common/errors/CustomError';
+import {
+  BadRequestError,
+  CustomError,
+  NotFoundError,
+} from '@common/errors/CustomError';
 import { CreateRolesPermissionsDb } from 'src/db/migrations/createRolesPermissions.db';
+import { AddUserPerm } from '@common/validation/permissions/addUserPerm.schema';
+import {
+  CustomResponse,
+  SuccessResponse,
+} from '@common/errors/customResponses';
 
 @Injectable()
 export class PermissionsService implements OnModuleInit {
@@ -156,5 +165,48 @@ export class PermissionsService implements OnModuleInit {
     }
 
     throw new NotFoundError('Role with that name not found');
+  }
+
+  async addUserPermission(
+    addUserPerm: AddUserPerm,
+  ): Promise<CustomResponse | CustomError> {
+    const user = await this.userRepository.findOne({
+      where: { id: addUserPerm.userId },
+      relations: { permissions: true },
+    });
+    const permission = await this.permissionsRepository.findOne({
+      where: { id: addUserPerm.permissionId },
+    });
+    if (user && permission) {
+      user.permissions.push(permission);
+      await this.userRepository.save(user);
+      return new SuccessResponse();
+    }
+    throw new NotFoundError('User or permission not found');
+  }
+
+  async removeUserPermission(
+    removeUserPerm: AddUserPerm,
+  ): Promise<CustomResponse | CustomError> {
+    const user = await this.userRepository.findOne({
+      where: { id: removeUserPerm.userId },
+      relations: { permissions: true },
+    });
+    const permission = await this.permissionsRepository.findOne({
+      where: { id: removeUserPerm.permissionId },
+    });
+    if (user && permission) {
+      const checkNames = user.permissions.map((perm) => perm.name);
+      // eslint-disable-next-line prettier/prettier
+      if (user.permissions.length === 0 || !checkNames.includes(permission.name))
+        throw new BadRequestError("User don't have this permission");
+      user.permissions = user.permissions.filter((userPerm) => {
+        if (userPerm.id !== permission.id) return userPerm;
+      });
+      await this.userRepository.save(user);
+      return new SuccessResponse();
+    }
+
+    throw new NotFoundError('User or permission not found');
   }
 }

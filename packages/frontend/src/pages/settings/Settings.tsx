@@ -14,7 +14,7 @@ const Settings = () => {
   const currentTab = location.pathname.split('/').pop();
 
   useEffect(() => {
-    if (currentTab === 'settings') navigate('/settings/global-settings');
+    if (currentTab === 'settings' || currentTab === '') navigate('/settings/global-settings');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTab]);
 

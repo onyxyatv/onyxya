@@ -30,7 +30,6 @@ import {
   editUserSchema,
   EditUser,
 } from '@common/validation/auth/editUser.schema';
-import { CustomError } from '@common/errors/CustomError';
 
 @Controller()
 export class UserController {
@@ -57,6 +56,8 @@ export class UserController {
     return res.status(resLogin.statusCode).json(resLogin);
   }
 
+  @NeedPermissions(Permissions.CreateUser)
+  @UseGuards(AuthGuard, PermissionsGuard)
   @Post('/users/new')
   @UsePipes(new ZodValidationPipe(createUserSchema))
   async createUser(

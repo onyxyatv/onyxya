@@ -3,10 +3,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { UsersDataTable } from "./users/userDataTable";
 import { userColumns } from "./users/userColumns";
 import CreateUserPopup from "./users/createUserPopup";
-import { User } from "@/components/models/user";
+import { useEffect, useState } from "react";
 
 const UserAdminSettings = () => {
-  const usersList: Array<User> = useGetUsers();
+  const [usersList, setUsers] = useGetUsers();
+  const [needReload, reloadUsers] = useState(false);
+
+  useEffect(() => {
+    setUsers();
+    if (needReload) reloadUsers(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [needReload]);
 
   return (
     <section>
@@ -20,7 +27,7 @@ const UserAdminSettings = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <CreateUserPopup />
+          <CreateUserPopup reloadUsers={() => reloadUsers(true)} />
           <div className="mt-2 border-2 border-gray-200 rounded-md">
             <UsersDataTable columns={userColumns} data={usersList} />
           </div>

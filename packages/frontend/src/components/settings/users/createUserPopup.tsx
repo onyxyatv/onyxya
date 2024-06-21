@@ -14,14 +14,14 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUser, createUserSchema } from "@common/validation/auth/createUser.schema";
-import axios, { AxiosResponse, HttpStatusCode } from "axios";
+import { AxiosResponse, HttpStatusCode } from "axios";
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
-import { api_url } from "../../../../config.json";
 import { Input } from "../../ui/input";
 import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from "../../ui/select";
+import FrontUtilService from "@/utils/frontUtilService";
 
-const CreateUserPopup = () => {
+const CreateUserPopup = (props: { reloadUsers: any }) => {
   const [popupOpened, setPopupOpened] = useState(false);
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
@@ -38,12 +38,12 @@ const CreateUserPopup = () => {
 
   const handleCreateUser = async (values: CreateUser) => {
     try {
-      console.log(values);
-      const res: AxiosResponse = await axios.post(api_url + "/users/new", values, { withCredentials: true });
+      const res: AxiosResponse = await FrontUtilService.postApi(FrontUtilService.newUserEndpoint, values);
       if (res.status === HttpStatusCode.Created) {
         if (form !== undefined) {
           form.reset();
           setPopupOpened(false);
+          props.reloadUsers();
         }
       }
 
