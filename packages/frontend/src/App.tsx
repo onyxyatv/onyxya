@@ -5,6 +5,7 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Movies from "./pages/Movies";
 import Music from "./pages/Music";
 import Series from "./pages/Series";
+import Unauthorized from "./pages/Unauthorized"; // Ajoutez cette importation
 import EditUser from "./pages/settings/EditUser";
 import Settings from "./pages/settings/Settings";
 import { AuthProvider } from "./utils/AuthContext";
@@ -51,7 +52,7 @@ const App: React.FC = () => {
           <Route
             path="/settings"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute role="admin">
                 <Settings />
               </ProtectedRoute>
             }
@@ -59,11 +60,12 @@ const App: React.FC = () => {
           <Route
             path="/settings/user/:id"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute role="admin">
                 <EditUser />
               </ProtectedRoute>
             }
           />
+          <Route path="/unauthorized" element={<Unauthorized />} />
         </Routes>
       </Router>
     </AuthProvider>

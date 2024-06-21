@@ -10,6 +10,7 @@ interface AuthContextType {
 interface AuthUser {
   id: number;
   username: string;
+  role: string;
   exp: number;
   iat: number;
 }
@@ -28,17 +29,18 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     if (token) {
       const user = parseJwt(token);
       setAuthUser(user);
+      console.log("User logged in : ", user);
     }
   }, []);
 
   const login = (token: string) => {
-    localStorage.setItem("token", token);
+    localStorage.setItem("onyxyaToken", token);
     const user = parseJwt(token);
     setAuthUser(user);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("onyxyaToken");
     setAuthUser(null);
   };
 
@@ -56,6 +58,10 @@ const parseJwt = (token: string): AuthUser | null => {
     console.error("Invalid token");
     return null;
   }
+};
+
+const convertSecondsToDate = (seconds: number): Date => {
+  return new Date(seconds * 1000);
 };
 
 export default AuthContext;

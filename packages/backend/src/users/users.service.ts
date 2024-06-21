@@ -3,17 +3,17 @@ import {
   InternalServerError,
   NotFoundError,
 } from '@common/errors/CustomError';
+import { CreateUser } from '@common/validation/auth/createUser.schema';
 import { LoginUser } from '@common/validation/auth/login.schema';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { sha512 } from 'js-sha512';
-import { User } from 'src/models/user.model';
-import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
-import { CreateUser } from '@common/validation/auth/createUser.schema';
-import UtilService from 'src/services/util.service';
 import { Permission } from 'src/models/permission.model';
 import { Role } from 'src/models/role.model';
+import { User } from 'src/models/user.model';
+import UtilService from 'src/services/util.service';
+import { Repository } from 'typeorm';
 const secret: string = process.env.JWT_SECRET_KEY;
 
 @Injectable()

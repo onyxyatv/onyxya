@@ -8,13 +8,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { CircleUser, LogOut, Settings } from "lucide-react";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useContext } from "react";
 import { Link } from "react-router-dom";
+import AuthContext from "../../utils/AuthContext";
 
 const UserMenu: FunctionComponent = () => {
-  const onDisconnect = () => {
-    localStorage.removeItem("onyxyaToken");
-    window.location.href = "/";
+  const { logout } = useContext(AuthContext) || {};
+
+  const handleLogout = () => {
+    if (logout) {
+      logout();
+    }
   };
 
   return (
@@ -38,7 +42,7 @@ const UserMenu: FunctionComponent = () => {
           <Settings className="mr-1 h-5" href="/settings" to="/settings" />{" "}
           <Link to="/settings">Parameters</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={onDisconnect}>
+        <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-1 h-5" /> Disconnect
         </DropdownMenuItem>
       </DropdownMenuContent>
