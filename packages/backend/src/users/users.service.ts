@@ -1,20 +1,26 @@
 import {
+  BadRequestError,
   ConflictError,
+  CustomError,
   InternalServerError,
   NotFoundError,
+  UnauthorizedError,
 } from '@common/errors/CustomError';
 import { LoginUser } from '@common/validation/auth/login.schema';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { sha512 } from 'js-sha512';
 import { User } from 'src/models/user.model';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
 import { CreateUser } from '@common/validation/auth/createUser.schema';
 import UtilService from 'src/services/util.service';
 import { Permission } from 'src/models/permission.model';
 import { Role } from 'src/models/role.model';
-import { CustomResponse, OkResponse } from '@common/errors/customResponses';
+import {
+  CustomResponse,
+  SuccessResponse,
+} from '@common/errors/customResponses';
 import { EditUser } from '@common/validation/auth/editUser.schema';
 import { Permissions } from 'src/db/permissions';
 const secret: string = process.env.JWT_SECRET_KEY;
@@ -58,9 +64,12 @@ export class UserService {
       const hashedPassword: string = sha512(
         checkUser.salt + loginData.password + checkUser.salt,
       );
-      const user: User = await this.usersRepository.findOneBy({
-        username: loginData.username,
-        password: hashedPassword,
+      const user: User = await this.usersRepository.findOne({
+        where: {
+          username: loginData.username,
+          password: hashedPassword,
+        },
+        relations: { role: true },
       });
 
       if (user !== null) {
@@ -205,14 +214,39 @@ export class UserService {
     editedUser: EditUser,
   ): Promise<CustomResponse> {
     // eslint-disable-next-line prettier/prettier
-    const user: User = await this.usersRepository.findOne({ where: { id: userIdEdited }});
-    if (
-      authUser.id === user.id ||
-      this.userHasPermission(authUser, Permissions.AdminUsers)
-    ) {
-      const editedUserKeys = Object.keys(editedUser);
-      console.log(editedUserKeys);
+    const toEditUser: User = await this.usersRepository.findOne({ where: { id: userIdEdited }});
+    const checkPerms = this.userHasPermission(authUser, Permissions.AdminUsers);
+    if (authUser.id === toEditUser.id || checkPerms) {
+      for (const key of Object.keys(editedUser))
+        toEditUser[key] = editedUser[key];
+      await this.usersRepository.save(toEditUser);
+      return new SuccessResponse();
     }
-    return new OkResponse();
+    throw new BadRequestError('Edit user request failed');
+  }
+
+  async deleteUser(
+    userIdToDelete: number,
+    authUser: User,
+  ): Promise<CustomResponse | CustomError> {
+    const userToDelete: User = await this.usersRepository.findOne({
+      where: { id: userIdToDelete },
+    });
+    if (userToDelete) {
+      // eslint-disable-next-line prettier/prettier
+      const checkPerms = this.userHasPermission(authUser, Permissions.AdminUsers);
+      if (userToDelete.id !== authUser.id && !checkPerms) {
+        throw new UnauthorizedError(
+          "You don't have the permission to delete the user",
+        );
+      }
+
+      // eslint-disable-next-line prettier/prettier
+      const resRepo: DeleteResult = await this.usersRepository.delete(userToDelete.id);
+      return resRepo.affected > 0
+        ? new SuccessResponse()
+        : new InternalServerError('Error during deletion');
+    }
+    throw new NotFoundError('User to delete not found');
   }
 }

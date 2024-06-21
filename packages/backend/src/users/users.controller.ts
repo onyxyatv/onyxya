@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Patch,
   Post,
@@ -29,6 +30,7 @@ import {
   editUserSchema,
   EditUser,
 } from '@common/validation/auth/editUser.schema';
+import { CustomError } from '@common/errors/CustomError';
 
 @Controller()
 export class UserController {
@@ -86,17 +88,27 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @UsePipes(new ZodValidationPipe(editUserSchema))
   @Patch('/users/user/:id')
+  @UsePipes(new ZodValidationPipe(editUserSchema))
   async editUser(
     @Request() req: any,
     @Res() res: Response,
-    editedUser: EditUser,
+    @Body() editedUser: EditUser,
   ): Promise<object> {
     const userIdEdited: number = req.params.id;
     const user: User = req.user;
     // eslint-disable-next-line prettier/prettier
     const resService: CustomResponse = await this.userService.editUser(userIdEdited, user, editedUser);
+    return res.status(resService.statusCode).json(resService);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('/users/user/:id')
+  async deleteUser(@Request() req: any, @Res() res: Response): Promise<object> {
+    const userId: number = req.params.id;
+    const user: User = req.user;
+    // eslint-disable-next-line prettier/prettier
+    const resService: { statusCode: number } = await this.userService.deleteUser(userId, user);
     return res.status(resService.statusCode).json(resService);
   }
 

@@ -1,10 +1,9 @@
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, BookmarkCheck } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EditUser, editUserSchema } from '@common/validation/auth/editUser.schema';
-import axios, { AxiosResponse, HttpStatusCode } from 'axios';
-import { useEffect, useState } from 'react';
-import { api_url } from '../../../../config.json';
+import { AxiosResponse, HttpStatusCode } from 'axios';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -12,30 +11,38 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import DeleteUserDialog from './deleteUserDialog';
+import FrontUtilService from '@/utils/frontUtilService';
 
 const UserCardDetails = (props: { user: any }) => {
-  const [error, setError] = useState("");
-  const [errorText, setErrorText] = useState("No more details");
+  const [error, setError] = useState('');
+  const [errorText, setErrorText] = useState('No more details');
+  const [successMessage, setSuccessMessage] = useState('');
+  const initialForm = {
+    username: props.user.username,
+    password: undefined,
+    role: props.user.role.name,
+    isActive: props.user.isActive,
+  };
 
   const form = useForm<EditUser>({
     resolver: zodResolver(editUserSchema),
     mode: "onSubmit",
-    defaultValues: {
-      username: props.user.username,
-      password: "",
-      role: 'user',
-      isActive: props.user.isActive.toString()
-    }
+    defaultValues: initialForm,
   });
 
   const handleEditUser = async (values: EditUser) => {
     try {
-      const res: AxiosResponse<any, any> = await axios.patch(api_url + `/users/user/${props.user.id}`, 
-        values,
-        { withCredentials: true }
-      );
-      if (res.status === HttpStatusCode.Ok) {
-        console.log("ee");
+      for (const key of (Object.keys(values) as Array<keyof EditUser>))
+        if (initialForm[key] === values[key]) delete values[key];
+
+      if (Object.keys(values).length > 0) {
+        const res: AxiosResponse<any, any> = await FrontUtilService.patchApi(
+          FrontUtilService.userEndpoint.replace(':id', props.user.id), values
+        );
+        if (res.status === HttpStatusCode.Ok) {
+          setSuccessMessage('User successfully edited!');
+          setTimeout(() => setSuccessMessage(''), 4000);
+        }
       }
     } catch (error: any) {
       const errorMessage: string = (error.response !== undefined) ? error.response.statusText : "No More details";
@@ -43,10 +50,6 @@ const UserCardDetails = (props: { user: any }) => {
       setErrorText(`Error status : ${errorMessage}`);
     }
   }
-
-  useEffect(() => {
-    console.log(props.user);
-  }, [props.user]);
 
   return (
     <Card>
@@ -94,9 +97,9 @@ const UserCardDetails = (props: { user: any }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <FormControl>
-                      <div>
-                        <Select defaultValue={props.user.role.name}>
+                    <Select onValueChange={field.onChange} defaultValue={props.user.role.name}>
+                      <FormControl>
+                        <div>
                           <SelectTrigger className="p-2 rounded-md border-slate-200 border-2 bg-slate-100">
                             <div className="flex flex-row items-center justify-center">
                               <SelectValue {...field} />
@@ -106,9 +109,9 @@ const UserCardDetails = (props: { user: any }) => {
                             <SelectItem value="user">User</SelectItem>
                             <SelectItem value="admin">Admin</SelectItem>
                           </SelectContent>
-                        </Select>
-                      </div>
-                    </FormControl>
+                        </div>
+                      </FormControl>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -122,9 +125,9 @@ const UserCardDetails = (props: { user: any }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <FormControl>
-                      <div>
-                        <Select defaultValue={props.user.isActive.toString()}>
+                    <Select onValueChange={field.onChange} defaultValue={props.user.isActive.toString()}>
+                      <FormControl>
+                        <div>
                           <SelectTrigger className="p-2 rounded-md border-slate-200 border-2 bg-slate-100">
                             <div className="flex flex-row items-center justify-center">
                               <SelectValue {...field} />
@@ -134,9 +137,9 @@ const UserCardDetails = (props: { user: any }) => {
                             <SelectItem value="true">Active</SelectItem>
                             <SelectItem value="false">Not Active</SelectItem>
                           </SelectContent>
-                        </Select>
-                      </div>
-                    </FormControl>
+                        </div>
+                      </FormControl>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -160,6 +163,16 @@ const UserCardDetails = (props: { user: any }) => {
               {error}
               <br />
               {errorText}
+            </AlertDescription>
+          </Alert>
+        }
+        {
+          successMessage.length > 0 &&
+          <Alert variant="default" className="mb-4 border-green-500 text-green-500">
+            <BookmarkCheck color="#22c55e" className="h-4 w-4" />
+            <AlertTitle>Edition Result</AlertTitle>
+            <AlertDescription>
+              {successMessage}
             </AlertDescription>
           </Alert>
         }

@@ -9,8 +9,23 @@ import {
   AlertDialogTrigger 
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import FrontUtilService from "@/utils/frontUtilService";
+import { AxiosResponse, HttpStatusCode } from "axios";
+import { useNavigate } from "react-router-dom";
 
 const DeleteUserDialog = (props: { userId: number }) => {
+  const navigate = useNavigate();
+
+  const confirmDeleteUser = async (): Promise<void> => {
+    try {
+      const endpoint = `/users/user/${props.userId}`;
+      const res: AxiosResponse = await FrontUtilService.deleteApi(endpoint);
+      if (res.status === HttpStatusCode.Ok) navigate('/settings/users-administration');
+    } catch (error) {
+      alert('ee');
+    }
+  }
+
   return (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -31,7 +46,7 @@ const DeleteUserDialog = (props: { userId: number }) => {
           <AlertDialogCancel>
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction className="bg-red-300 hover:bg-red-500">
+          <AlertDialogAction onClick={() => confirmDeleteUser()} className="bg-red-300 hover:bg-red-500">
             Confirm deletion
           </AlertDialogAction>
         </div>

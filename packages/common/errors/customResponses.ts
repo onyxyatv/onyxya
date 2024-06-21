@@ -8,7 +8,7 @@ export class CustomResponse {
   }
 }
 
-export class OkResponse extends CustomResponse {
+export class SuccessResponse extends CustomResponse {
   constructor() {
     super(200, true);
   }
