@@ -1,5 +1,5 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert.tsx";
-import { Button } from "@/components/ui/button.tsx";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card.tsx";
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -15,36 +15,25 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form.tsx";
-import { Input } from "@/components/ui/input.tsx";
-import {
-  LoginUser,
-  loginSchema,
-} from "@common/validation/auth/login.schema.ts";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { LoginUser, loginSchema } from "@common/validation/auth/login.schema";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosResponse } from "axios";
 import { AlertCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Navigate } from "react-router-dom";
 import { api_url } from "../../config.json";
-import { useGetAuthUser } from "../hooks/useGetAuthUser.ts";
+import AuthContext from "../utils/AuthContext";
 
-/**
- * This component is used to render the login page.
- * */
-const Login = () => {
+const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const authUser = useGetAuthUser();
-
-  useEffect(() => {
-    if (authUser) {
-      window.location.href = "/home";
-    }
-  }, [authUser]);
+  const { authUser, login } = useContext(AuthContext) || {};
 
   const form = useForm<LoginUser>({
     resolver: zodResolver(loginSchema),
@@ -58,27 +47,29 @@ const Login = () => {
   const handleSubmit = async (values: LoginUser) => {
     setIsSubmitting(true);
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: AxiosResponse<any> = await axios.post(
-        api_url + "/login",
+      const res: AxiosResponse<{ jwt: string }> = await axios.post(
+        `${api_url}/login`,
         values,
         { withCredentials: true }
       );
-      if (res.status === 200) {
-        localStorage.setItem("onyxyaToken", res.data.jwt);
-        window.location.href = "/home";
+      if (res.status === 200 && login) {
+        login(res.data.jwt);
       }
-      setIsSubmitting(false);
     } catch (e) {
       setError("Login or password is incorrect. Please try again.");
+    } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (authUser) {
+    return <Navigate to="/home" />;
+  }
+
   return (
-    <div className={"h-screen w-screen flex items-center justify-center"}>
+    <div className="h-screen w-screen flex items-center justify-center">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className={"w-1/5"}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="w-1/5">
           <Card>
             <CardHeader>
               <CardTitle>Login</CardTitle>
@@ -86,10 +77,9 @@ const Login = () => {
                 Please login to access your account.
               </CardDescription>
             </CardHeader>
-
             <CardContent>
               {error && (
-                <Alert variant="destructive" className={"mb-4"}>
+                <Alert variant="destructive" className="mb-4">
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>Error</AlertTitle>
                   <AlertDescription>{error}</AlertDescription>
@@ -97,21 +87,20 @@ const Login = () => {
               )}
               <FormField
                 control={form.control}
-                name={"username"}
+                name="username"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder={"Username"} />
+                      <Input {...field} placeholder="Username" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
-                name={"password"}
+                name="password"
                 render={({ field }) => (
                   <FormItem className="pt-3">
                     <FormLabel>Password</FormLabel>
@@ -120,7 +109,7 @@ const Login = () => {
                         <Input
                           type={showPassword ? "text" : "password"}
                           {...field}
-                          placeholder={"Password"}
+                          placeholder="Password"
                         />
                         <button
                           type="button"
@@ -138,23 +127,17 @@ const Login = () => {
                 )}
               />
             </CardContent>
-
             <CardFooter>
               {isSubmitting ? (
-                <Button type={"submit"} variant={"default"} disabled>
+                <Button type="submit" variant="default" disabled>
                   Loading...
                 </Button>
               ) : (
-                <Button type={"submit"} variant={"default"}>
+                <Button type="submit" variant="default">
                   Login
                 </Button>
               )}
             </CardFooter>
-            {authUser && (
-              <p className="text-center text-sm text-gray-500 mt-4">
-                You are already logged in as {authUser.username}.{" "}
-              </p>
-            )}
           </Card>
         </form>
       </Form>
