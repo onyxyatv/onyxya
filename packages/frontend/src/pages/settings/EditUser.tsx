@@ -16,6 +16,7 @@ const EditUser = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser]: any = useState(null);
   const navigate = useNavigate();
+  const [reloadStatus, setReloadStatus] = useState(false);
 
   useEffect(() => {
     const checkId = Number.parseInt(id);
@@ -29,7 +30,8 @@ const EditUser = () => {
       }
       fetchUser();
     }
-  }, [id]);
+    if (reloadStatus) setReloadStatus(false);
+  }, [id, reloadStatus]);
 
   return (
     <div className="mb-3">
@@ -48,7 +50,7 @@ const EditUser = () => {
             <CardContent>
               {
                 user !== null &&
-                <UserCardDetails user={user} />
+                <UserCardDetails setReloadStatus={setReloadStatus} user={user} />
               }
             </CardContent>
             <CardFooter className="min-w-max flex flex-col">
@@ -56,7 +58,7 @@ const EditUser = () => {
               <p>
                 Permissions obtained via the role are not removable.
               </p>
-              <UserPermissionsList userId={user.id} userName={user.username} />
+              <UserPermissionsList userId={user.id} reloadStatus={reloadStatus} userName={user.username} />
             </CardFooter>
           </Card>
         }

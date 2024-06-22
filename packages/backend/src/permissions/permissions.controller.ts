@@ -20,6 +20,10 @@ import {
   addUserPermSchema,
 } from '@common/validation/permissions/addUserPerm.schema';
 import { ZodValidationPipe } from 'src/pipes/zod.pipe';
+import {
+  setUserPermissionsSchema,
+  SetUserPermissions,
+} from '@common/validation/permissions/setUserPermissions.schema';
 
 @UseGuards(AuthGuard, PermissionsGuard)
 @Controller('/permissions')
@@ -70,6 +74,18 @@ export class PermissionsController {
   ): Promise<object> {
     // eslint-disable-next-line prettier/prettier
     const resService: { statusCode: number } = await this.permissionsService.removeUserPermission(removeUserPerm);
+    return res.status(resService.statusCode).json(resService);
+  }
+
+  @NeedPermissions(Permissions.AdminUserPermissions)
+  @UsePipes(new ZodValidationPipe(setUserPermissionsSchema))
+  @Post('/setUserPermissions')
+  async setUserPermissions(
+    @Res() res: Response,
+    @Body() setUserPermissions: SetUserPermissions,
+  ): Promise<object> {
+    // eslint-disable-next-line prettier/prettier
+    const resService: { statusCode: number } = await this.permissionsService.setUserPermissions(setUserPermissions);
     return res.status(resService.statusCode).json(resService);
   }
 }

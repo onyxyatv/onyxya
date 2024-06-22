@@ -5,6 +5,7 @@ class FrontUtilService {
   static token: string | null = localStorage.getItem("onyxyaToken");
   static userEndpoint: string = '/users/user/:id';
   static newUserEndpoint: string = '/users/new';
+  static setUserPermissionsEndpoint = '/permissions/setUserPermissions';
 
   public static async getDataFromApi(endpoint: string): Promise<any | null> {
     try {

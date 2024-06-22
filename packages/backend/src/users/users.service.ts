@@ -72,7 +72,8 @@ export class UserService {
         relations: { role: true },
       });
 
-      if (user !== null) {
+      // Inactive user cannot login to the application
+      if (user !== null && user.isActive) {
         const userJwt: string = this.generateUserJwt(user);
         return { jwt: userJwt, statusCode: HttpStatus.OK };
       }
@@ -217,8 +218,14 @@ export class UserService {
     const toEditUser: User = await this.usersRepository.findOne({ where: { id: userIdEdited }});
     const checkPerms = this.userHasPermission(authUser, Permissions.AdminUsers);
     if (authUser.id === toEditUser.id || checkPerms) {
-      for (const key of Object.keys(editedUser))
-        toEditUser[key] = editedUser[key];
+      for (const key of Object.keys(editedUser)) {
+        if (key === 'role') {
+          const newRole: Role = await this.rolesRepository.findOneBy({
+            name: editedUser.role,
+          });
+          toEditUser.role = newRole;
+        } else toEditUser[key] = editedUser[key];
+      }
       await this.usersRepository.save(toEditUser);
       return new SuccessResponse();
     }

@@ -13,7 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import DeleteUserDialog from './deleteUserDialog';
 import FrontUtilService from '@/utils/frontUtilService';
 
-const UserCardDetails = (props: { user: any }) => {
+const UserCardDetails = (props: { user: any, setReloadStatus: any }) => {
   const [error, setError] = useState('');
   const [errorText, setErrorText] = useState('No more details');
   const [successMessage, setSuccessMessage] = useState('');
@@ -41,6 +41,7 @@ const UserCardDetails = (props: { user: any }) => {
         );
         if (res.status === HttpStatusCode.Ok) {
           setSuccessMessage('User successfully edited!');
+          props.setReloadStatus(true);
           setTimeout(() => setSuccessMessage(''), 4000);
         }
       }

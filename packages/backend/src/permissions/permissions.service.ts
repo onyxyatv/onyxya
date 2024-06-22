@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permission } from 'src/models/permission.model';
 import { User } from 'src/models/user.model';
@@ -17,6 +17,8 @@ import {
   CustomResponse,
   SuccessResponse,
 } from '@common/errors/customResponses';
+import { UserService } from 'src/users/users.service';
+import { SetUserPermissions } from '@common/validation/permissions/setUserPermissions.schema';
 
 @Injectable()
 export class PermissionsService implements OnModuleInit {
@@ -27,6 +29,7 @@ export class PermissionsService implements OnModuleInit {
     private userRepository: Repository<User>,
     @InjectRepository(Role)
     private rolesRepository: Repository<Role>,
+    private readonly userService: UserService,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -117,23 +120,13 @@ export class PermissionsService implements OnModuleInit {
     return this.permissionsRepository.find();
   }
 
+  /**
+   * Get a permission by its Id
+   * @param id | permissionId
+   * @returns Permission
+   */
   getById(id: number): Promise<Permission> {
     return this.permissionsRepository.findOneBy({ id: id });
-  }
-
-  async givePermToUser(userId: number, permId: number): Promise<any> {
-    const permission: Permission = await this.permissionsRepository.findOneBy({
-      id: permId,
-    });
-    const user: User = await this.userRepository.findOneBy({ id: userId });
-
-    if (permission === null || user === null)
-      throw new Error(`User or Permission not found!`);
-
-    user.permissions.push(permission);
-    await this.userRepository.save(user);
-
-    return { success: true, statusCode: HttpStatus.OK };
   }
 
   async getRolePermissions(roleName: string | undefined): Promise<any> {
@@ -167,6 +160,17 @@ export class PermissionsService implements OnModuleInit {
     throw new NotFoundError('Role with that name not found');
   }
 
+  async userHasPermission(
+    user: User,
+    permission: Permission,
+  ): Promise<boolean> {
+    const userPerms = await this.userService.getUserOwnedPermissions(user.id);
+    for (const userPerm of userPerms) {
+      if (userPerm['isUser'] && userPerm.id === permission.id) return true;
+    }
+    return false;
+  }
+
   async addUserPermission(
     addUserPerm: AddUserPerm,
   ): Promise<CustomResponse | CustomError> {
@@ -178,9 +182,14 @@ export class PermissionsService implements OnModuleInit {
       where: { id: addUserPerm.permissionId },
     });
     if (user && permission) {
-      user.permissions.push(permission);
-      await this.userRepository.save(user);
-      return new SuccessResponse();
+      const checkUserHasPerm = await this.userHasPermission(user, permission);
+      if (!checkUserHasPerm) {
+        user.permissions.push(permission);
+        await this.userRepository.save(user);
+        return new SuccessResponse();
+      } else {
+        throw new BadRequestError('User have already this permission');
+      }
     }
     throw new NotFoundError('User or permission not found');
   }
@@ -208,5 +217,32 @@ export class PermissionsService implements OnModuleInit {
     }
 
     throw new NotFoundError('User or permission not found');
+  }
+
+  /**
+   * This method sets a user's permissions
+   * @param setUserPermissions | { userId: number, permissions: number[] }
+   * @returns a CustomResponse or a CustomError
+   */
+  async setUserPermissions(
+    setUserPermissions: SetUserPermissions,
+  ): Promise<CustomResponse | CustomError> {
+    const user: User = await this.userRepository.findOne({
+      where: { id: setUserPermissions.userId },
+      relations: { permissions: true },
+    });
+    if (user) {
+      user.permissions = [];
+      await this.userRepository.save(user);
+      for (const permId of setUserPermissions.permissions) {
+        const permission: Permission = await this.permissionsRepository.findOne(
+          { where: { id: permId } },
+        );
+        if (permission) user.permissions.push(permission);
+      }
+      await this.userRepository.save(user);
+      return new SuccessResponse();
+    }
+    throw new NotFoundError('User or one permission not found!');
   }
 }

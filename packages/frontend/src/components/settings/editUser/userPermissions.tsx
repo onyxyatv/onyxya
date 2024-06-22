@@ -12,12 +12,18 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { AxiosResponse, HttpStatusCode } from "axios";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, BookmarkCheck } from "lucide-react";
 
-const UserPermissionsList = (props: { userId: number, userName: string }) => {
+const UserPermissionsList = (props: { userId: number, userName: string, reloadStatus: boolean }) => {
   const userId: number = props.userId;
   const userName: string = props.userName;
   const [permData, setPermissions] = useState([]);
   const [permissionsError, setPermissionsError] = useState('');
+  const [error, setError] = useState('');
+  const [errorText, setErrorText] = useState('No more details');
+  const [successMessage, setSuccessMessage] = useState('');
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchUserPermissionsList = async () => {
@@ -34,10 +40,40 @@ const UserPermissionsList = (props: { userId: number, userName: string }) => {
     console.log(status);
   }
 
+  const saveUserPermissions = (): void => {
+    const permissionsList: Array<number> = [];
+    const permissionsBoxes: NodeListOf<Element> = document.querySelectorAll('.permission-status-box');
+    permissionsBoxes.forEach((permissionBox) => {
+      if (permissionBox.getAttribute('data-state') === 'checked') {
+        const permId: string | null = permissionBox.getAttribute('itemid');
+        if (permId !== null) permissionsList.push(Number.parseInt(permId));
+      }
+    });
+
+    if (permissionsList.length > 0) setNewUserPermissions(permissionsList);
+  }
+
+  const setNewUserPermissions = async (permissionsList: Array<number>): Promise<void> => {
+    try {
+      if (permissionsList.length > 0) {
+        const data = { userId: props.userId, permissions: permissionsList };
+        const endpoint = FrontUtilService.setUserPermissionsEndpoint;
+        const resApi: AxiosResponse = await FrontUtilService.postApi(endpoint, data);
+        if (resApi.status === HttpStatusCode.Ok) {
+          setSuccessMessage("User's permissions updated!");
+        }
+      }
+    } catch (error: any) {
+      const errorMessage: string = (error.response !== undefined) ? error.response.statusText : "No More details";
+      setError('User edition failed. Please try again');
+      setErrorText(`Error status : ${errorMessage}`);
+    }
+  }
+
   useEffect(() => {
     fetchUserPermissionsList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, props.reloadStatus]);
 
   return (
     <section className="w-full">
@@ -69,15 +105,30 @@ const UserPermissionsList = (props: { userId: number, userName: string }) => {
                   <TableRow className={(permission.isUser === false) ? 'bg-gray-400 hover:bg-gray-500' : ''}>
                     <TableCell>
                       {
-                        permission.owned && permission.isUser &&
-                        <Checkbox defaultChecked={true} aria-checked={true} onCheckedChange={setPermStatus} />
-                      }
-                      {
-                        permission.owned && !permission.isUser &&
-                        <Checkbox className="hover:cursor-not-allowed" checked={true} />
-                      }
-                      {
-                        !permission.owned && <Checkbox onCheckedChange={setPermStatus} />
+                        <Checkbox itemID={permission.id}
+                          // Permission is not owned
+                          {...(!permission.owned ? { onCheckedChange: setPermStatus } : {})}
+                          // Permission owned by user
+                          {...(permission.owned && permission.isUser ?
+                            {
+                              defaultChecked: true,
+                              'aria-checked': true,
+                              onCheckedChange: setPermStatus
+                            } : {})
+                          }
+                          // Permission owned by user role
+                          {...(permission.owned && !permission.isUser ?
+                            {
+                              className: 'hover:cursor-not-allowed',
+                              checked: true
+                            }
+                            : {})
+                          }
+                          {...
+                          (!permission.owned || permission.isUser) &&
+                          { className: 'permission-status-box' }
+                          }
+                        />
                       }
                     </TableCell>
                     <TableCell className="font-medium">{permission.name}</TableCell>
@@ -96,8 +147,33 @@ const UserPermissionsList = (props: { userId: number, userName: string }) => {
         </Table>
       </ScrollArea>
       <div className="mt-2 flex flex-row justify-end align-middle">
-        <Button variant="outline" className="bg-green-300 hover:bg-green-500">Save Permissions</Button>
+        <Button onClick={() => saveUserPermissions()}
+          variant="outline" className="bg-green-300 hover:bg-green-500">
+          Save Permissions
+        </Button>
       </div>
+      {
+        error.length > 0 &&
+        <Alert variant="destructive" className="mt-2 mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            {error}
+            <br />
+            {errorText}
+          </AlertDescription>
+        </Alert>
+      }
+      {
+        successMessage.length > 0 &&
+        <Alert variant="default" className="mb-4 mt-2 border-green-500 text-green-500">
+          <BookmarkCheck color="#22c55e" className="h-4 w-4" />
+          <AlertTitle>Edition Result</AlertTitle>
+          <AlertDescription>
+            {successMessage}
+          </AlertDescription>
+        </Alert>
+      }
     </section>
   );
 }

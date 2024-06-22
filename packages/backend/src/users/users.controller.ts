@@ -21,7 +21,6 @@ import { UserService } from './users.service';
 import { User } from 'src/models/user.model';
 import { AuthGuard } from 'src/middlewares/auth.guard';
 import { PermissionsGuard } from 'src/middlewares/permissions.guard';
-import { PermissionsService } from 'src/permissions/permissions.service';
 import { NeedPermissions } from 'src/permissions/permissions.decorator';
 import { Permissions } from 'src/db/permissions';
 import { Permission } from 'src/models/permission.model';
@@ -33,10 +32,7 @@ import {
 
 @Controller()
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly permissionsService: PermissionsService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @NeedPermissions(Permissions.AdminUsers)
   @UseGuards(AuthGuard, PermissionsGuard)
