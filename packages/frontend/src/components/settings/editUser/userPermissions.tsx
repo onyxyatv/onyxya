@@ -24,6 +24,7 @@ const UserPermissionsList = (props: { userId: number, userName: string, reloadSt
   const [error, setError] = useState('');
   const [errorText, setErrorText] = useState('No more details');
   const [successMessage, setSuccessMessage] = useState('');
+  const [reloadPermsStatus, setReloadPermsStatus] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchUserPermissionsList = async () => {
@@ -50,18 +51,18 @@ const UserPermissionsList = (props: { userId: number, userName: string, reloadSt
       }
     });
 
-    if (permissionsList.length > 0) setNewUserPermissions(permissionsList);
+    setNewUserPermissions(permissionsList);
   }
 
   const setNewUserPermissions = async (permissionsList: Array<number>): Promise<void> => {
     try {
-      if (permissionsList.length > 0) {
-        const data = { userId: props.userId, permissions: permissionsList };
-        const endpoint = FrontUtilService.setUserPermissionsEndpoint;
-        const resApi: AxiosResponse = await FrontUtilService.postApi(endpoint, data);
-        if (resApi.status === HttpStatusCode.Ok) {
-          setSuccessMessage("User's permissions updated!");
-        }
+      const data = { userId: props.userId, permissions: permissionsList };
+      const endpoint = FrontUtilService.setUserPermissionsEndpoint;
+      const resApi: AxiosResponse = await FrontUtilService.postApi(endpoint, data);
+      if (resApi.status === HttpStatusCode.Ok) {
+        setSuccessMessage("User's permissions updated!");
+        setReloadPermsStatus(true);
+        setTimeout(() => setSuccessMessage(''), 4000);
       }
     } catch (error: any) {
       const errorMessage: string = (error.response !== undefined) ? error.response.statusText : "No More details";
@@ -72,8 +73,9 @@ const UserPermissionsList = (props: { userId: number, userName: string, reloadSt
 
   useEffect(() => {
     fetchUserPermissionsList();
+    if (reloadPermsStatus) setReloadPermsStatus(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, props.reloadStatus]);
+  }, [userId, props.reloadStatus, reloadPermsStatus]);
 
   return (
     <section className="w-full">
