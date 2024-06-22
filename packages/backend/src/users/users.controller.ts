@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Patch,
   Post,
   Request,
   Res,
@@ -19,16 +21,21 @@ import { UserService } from './users.service';
 import { User } from 'src/models/user.model';
 import { AuthGuard } from 'src/middlewares/auth.guard';
 import { PermissionsGuard } from 'src/middlewares/permissions.guard';
-import { PermissionsService } from 'src/permissions/permissions.service';
+import { NeedPermissions } from 'src/permissions/permissions.decorator';
+import { Permissions } from 'src/db/permissions';
+import { Permission } from 'src/models/permission.model';
+import { CustomResponse } from '@common/errors/customResponses';
+import {
+  editUserSchema,
+  EditUser,
+} from '@common/validation/auth/editUser.schema';
 
 @Controller()
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly permissionsService: PermissionsService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AuthGuard)
+  @NeedPermissions(Permissions.AdminUsers)
+  @UseGuards(AuthGuard, PermissionsGuard)
   @Get('/users')
   async getAll(@Res() res: Response): Promise<object> {
     const users: Array<User> = await this.userService.getAllUsers();
@@ -45,6 +52,8 @@ export class UserController {
     return res.status(resLogin.statusCode).json(resLogin);
   }
 
+  @NeedPermissions(Permissions.CreateUser)
+  @UseGuards(AuthGuard, PermissionsGuard)
   @Post('/users/new')
   @UsePipes(new ZodValidationPipe(createUserSchema))
   async createUser(
@@ -62,24 +71,70 @@ export class UserController {
     @Res() res: Response,
   ): Promise<object> {
     const userId: number = req.user.id;
-    const myProfileData: any = await this.userService.getProfile(userId);
+    const myProfileData: any = await this.userService.getUser(userId);
     return res.status(myProfileData.statusCode).json(myProfileData);
   }
 
+  @NeedPermissions(Permissions.AdminUsers)
   @UseGuards(AuthGuard, PermissionsGuard)
   @Get('/users/user/:id')
   async getById(@Request() req: any, @Res() res: Response): Promise<object> {
     const userId: number = req.params.id;
-    const user: any = await this.userService.getProfile(userId);
+    const user: any = await this.userService.getUser(userId);
     return res.status(200).json(user);
   }
 
   @UseGuards(AuthGuard)
-  @Get('/users/user/:id/permissions')
-  async givePerm(@Request() req: any, @Res() res: Response): Promise<object> {
-    const userId: number = req.params.id;
-    const resService: { success: boolean; statusCode: number } =
-      await this.permissionsService.givePermToUser(userId, 1);
+  @Patch('/users/user/:id')
+  @UsePipes(new ZodValidationPipe(editUserSchema))
+  async editUser(
+    @Request() req: any,
+    @Res() res: Response,
+    @Body() editedUser: EditUser,
+  ): Promise<object> {
+    const userIdEdited: number = req.params.id;
+    const user: User = req.user;
+    // eslint-disable-next-line prettier/prettier
+    const resService: CustomResponse = await this.userService.editUser(userIdEdited, user, editedUser);
     return res.status(resService.statusCode).json(resService);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('/users/user/:id')
+  async deleteUser(@Request() req: any, @Res() res: Response): Promise<object> {
+    const userId: number = req.params.id;
+    const user: User = req.user;
+    // eslint-disable-next-line prettier/prettier
+    const resService: { statusCode: number } = await this.userService.deleteUser(userId, user);
+    return res.status(resService.statusCode).json(resService);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/users/user/:id/permissions')
+  async getUserFullPermissions(
+    @Request() req: any,
+    @Res() res: Response,
+  ): Promise<object> {
+    const userId: number = req.params.id;
+    // eslint-disable-next-line prettier/prettier
+    const userPermissions: Array<Permission> = await this.userService.getUserPermissions(userId);
+    return res.status(200).json({
+      count: userPermissions.length,
+      permissions: userPermissions,
+    });
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/users/user/:id/permissions/owned')
+  async getUserOwnedPermissions(
+    @Request() req: any,
+    @Res() res: Response,
+  ): Promise<object> {
+    const userId: number = req.params.id;
+    const userPermissions: Array<Permission> =
+      await this.userService.getUserOwnedPermissions(userId);
+    return res
+      .status(200)
+      .json({ count: userPermissions.length, permissions: userPermissions });
   }
 }

@@ -6,6 +6,7 @@ export enum Permissions {
   ReadRolePermissions = 'read_role_permissions',
   AdminUsers = 'admin_users',
   AdminRoles = 'admin_roles',
+  AdminUserPermissions = 'admin_user_permissions',
 }
 
 export const permissions = [
@@ -37,6 +38,10 @@ export const permissions = [
     name: Permissions.AdminRoles,
     description: 'Can administrate roles and edit their permissions',
   },
+  {
+    name: Permissions.AdminUserPermissions,
+    description: 'Can administrate roles and edit their permissions',
+  },
 ];
 
 export const rolesPermissions = {
@@ -48,6 +53,7 @@ export const rolesPermissions = {
     Permissions.ReadRolePermissions,
     Permissions.AdminUsers,
     Permissions.AdminRoles,
+    Permissions.AdminUserPermissions,
   ],
   user: [Permissions.ReadMedias],
 };

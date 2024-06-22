@@ -11,6 +11,7 @@ import { Role } from './role.model';
 
 @Entity()
 export class User {
+  user: Permission;
   constructor(username: string, password: string, role: Role, salt: string) {
     this.username = username;
     this.password = password;

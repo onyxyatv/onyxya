@@ -8,21 +8,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "../../ui/button";
-import { AlertCircle, ChevronDown, CirclePlus } from "lucide-react";
+import { AlertCircle, CirclePlus } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "../../ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../../ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUser, createUserSchema } from "@common/validation/auth/createUser.schema";
-import axios, { AxiosResponse, HttpStatusCode } from "axios";
+import { AxiosResponse, HttpStatusCode } from "axios";
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
-import { api_url } from "../../../../config.json";
 import { Input } from "../../ui/input";
-import { Select, SelectContent, SelectItem, SelectValue } from "../../ui/select";
-import { SelectTrigger } from "@radix-ui/react-select";
+import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from "../../ui/select";
+import FrontUtilService from "@/utils/frontUtilService";
 
-const CreateUserPopup = () => {
+const CreateUserPopup = (props: { reloadUsers: any }) => {
   const [popupOpened, setPopupOpened] = useState(false);
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
@@ -33,18 +32,22 @@ const CreateUserPopup = () => {
     defaultValues: {
       username: "",
       password: "",
-      role: "user"
+      role: undefined,
     }
   });
 
   const handleCreateUser = async (values: CreateUser) => {
     try {
-      const res: AxiosResponse = await axios.post(api_url + "/users/new", values, { withCredentials: true });
-      if (res.status === HttpStatusCode.Ok) {
-        console.log("ee");
+      const res: AxiosResponse = await FrontUtilService.postApi(FrontUtilService.newUserEndpoint, values);
+      if (res.status === HttpStatusCode.Created) {
+        if (form !== undefined) {
+          form.reset();
+          setPopupOpened(false);
+          props.reloadUsers();
+        }
       }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMessage: string = (error.response !== undefined) ? error.response.statusText : "No More details";
       setError('User creation failed. Please try again');
@@ -57,7 +60,7 @@ const CreateUserPopup = () => {
   }, [form, popupOpened]);
 
   return (
-    <Dialog onOpenChange={setPopupOpened}>
+    <Dialog open={popupOpened} onOpenChange={setPopupOpened}>
       <DialogTrigger>
         <Button>
           <CirclePlus className="mr-2" /> Add a user
@@ -114,22 +117,17 @@ const CreateUserPopup = () => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Role</FormLabel>
-                            <FormControl>
-                              <div>
-                                <Select>
-                                  <SelectTrigger className="p-2 rounded-md border-slate-200 border-2 bg-slate-100">
-                                    <div className="flex flex-row items-center justify-center">
-                                      <SelectValue placeholder="Choose" {...field} />
-                                      <ChevronDown className="ml-4 bg-slate-100 text-slate-500" />
-                                    </div>
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="user">User</SelectItem>
-                                    <SelectItem value="admin">Admin</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </FormControl>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="p-2 rounded-md w-1/3 border-slate-200 border-2 bg-slate-100">
+                                  <SelectValue placeholder="Choose" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="user">User</SelectItem>
+                                <SelectItem value="admin">Admin</SelectItem>
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -140,7 +138,7 @@ const CreateUserPopup = () => {
                       <DialogClose>
                         <Button type="reset" variant="destructive">Cancel</Button>
                       </DialogClose>
-                      <Button variant="outline" className="bg-green-300 hover:bg-green-500">Confirm</Button>
+                      <Button type="submit" variant="outline" className="bg-green-300 hover:bg-green-500">Confirm</Button>
                     </div>
                   </form>
                 </Form>
