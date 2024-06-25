@@ -1,10 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateRoleDb } from 'src/db/migrations/createRoles.db';
-import { CreateRolesPermissionsDb } from 'src/db/migrations/createRolesPermissions.db';
-import { permissions, rolesPermissions } from 'src/db/permissions';
 import { Permission } from 'src/models/permission.model';
-import { Role } from 'src/models/role.model';
 import { User } from 'src/models/user.model';
 import { QueryRunner, Repository } from 'typeorm';
 import { permissions, rolesPermissions } from 'src/db/permissions';
