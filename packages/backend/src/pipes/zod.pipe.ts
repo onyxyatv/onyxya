@@ -12,7 +12,7 @@ export class ZodValidationPipe implements PipeTransform {
     } catch (error) {
       const err = error.errors[0].message.split(' ');
       if (err.length === 1) err.push(err[0]); // if the message is only one word, we shift it so we don't lose it
-      err[0] = error.errors[0].path[0];
+      if (error.errors[0].path.length > 0) err[0] = error.errors[0].path[0];
 
       const str: string = err.join(' ');
       throw new BadRequestError(str.toLowerCase());

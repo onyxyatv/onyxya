@@ -3,7 +3,7 @@ import { rolesPermissions } from '../permissions';
 
 export class CreateRolesPermissionsDb {
   static async up(queryRunner: QueryRunner): Promise<void> {
-    this.down(queryRunner).then(async () => {
+    this.deleteRolesPermissions(queryRunner).then(async () => {
       for (const role in rolesPermissions) {
         const permissions = rolesPermissions[role];
         for (const permission in permissions) {
@@ -27,7 +27,25 @@ export class CreateRolesPermissionsDb {
     );
   }
 
-  static async down(queryRunner: QueryRunner): Promise<void> {
+  /**
+   * This method removes permission's role from database
+   * @param queryRunner | the queryRunner instance
+   * @param roleName
+   * @param permId | permission id (foreign key)
+   */
+  static async removeRolePermission(
+    queryRunner: QueryRunner,
+    roleName: string,
+    permId: number,
+  ) {
+    await queryRunner.query(
+      'DELETE FROM role_permissions WHERE role_id = (SELECT id FROM role WHERE name = ?)' +
+        ' AND permission_id = ?',
+      [roleName, permId],
+    );
+  }
+
+  static async deleteRolesPermissions(queryRunner: QueryRunner): Promise<void> {
     for (const role in rolesPermissions) {
       const permissions = rolesPermissions[role];
       for (const permission in permissions) {

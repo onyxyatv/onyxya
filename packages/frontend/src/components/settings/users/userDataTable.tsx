@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/table"
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Button } from "@/components/ui/button"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -54,7 +56,7 @@ export function UsersDataTable<TData, TValue>({
           className="max-w-sm"
         />
       </div>
-      <div>
+      <ScrollArea className="h-[250px] pr-3">
         <Table className="border-2 border-gray-200">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -97,6 +99,16 @@ export function UsersDataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+      </ScrollArea>
+      <div className="flex items-center justify-end mr-3 space-x-2 mt-2">
+        <Button variant="outline" size="sm"
+          onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+          Previous
+        </Button>
+        <Button variant="outline" size="sm"
+          onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          Next
+        </Button>
       </div>
     </div>
   )
