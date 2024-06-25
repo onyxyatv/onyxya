@@ -16,10 +16,8 @@ import { User } from "@/components/models/user";
 import UserPermissionsList from "@/components/settings/editUser/userPermissions";
 
 const EditUser = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { id }: any = useParams();
   const [userId, setUserId] = useState(id);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser]: any = useState(null);
   const navigate = useNavigate();
   const [reloadStatus, setReloadStatus] = useState(false);

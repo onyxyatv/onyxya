@@ -15,7 +15,6 @@ const PermissionsList = (props: { role: any; }) => {
   const roleName = props.role;
   const [permData, setPermissions] = useState({ owned: [], missing: [] });
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchPermissionsList = async () => {
     const endpoint: string = `/permissions/roles?role=${roleName}`;
     const data: any = await FrontUtilService.getDataFromApi(endpoint);

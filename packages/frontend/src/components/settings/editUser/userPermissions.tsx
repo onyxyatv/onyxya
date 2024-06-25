@@ -26,7 +26,6 @@ const UserPermissionsList = (props: { userId: number, userName: string, reloadSt
   const [successMessage, setSuccessMessage] = useState('');
   const [reloadPermsStatus, setReloadPermsStatus] = useState(false);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchUserPermissionsList = async () => {
     const endpoint: string = `/users/user/${userId}/permissions`;
     const data: any = await FrontUtilService.getDataFromApi(endpoint);
