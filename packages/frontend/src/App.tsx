@@ -5,11 +5,11 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Movies from "./pages/Movies";
 import Music from "./pages/Music";
 import Series from "./pages/Series";
-import Unauthorized from "./pages/Unauthorized"; // Ajoutez cette importation
+import Unauthorized from "./pages/Unauthorized";
 import EditUser from "./pages/settings/EditUser";
 import Settings from "./pages/settings/Settings";
 import { AuthProvider } from "./utils/AuthContext";
-import ProtectedRoute from "./utils/ProtectedRoute"; // Assurez-vous que vous avez ce composant pour gérer les routes protégées
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 const App: React.FC = () => {
   return (

@@ -6,13 +6,8 @@ import { AuthGuard } from 'src/middlewares/auth.guard';
 import { MediaCard } from 'src/models/mediacard.model';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([MediaCard])
-  ],
+  imports: [TypeOrmModule.forFeature([MediaCard])],
   controllers: [MediaCardController],
-  providers: [
-    MediaCardService, AuthGuard
-  ]
+  providers: [MediaCardService, AuthGuard],
 })
-
 export class MediaCardModule {}

@@ -13,7 +13,9 @@ export class PermissionsGuard implements CanActivate {
   constructor(private usersService: UserService) {}
 
   // eslint-disable-next-line prettier/prettier
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
     try {
       const req: any = context.switchToHttp().getRequest();
       const user: any = req.user;
@@ -23,6 +25,11 @@ export class PermissionsGuard implements CanActivate {
         context.getHandler(),
       );
 
+      // const hasPermissions = Reflect.getMetadata(
+      //     'hasPermissions',
+      //     context.getHandler(),
+      // );
+
       const fetchUserPerms = async (): Promise<boolean> => {
         if (needPermissions === undefined) {
           throw new InternalServerError(
@@ -30,7 +37,7 @@ export class PermissionsGuard implements CanActivate {
           );
         }
         // eslint-disable-next-line prettier/prettier
-        const userPermissions: Permission[] = await this.usersService.getUserPermissions(user.id);
+        const userPermissions: Permission[] = await this.usersService.getUserOwnedPermissions(user.id);
         const permissionsNamesList = userPermissions.map((perm) => perm.name);
         for (const needed of needPermissions) {
           if (!permissionsNamesList.includes(needed))
