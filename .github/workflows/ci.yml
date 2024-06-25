@@ -3,10 +3,10 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - github/cicd
+      - github/development
   pull_request:
     branches:
-      - github/cicd
+      - github/development
 
 jobs:
   lint-and-test-react:
