@@ -3,7 +3,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import UserCardDetails from "@/components/settings/editUser/userCard";
 import FrontUtilService from "@/utils/frontUtilService";
 import { User } from "@/components/models/user";
@@ -27,7 +33,7 @@ const EditUser = () => {
       const fetchUser = async () => {
         const user: User = await FrontUtilService.getUserById(checkId);
         setUser(user);
-      }
+      };
       fetchUser();
     }
     if (reloadStatus) setReloadStatus(false);
@@ -37,10 +43,12 @@ const EditUser = () => {
     <div className="mb-3">
       <Header />
       <section className="mt-2 m-auto max-w-7xl">
-        <ArrowLeft className="w-5 hover:cursor-pointer" onClick={() => navigate("/settings/users-administration")} />
+        <ArrowLeft
+          className="w-5 hover:cursor-pointer"
+          onClick={() => navigate("/settings/users-administration")}
+        />
         <h2 className="text-2xl font-bold">Edit user #{id}</h2>
-        {
-          userId !== null && user !== null &&
+        {userId !== null && user !== null && (
           <Card>
             <CardHeader>
               <CardDescription className="text-center text-2xl font-bold">
@@ -61,9 +69,8 @@ const EditUser = () => {
               <UserPermissionsList userId={user.id} reloadStatus={reloadStatus} userName={user.username} />
             </CardFooter>
           </Card>
-        }
-        {
-          userId === null &&
+        )}
+        {userId === null && (
           <Alert variant="destructive" className="mt-4">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle className="text-2xl">Error</AlertTitle>
@@ -71,7 +78,7 @@ const EditUser = () => {
               User with that id not found!
             </AlertDescription>
           </Alert>
-        }
+        )}
       </section>
     </div>
   );
