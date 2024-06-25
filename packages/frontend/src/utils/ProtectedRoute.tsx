@@ -21,7 +21,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     return <Navigate to="/" />;
   }
 
-  if (role && authUser.role !== role) {
+  if (role && authUser.role.name !== role) {
     return <Navigate to="/unauthorized" />; // Rediriger vers une page d'accès refusé
   }
 
