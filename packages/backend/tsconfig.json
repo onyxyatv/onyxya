@@ -21,6 +21,5 @@
     "paths": {
       "@common/*": ["../common/*"]
     },
-    "resolveJsonModule": true,
   }
 }
