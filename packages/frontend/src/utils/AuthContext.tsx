@@ -60,8 +60,4 @@ const parseJwt = (token: string): AuthUser | null => {
   }
 };
 
-const convertSecondsToDate = (seconds: number): Date => {
-  return new Date(seconds * 1000);
-};
-
 export default AuthContext;
