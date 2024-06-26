@@ -6,7 +6,6 @@ const Media = () => {
     <div>
       <Header />
       <div>
-        <h1>Media</h1>
         <MediaTable />
       </div>
     </div>

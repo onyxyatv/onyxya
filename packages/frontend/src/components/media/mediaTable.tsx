@@ -9,6 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import FrontUtilService from "@/utils/frontUtilService";
+import { SyncMediaButton } from "./syncMediaButton";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -20,134 +22,59 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ReactNode, useState } from "react";
-
-interface Media {
-  id: number;
-  name: string;
-  path: string;
-  status: string;
-  type: string;
-}
-
-const medias: Media[] = [
-  {
-    id: 1,
-    name: "Gangnam Style",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-  {
-    id: 2,
-    name: "Gangnam Style 2",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-  {
-    id: 3,
-    name: "Gangnam Style 3",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-  {
-    id: 1,
-    name: "Gangnam Style",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-  {
-    id: 2,
-    name: "Gangnam Style 2",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-  {
-    id: 3,
-    name: "Gangnam Style 3",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-  {
-    id: 1,
-    name: "Gangnam Style",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-  {
-    id: 2,
-    name: "Gangnam Style 2",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-  {
-    id: 3,
-    name: "Gangnam Style 3",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-  {
-    id: 1,
-    name: "Gangnam Style",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-  {
-    id: 2,
-    name: "Gangnam Style 2",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-  {
-    id: 3,
-    name: "Gangnam Style 3",
-    path: "https://www.youtube.com/watch?v=9bZkp7q19f0",
-    status: "active",
-    type: "video",
-  },
-];
+import { ReactNode, useEffect, useState } from "react";
+import { Media } from "../models/media";
 
 const columns: ColumnDef<Media>[] = [
   {
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
     accessorKey: "name",
     header: "Name",
-  },
-  {
-    accessorKey: "path",
-    header: "Path",
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
+    cell: (info) => info.getValue(),
   },
   {
     accessorKey: "type",
     header: "Type",
+    cell: (info) => info.row.original.mimeType,
+  },
+  {
+    accessorKey: "size",
+    header: "Size",
+    cell: (info) => `${info.getValue()} bytes`,
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: (info) => (
+      <div className="flex justify-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            FrontUtilService.deleteApi(`/media/${info.row.original.id}`);
+          }}
+        >
+          Delete
+        </Button>
+        <Button variant="outline" size="sm">
+          Edit
+        </Button>
+      </div>
+    ),
   },
 ];
 
 export function MediaTable() {
+  const [medias, setMedias] = useState<Media[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  // Récupère en db les média
-  function getMedia() {
-    return medias;
-  }
+  useEffect(() => {
+    FrontUtilService.getDataFromApi("/media").then((data: Media[] | null) => {
+      if (data) {
+        setMedias(data);
+      }
+    });
+  }, []);
 
   const table = useReactTable({
     data: medias,
@@ -175,6 +102,7 @@ export function MediaTable() {
           }
           className="max-w-sm"
         />
+        <SyncMediaButton />
       </div>
       <ScrollArea className="h-[250px] pr-3">
         <Table className="border-2 border-gray-200">
