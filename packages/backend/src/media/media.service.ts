@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { promises as fs } from 'fs';
 import * as path from 'path';
@@ -198,5 +198,18 @@ export class MediaService implements OnModuleInit {
       default:
         return null;
     }
+  }
+
+  async getFileById(
+    fileId: number,
+  ): Promise<{ statusCode: number; file: string }> {
+    const fileMedia: Media = await this.mediaRepository.findOneBy({
+      id: fileId,
+    });
+    if (fileMedia) {
+      const file = path.join('/home/node/media/music', fileMedia.name);
+      return { file: file, statusCode: 200 };
+    }
+    return { file: null, statusCode: HttpStatus.NOT_FOUND };
   }
 }

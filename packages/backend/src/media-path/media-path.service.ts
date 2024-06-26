@@ -1,5 +1,6 @@
 import {
   BadRequestError,
+  CustomError,
   InternalServerError,
   NoContentError,
 } from '@common/errors/CustomError';
@@ -7,6 +8,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MediaPath } from '../models/media-path.model';
+import { baseFolders } from '../../config.json';
 
 @Injectable()
 export class MediaPathService implements OnModuleInit {
@@ -15,38 +17,19 @@ export class MediaPathService implements OnModuleInit {
     private mediaPathRepository: Repository<MediaPath>,
   ) {}
 
-  onModuleInit() {
-    this.insertInitialData();
+  async onModuleInit(): Promise<void> {
+    await this.insertInitialData();
   }
 
   /**
    * This function insert initial data in the database.
    * @throws InternalServerError if there is an error inserting data.
    */
-  async insertInitialData() {
+  async insertInitialData(): Promise<void | CustomError> {
     try {
-      let path = await this.mediaPathRepository.findOne({
-        where: {
-          path: '/home/node/app/media/music',
-        },
-      });
-
-      if (!path) {
-        await this.mediaPathRepository.save({
-          path: '/home/node/app/media/music',
-        });
-      }
-
-      path = await this.mediaPathRepository.findOne({
-        where: {
-          path: '/home/node/app/media/movie',
-        },
-      });
-
-      if (!path) {
-        await this.mediaPathRepository.save({
-          path: '/home/node/app/media/movie',
-        });
+      for (const folder of baseFolders) {
+        const path = await this.mediaPathRepository.findOneBy({ path: folder });
+        if (!path) await this.mediaPathRepository.save({ path: folder });
       }
     } catch (error) {
       throw new InternalServerError('Error inserting initial data');
@@ -116,18 +99,12 @@ export class MediaPathService implements OnModuleInit {
         id: id,
       },
     });
-    if (
-      path.path === '/home/node/app/media/music' ||
-      path.path === '/home/node/app/media/movie'
-    ) {
+    if (baseFolders.includes(path.path))
       throw new BadRequestError('You cannot delete this path');
-    }
 
     try {
       await this.mediaPathRepository.delete(id);
-      return {
-        success: true,
-      };
+      return { success: true };
     } catch (error) {
       throw new InternalServerError('Error deleting path');
     }
@@ -143,9 +120,7 @@ export class MediaPathService implements OnModuleInit {
   async update(id: number, path: string): Promise<object> {
     try {
       await this.mediaPathRepository.update(id, { path });
-      return {
-        success: true,
-      };
+      return { success: true };
     } catch (error) {
       throw new InternalServerError('Error updating path');
     }

@@ -1,5 +1,9 @@
 {
     "syncDbStatus": true,
-    "music_folder": "C:/Users",
-    "migrationRunStatus": false
+    "migrationRunStatus": false,
+    "baseFolders": [
+        "/home/node/media/music",
+        "/home/node/media/movies",
+        "/home/node/media/series"
+    ]
 }

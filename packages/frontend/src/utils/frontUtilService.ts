@@ -19,6 +19,19 @@ class FrontUtilService {
     }
   }
 
+  public static async getBlobFromApi(endpoint: string): Promise<any | null> {
+    try {
+      const res: AxiosResponse<any, any> = await axios.get(api_url + endpoint, {
+        headers: { "Authorization": `Bearer ${this.token}` },
+        responseType: 'blob',
+      });
+      if (res.status === HttpStatusCode.Ok) return res.data;
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }
+
   public static async getUserById(userId: number): Promise<any | null> {
     try {
       if (!isNaN(userId)) {
