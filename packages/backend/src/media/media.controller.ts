@@ -10,4 +10,9 @@ export class MediaController {
   async syncMedia(): Promise<object> {
     return this.mediaService.syncMedia();
   }
+
+  @Get()
+  async findAll() {
+    return this.mediaService.findAll();
+  }
 }
