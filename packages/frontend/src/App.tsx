@@ -1,53 +1,54 @@
-import {
-  createBrowserRouter,
-  RouterProvider
-} from "react-router-dom";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login.tsx";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Media from "./pages/Media";
 import Movies from "./pages/Movies";
-import Series from "./pages/Series";
 import Music from "./pages/Music";
-import Settings from "./pages/settings/Settings";
+import Series from "./pages/Series";
 import EditUser from "./pages/settings/EditUser";
+import Settings from "./pages/settings/Settings";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Login />
+    element: <Login />,
   },
   {
     path: "/home",
-    element: <Home />
+    element: <Home />,
   },
   {
     path: "/movies",
-    element: <Movies />
+    element: <Movies />,
   },
   {
     path: "/music",
-    element: <Music />
+    element: <Music />,
+  },
+  {
+    path: "/media",
+    element: <Media />,
   },
   {
     path: "/series",
-    element: <Series />
+    element: <Series />,
   },
   {
     path: "/settings/*",
-    element: <Settings />
+    element: <Settings />,
   },
   {
     path: "/settings/user/:id",
-    element: <EditUser />
-  }
+    element: <EditUser />,
+  },
 ]);
 
 function App() {
-
   return (
     <>
-      <RouterProvider router={router}/>
+      <RouterProvider router={router} />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
