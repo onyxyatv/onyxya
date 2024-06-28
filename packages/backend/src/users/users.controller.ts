@@ -95,7 +95,11 @@ export class UserController {
     const userIdEdited: number = req.params.id;
     const user: User = req.user;
     // eslint-disable-next-line prettier/prettier
-    const resService: CustomResponse = await this.userService.editUser(userIdEdited, user, editedUser);
+    const resService: CustomResponse = await this.userService.editUser(
+      userIdEdited,
+      user,
+      editedUser,
+    );
     return res.status(resService.statusCode).json(resService);
   }
 
@@ -105,7 +109,8 @@ export class UserController {
     const userId: number = req.params.id;
     const user: User = req.user;
     // eslint-disable-next-line prettier/prettier
-    const resService: { statusCode: number } = await this.userService.deleteUser(userId, user);
+    const resService: { statusCode: number } =
+      await this.userService.deleteUser(userId, user);
     return res.status(resService.statusCode).json(resService);
   }
 
@@ -117,7 +122,8 @@ export class UserController {
   ): Promise<object> {
     const userId: number = req.params.id;
     // eslint-disable-next-line prettier/prettier
-    const userPermissions: Array<Permission> = await this.userService.getUserPermissions(userId);
+    const userPermissions: Array<Permission> =
+      await this.userService.getUserPermissions(userId);
     return res.status(200).json({
       count: userPermissions.length,
       permissions: userPermissions,

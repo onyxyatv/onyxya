@@ -7,7 +7,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import FrontUtilService from "@/utils/frontUtilService";
-import { EditMediaCard, editMediaCardSchema } from "@common/validation/media/editMediaCart.schema";
+import {
+  EditMediaCard,
+  editMediaCardSchema,
+} from "@common/validation/media/editMediaCard.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
@@ -16,45 +19,70 @@ import { useForm } from "react-hook-form";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "../ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 import { Input } from "../ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type EditMediaPopupProps = {
-  mediaCart: EditMediaCard;
-  reloadMediaCarts: () => void;
+  mediaCard: EditMediaCard;
+  reloadMediaCards: () => void;
   isOpen: boolean;
   onClose: () => void;
 };
 
-const EditMediaPopup = ({ mediaCart, reloadMediaCarts, isOpen, onClose }: EditMediaPopupProps) => {
+const EditMediaPopup = ({
+  mediaCard,
+  reloadMediaCards,
+  isOpen,
+  onClose,
+}: EditMediaPopupProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
 
   const form = useForm<EditMediaCard>({
     resolver: zodResolver(editMediaCardSchema),
     mode: "onSubmit",
-    defaultValues: mediaCart,
+    defaultValues: mediaCard,
   });
 
   const handleEditMedia = async (values: EditMediaCard) => {
     try {
-      const res: AxiosResponse = await FrontUtilService.patchApi(`/media/${values.id}`, values);
+      const res: AxiosResponse = await FrontUtilService.patchApi(
+        `/media/${values.id}`,
+        values
+      );
       if (res.status === HttpStatusCode.Ok) {
         form.reset();
-        reloadMediaCarts();
+        reloadMediaCards();
         onClose();
       }
     } catch (error: any) {
-      const errorMessage: string = (error.response !== undefined) ? error.response.statusText : "No More details";
-      setError('Media update failed. Please try again');
+      const errorMessage: string =
+        error.response !== undefined
+          ? error.response.statusText
+          : "No More details";
+      setError("Media update failed. Please try again");
       setErrorText(`Error status : ${errorMessage}`);
     }
-  }
+  };
 
   useEffect(() => {
-    form.reset(mediaCart);
-  }, [form, mediaCart]);
+    form.reset(mediaCard);
+  }, [form, mediaCard]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -78,7 +106,11 @@ const EditMediaPopup = ({ mediaCart, reloadMediaCarts, isOpen, onClose }: EditMe
                         <FormItem>
                           <FormLabel>Name</FormLabel>
                           <FormControl>
-                            <Input className="border-slate-200 border-2 bg-slate-100" placeholder="Media Name" {...field} />
+                            <Input
+                              className="border-slate-200 border-2 bg-slate-100"
+                              placeholder="Media Name"
+                              {...field}
+                            />
                           </FormControl>
                           <FormDescription>Name of the media</FormDescription>
                           <FormMessage />
@@ -94,9 +126,15 @@ const EditMediaPopup = ({ mediaCart, reloadMediaCarts, isOpen, onClose }: EditMe
                           <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                              <Input className="border-slate-200 border-2 bg-slate-100" placeholder="Description" {...field} />
+                              <Input
+                                className="border-slate-200 border-2 bg-slate-100"
+                                placeholder="Description"
+                                {...field}
+                              />
                             </FormControl>
-                            <FormDescription>Brief description of the media</FormDescription>
+                            <FormDescription>
+                              Brief description of the media
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -122,7 +160,9 @@ const EditMediaPopup = ({ mediaCart, reloadMediaCarts, isOpen, onClose }: EditMe
                                 {/* Add other media types here */}
                               </SelectContent>
                             </Select>
-                            <FormDescription>Select the type of media</FormDescription>
+                            <FormDescription>
+                              Select the type of media
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -130,7 +170,12 @@ const EditMediaPopup = ({ mediaCart, reloadMediaCarts, isOpen, onClose }: EditMe
                     </div>
 
                     <div className="mt-4">
-                      <Button type="submit" variant="outline" size="sm" className="w-full">
+                      <Button
+                        type="submit"
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                      >
                         Save Changes
                       </Button>
                     </div>
@@ -151,7 +196,11 @@ const EditMediaPopup = ({ mediaCart, reloadMediaCarts, isOpen, onClose }: EditMe
           </DialogDescription>
         </DialogHeader>
         <DialogClose asChild>
-          <Button variant="outline" size="sm" className="absolute top-4 right-4">
+          <Button
+            variant="outline"
+            size="sm"
+            className="absolute top-4 right-4"
+          >
             Close
           </Button>
         </DialogClose>

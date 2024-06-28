@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import FrontUtilService from "@/utils/frontUtilService";
-import { EditMediaCard } from "@common/validation/media/editMediaCart.schema";
+import { EditMediaCard } from "@common/validation/media/editMediaCard.schema";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -99,7 +99,7 @@ export function MediaTable() {
     }, 2000);
   };
 
-  const reloadMediaCarts = () => {
+  const reloadMediaCards = () => {
     // Logique pour recharger les données des médias
     fetchData(); // Exemple d'une fonction fetchData qui récupère les données des médias
   };
@@ -209,8 +209,8 @@ export function MediaTable() {
       </div>
       {selectedMedia && (
         <EditMediaPopop
-          mediaCart={selectedMedia}
-          reloadMediaCarts={reloadMediaCarts}
+          mediaCard={selectedMedia}
+          reloadMediaCards={reloadMediaCards}
           isOpen={popupOpened}
           onClose={() => setPopupOpened(false)}
         />

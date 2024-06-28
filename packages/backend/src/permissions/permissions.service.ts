@@ -138,7 +138,8 @@ export class PermissionsService implements OnModuleInit {
 
       if (role !== null) {
         // eslint-disable-next-line prettier/prettier
-        const permissions: Array<Permission> = await this.permissionsRepository.find();
+        const permissions: Array<Permission> =
+          await this.permissionsRepository.find();
         const ownedPermsNames = role.permissions.map((perm) => perm.name);
         const missingPermissions = permissions.filter(
           (perm) => !ownedPermsNames.includes(perm.name),
@@ -207,7 +208,10 @@ export class PermissionsService implements OnModuleInit {
     if (user && permission) {
       const checkNames = user.permissions.map((perm) => perm.name);
       // eslint-disable-next-line prettier/prettier
-      if (user.permissions.length === 0 || !checkNames.includes(permission.name))
+      if (
+        user.permissions.length === 0 ||
+        !checkNames.includes(permission.name)
+      )
         throw new BadRequestError("User don't have this permission");
       user.permissions = user.permissions.filter((userPerm) => {
         if (userPerm.id !== permission.id) return userPerm;

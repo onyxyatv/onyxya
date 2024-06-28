@@ -34,7 +34,8 @@ export class PermissionsController {
   @Get()
   async getAll(@Res() res: Response): Promise<object> {
     // eslint-disable-next-line prettier/prettier
-    const permissions: Array<Permission> = await this.permissionsService.getAllPermissions();
+    const permissions: Array<Permission> =
+      await this.permissionsService.getAllPermissions();
     return res.status(200).json({
       count: permissions.length,
       permissions: permissions,
@@ -64,7 +65,8 @@ export class PermissionsController {
     @Body() addUserPerm: AddUserPerm,
   ): Promise<object> {
     // eslint-disable-next-line prettier/prettier
-    const resService: { statusCode: number } = await this.permissionsService.addUserPermission(addUserPerm);
+    const resService: { statusCode: number } =
+      await this.permissionsService.addUserPermission(addUserPerm);
     return res.status(resService.statusCode).json(resService);
   }
 
@@ -76,7 +78,8 @@ export class PermissionsController {
     @Body() removeUserPerm: AddUserPerm,
   ): Promise<object> {
     // eslint-disable-next-line prettier/prettier
-    const resService: { statusCode: number } = await this.permissionsService.removeUserPermission(removeUserPerm);
+    const resService: { statusCode: number } =
+      await this.permissionsService.removeUserPermission(removeUserPerm);
     return res.status(resService.statusCode).json(resService);
   }
 
@@ -88,7 +91,8 @@ export class PermissionsController {
     @Body() setUserPermissions: SetUserPermissions,
   ): Promise<object> {
     // eslint-disable-next-line prettier/prettier
-    const resService: { statusCode: number } = await this.permissionsService.setUserPermissions(setUserPermissions);
+    const resService: { statusCode: number } =
+      await this.permissionsService.setUserPermissions(setUserPermissions);
     return res.status(resService.statusCode).json(resService);
   }
 }

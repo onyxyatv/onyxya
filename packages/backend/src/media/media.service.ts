@@ -5,7 +5,7 @@ import * as path from 'path';
 import { Like, Repository } from 'typeorm';
 import { MediaPathService } from '../media-path/media-path.service';
 import { Media } from '../models/media.model';
-import { MediaCardService } from 'src/mediacart/mediacard.service';
+import { MediaCardService } from 'src/mediacard/mediacard.service';
 
 @Injectable()
 export class MediaService implements OnModuleInit {

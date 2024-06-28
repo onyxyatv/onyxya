@@ -5,7 +5,7 @@
 *.sqlite
 .npm
 package-lock.json
-media-folder
+media_folder
 .node_repl_history
 compose.local.yml
 .bash_history

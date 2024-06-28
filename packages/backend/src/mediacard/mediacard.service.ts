@@ -27,6 +27,7 @@ export class MediaCardService {
       if (media) {
         const mediaCard: MediaCard = new MediaCard();
         mediaCard.name = media.name.replace(media.extension, '');
+        mediaCard.media = media;
         const resDb: MediaCard = await this.mediaCardRepository.save(mediaCard);
         if (resDb) return true;
       }
