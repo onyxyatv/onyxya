@@ -20,4 +20,17 @@ export class MediaController {
       await this.mediaService.getFileById(fileId);
     return res.status(data.statusCode).sendFile(data.file);
   }
+
+  @Get(':mediaType/byCategories')
+  async getMediasByCategories(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<object> {
+    const mediaType: string = req.params.mediaType;
+    const data: any = await this.mediaService.getMediasByCategories(mediaType);
+    return res.status(200).json({
+      categoriesCount: data.length,
+      categories: data,
+    });
+  }
 }

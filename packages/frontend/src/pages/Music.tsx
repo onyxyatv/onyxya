@@ -1,4 +1,5 @@
 import Header from "@/components/header/header";
+import MusicsLists from "@/components/music/musicsList";
 import { Button } from "@/components/ui/button";
 import FrontUtilService from "@/utils/frontUtilService";
 import { useEffect, useState } from "react";
@@ -25,9 +26,7 @@ const Music = () => {
       <Header />
 
       <section>
-        <Button className="ml-10 mt-4" onClick={() => fetchMusic()}>
-          Play Mf doom
-        </Button>
+        <MusicsLists playMusic={fetchMusic} />
       </section>
 
       <section className="bg-blue-400 p-2 flex flex-row fixed bottom-0 w-full justify-center">
