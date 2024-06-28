@@ -147,7 +147,6 @@ export class UserService {
         relations: ['role', 'role.permissions', 'permissions'],
       });
 
-      // eslint-disable-next-line prettier/prettier
       user.permissions.forEach((userPerm) => (userPerm['isUser'] = true));
       user.role.permissions.forEach((rolePerm) => (rolePerm['isUser'] = false));
       const finalPermissions = [...user.permissions, ...user.role.permissions];

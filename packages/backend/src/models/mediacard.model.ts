@@ -1,13 +1,27 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Media } from './media.model';
 
 @Entity()
 export class MediaCard {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ default: 'No Name' })
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   image: string;
+
+  @OneToOne(() => Media, (media) => media.mediaCard, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  media: Media;
 }

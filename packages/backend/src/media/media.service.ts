@@ -1,10 +1,11 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { Like, Repository } from 'typeorm';
 import { MediaPathService } from '../media-path/media-path.service';
 import { Media } from '../models/media.model';
+import { MediaCardService } from 'src/mediacart/mediacard.service';
 
 @Injectable()
 export class MediaService implements OnModuleInit {
@@ -12,6 +13,7 @@ export class MediaService implements OnModuleInit {
     @InjectRepository(Media)
     private mediaRepository: Repository<Media>,
     private readonly mediaPathService: MediaPathService,
+    private readonly mediaCardService: MediaCardService,
   ) {}
 
   async onModuleInit() {
@@ -24,11 +26,7 @@ export class MediaService implements OnModuleInit {
    */
   async syncMedia() {
     const mediaPaths = await this.mediaPathService.findAll();
-    if (mediaPaths.length === 0) {
-      return {
-        success: false,
-      };
-    }
+    if (mediaPaths.length === 0) return { success: false };
 
     for (const mediaPath of mediaPaths) {
       const sync = await this.syncFolder(mediaPath.path);
@@ -37,9 +35,7 @@ export class MediaService implements OnModuleInit {
       }
     }
 
-    return {
-      success: true,
-    };
+    return { success: true };
   }
 
   /**
@@ -54,9 +50,7 @@ export class MediaService implements OnModuleInit {
       files = await fs.readdir(folder);
     } catch (error) {
       console.log(`Error reading folder ${folder}`);
-      return {
-        success: false,
-      };
+      return { success: false };
     }
 
     let existingMedia = await this.mediaRepository.find({
@@ -129,8 +123,9 @@ export class MediaService implements OnModuleInit {
    * @param folder path of the folder containing the file.
    */
   async addMedia(file: string, folder: string) {
-    const filePath = path.join(folder, file);
+    const filePath: string = path.join(folder, file);
     const stats = await fs.stat(filePath);
+    const mediaType: string = filePath.split('/')[4];
     if (stats.isFile()) {
       const extension = path.extname(file);
       const mimeType = this.getMimeType(extension);
@@ -146,8 +141,10 @@ export class MediaService implements OnModuleInit {
             stats.size,
             mimeType,
             stats.ino,
+            mediaType,
           );
-          await this.mediaRepository.save(media);
+          const finalMedia: Media = await this.mediaRepository.save(media);
+          await this.mediaCardService.createDefaultMediaCard(finalMedia);
         }
       }
     }
@@ -161,9 +158,7 @@ export class MediaService implements OnModuleInit {
     const media = await this.mediaRepository.findOne({
       where: { inode: inode },
     });
-    if (media) {
-      await this.mediaRepository.remove(media);
-    }
+    if (media) await this.mediaRepository.remove(media);
   }
 
   /**
@@ -199,8 +194,35 @@ export class MediaService implements OnModuleInit {
         return null;
     }
   }
-
+  
   async findAll() {
     return this.mediaRepository.find();
+  }
+
+  async getFileById(
+    fileId: number,
+  ): Promise<{ statusCode: number; file: string }> {
+    const fileMedia: Media = await this.mediaRepository.findOneBy({
+      id: fileId,
+    });
+    if (fileMedia) {
+      const file = path.join('/home/node/media/music', fileMedia.name);
+      return { file: file, statusCode: 200 };
+    }
+    return { file: null, statusCode: HttpStatus.NOT_FOUND };
+  }
+
+  async getMediasByCategories(mediaType: string) {
+    const musics: Array<Media> = await this.mediaRepository.find({
+      select: {
+        id: true,
+        name: true,
+        extension: true,
+        mimeType: true,
+      },
+      where: { type: mediaType },
+      relations: { mediaCard: true },
+    });
+    return musics;
   }
 }

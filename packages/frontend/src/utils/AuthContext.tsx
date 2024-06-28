@@ -10,7 +10,11 @@ interface AuthContextType {
 interface AuthUser {
   id: number;
   username: string;
-  role: string;
+  role: {
+    id: number,
+    name: string,
+    isActive: boolean,
+  };
   exp: number;
   iat: number;
 }
