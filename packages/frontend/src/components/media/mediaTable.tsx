@@ -24,53 +24,65 @@ import {
 import { ReactNode, useEffect, useState } from "react";
 import { Media } from "../models/media";
 import { SyncMediaButton } from "./syncMediaButton";
-
-const columns: ColumnDef<Media>[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: (info) => info.getValue(),
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-    cell: (info) => info.row.original.mimeType,
-  },
-  {
-    accessorKey: "size",
-    header: "Size",
-    cell: (info) => `${info.getValue()} bytes`,
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: (info) => (
-      <div className="flex justify-center space-x-2">
-        <Button variant="outline" size="sm">
-          View
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            FrontUtilService.deleteApi(`/media/${info.row.original.id}`);
-          }}
-        >
-          Delete
-        </Button>
-        <Button variant="outline" size="sm">
-          Edit
-        </Button>
-      </div>
-    ),
-  },
-];
+import EditMediaPopop from "./editMedia";
 
 export function MediaTable() {
   const [medias, setMedias] = useState<Media[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [popupOpened, setPopupOpened] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState(null);
+
+  const columns: ColumnDef<Media>[] = [
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: "type",
+      header: "Type",
+      cell: (info) => info.row.original.mimeType,
+    },
+    {
+      accessorKey: "size",
+      header: "Size",
+      cell: (info) => `${info.getValue()} bytes`,
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: (info) => (
+        <div className="flex justify-center space-x-2">
+          <Button variant="outline" size="sm">
+            View
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              FrontUtilService.deleteApi(`/media/${info.row.original.id}`);
+            }}
+          >
+            Delete
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => openEditDialog(info.row.original)}
+          >
+            Edit
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  const openEditDialog = (media) => {
+    setSelectedMedia(media);
+    setPopupOpened(true);
+  };
 
   // TODO: change isLoading gestion and his display
   const fetchData = async () => {
@@ -83,6 +95,11 @@ export function MediaTable() {
       setIsLoading(false);
     }, 2000);
   };
+
+  const reloadMediaCarts = () => {
+    // Logique pour recharger les données des médias
+    fetchData(); // Exemple d'une fonction fetchData qui récupère les données des médias
+  };  
 
   useEffect(() => {
     setIsLoading(true);
@@ -122,23 +139,21 @@ export function MediaTable() {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : (flexRender(
-                            header.column.columnDef.header as ReactNode,
-                            header.getContext()
-                          ) as ReactNode)}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header as ReactNode,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
           {isLoading ? (
-            <div className="">Loading...</div>
+            <div>Loading...</div>
           ) : (
             <TableBody>
               {table.getRowModel().rows?.length ? (
@@ -189,7 +204,15 @@ export function MediaTable() {
           Next
         </Button>
       </div>
-    </div>
+      {selectedMedia && (
+        <EditMediaPopop
+          mediaCart={selectedMedia}
+          reloadMediaCarts={reloadMediaCarts}
+          isOpen={popupOpened}
+          onClose={() => setPopupOpened(false)}
+        />
+      )}    
+      </div>
   );
 }
 
