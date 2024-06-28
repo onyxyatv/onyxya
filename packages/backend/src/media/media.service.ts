@@ -194,6 +194,10 @@ export class MediaService implements OnModuleInit {
         return null;
     }
   }
+  
+  async findAll() {
+    return this.mediaRepository.find();
+  }
 
   async getFileById(
     fileId: number,

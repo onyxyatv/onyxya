@@ -7,6 +7,11 @@ import { Request, Response } from 'express';
 @Controller('media')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
+  
+  @Get()
+  async findAll() {
+    return this.mediaService.findAll();
+  }
 
   @Get('sync/music')
   async syncMedia(): Promise<object> {
