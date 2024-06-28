@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import FrontUtilService from "@/utils/frontUtilService";
-import { SyncMediaButton } from "./syncMediaButton";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -24,6 +23,7 @@ import {
 } from "@tanstack/react-table";
 import { ReactNode, useEffect, useState } from "react";
 import { Media } from "../models/media";
+import { SyncMediaButton } from "./syncMediaButton";
 
 const columns: ColumnDef<Media>[] = [
   {
@@ -46,6 +46,9 @@ const columns: ColumnDef<Media>[] = [
     header: "Actions",
     cell: (info) => (
       <div className="flex justify-center space-x-2">
+        <Button variant="outline" size="sm">
+          View
+        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -67,13 +70,23 @@ export function MediaTable() {
   const [medias, setMedias] = useState<Media[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    FrontUtilService.getDataFromApi("/media").then((data: Media[] | null) => {
+  // TODO: change isLoading gestion and his display
+  const fetchData = async () => {
+    setIsLoading(true);
+    const data = await FrontUtilService.getDataFromApi("/media");
+    setTimeout(() => {
       if (data) {
         setMedias(data);
       }
-    });
+      setIsLoading(false);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchData();
   }, []);
 
   const table = useReactTable({
@@ -102,7 +115,7 @@ export function MediaTable() {
           }
           className="max-w-sm"
         />
-        <SyncMediaButton />
+        <SyncMediaButton onSyncComplete={fetchData} />
       </div>
       <ScrollArea className="h-[250px] pr-3">
         <Table className="border-2 border-gray-200">
@@ -124,34 +137,38 @@ export function MediaTable() {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+          {isLoading ? (
+            <div className="">Loading...</div>
+          ) : (
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              )}
+            </TableBody>
+          )}
         </Table>
       </ScrollArea>
       <div className="flex items-center justify-end mr-3 space-x-2 mt-2">
