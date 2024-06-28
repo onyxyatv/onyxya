@@ -110,7 +110,7 @@ const EditMediaPopup = ({ mediaCart, reloadMediaCarts, isOpen, onClose }: EditMe
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange}>
                               <FormControl>
                                 <SelectTrigger className="p-2 rounded-md w-full border-slate-200 border-2 bg-slate-100">
                                   <SelectValue placeholder="Choose Type" />
