@@ -8,7 +8,9 @@ export class AuthGuard implements CanActivate {
   private jwtSecret: string = process.env.JWT_SECRET_KEY;
 
   // eslint-disable-next-line prettier/prettier
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
     try {
       const req: any = context.switchToHttp().getRequest();
       const headers: any = req.headers;
@@ -20,7 +22,8 @@ export class AuthGuard implements CanActivate {
       if (authorization.length > 1 && authorization[0] !== 'Bearer')
         throw new Error();
       // eslint-disable-next-line prettier/prettier
-      const token = (authorization.length > 1) ? authorization[1] : authorization[0];
+      const token =
+        authorization.length > 1 ? authorization[1] : authorization[0];
 
       const payload = verify(token, this.jwtSecret);
       req['user'] = payload;

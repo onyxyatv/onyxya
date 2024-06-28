@@ -1,19 +1,23 @@
 FROM node:20.14-alpine3.20 as build
 
-WORKDIR /app
-COPY package.json ./
+WORKDIR /build
+COPY --chown=node:node ./package.json /build/package.json
+RUN mkdir /build/packages
+
+RUN chown -R node:node /build
+
+COPY --chown=node:node ./packages/frontend /build/packages/frontend
+COPY --chown=node:node ./packages/common /build/packages/common
 
 RUN npm install
 
-COPY . .
-
-RUN npm run build
+RUN cd /build/packages/frontend && npm run build
 
 FROM nginx:alpine
 
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /build/packages/frontend/dist /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY ./packages/frontend/nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
 

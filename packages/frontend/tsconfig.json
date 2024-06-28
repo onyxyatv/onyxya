@@ -10,9 +10,7 @@
     "baseUrl": ".",
     "paths": {
       "@common/*": ["../common/*"],
-      "@/*": [
-        "./src/*",
-      ],
+      "@/*": ["./src/*"]
     },
 
     /* Bundler mode */
