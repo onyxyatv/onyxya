@@ -5,6 +5,7 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Movies from "./pages/Movies";
 import Music from "./pages/Music";
 import Series from "./pages/Series";
+import Media from "./pages/Media";
 import Unauthorized from "./pages/Unauthorized";
 import EditUser from "./pages/settings/EditUser";
 import Settings from "./pages/settings/Settings";
@@ -46,6 +47,14 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute>
                 <Series />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/media"
+            element={
+              <ProtectedRoute>
+                <Media />
               </ProtectedRoute>
             }
           />
