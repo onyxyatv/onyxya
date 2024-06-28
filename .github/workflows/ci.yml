@@ -1,0 +1,71 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - development
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  lint-and-test-react:
+    runs-on: ubuntu-latest
+    name: Lint and Test React App
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run ESLint
+        run: npm -w @onyxyatv/frontend run lint
+
+      - name: Build React App
+        run: npm -w @onyxyatv/frontend run build
+
+  lint-and-test-nest:
+    runs-on: ubuntu-latest
+    name: Lint and Test NestJS App
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run ESLint
+        run: npm -w @onyxyatv/backend run lint
+
+      - name: Run Prettier
+        run: npm -w @onyxyatv/backend run format
+
+      - name: Build NestJS App
+        run: npm -w @onyxyatv/backend run build
+
+  docker-validation:
+    runs-on: ubuntu-latest
+    name: Validate Docker Setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker images
+        run: docker-compose -f compose.prod.yml build
+
+      - name: Run Docker Compose
+        run: docker-compose -f compose.prod.yml up -d

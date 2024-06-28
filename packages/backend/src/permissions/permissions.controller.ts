@@ -34,7 +34,8 @@ export class PermissionsController {
   @Get()
   async getAll(@Res() res: Response): Promise<object> {
     // eslint-disable-next-line prettier/prettier
-    const permissions: Array<Permission> = await this.permissionsService.getAllPermissions();
+    const permissions: Array<Permission> =
+      await this.permissionsService.getAllPermissions();
     return res.status(200).json({
       count: permissions.length,
       permissions: permissions,
@@ -44,11 +45,16 @@ export class PermissionsController {
   @NeedPermissions(Permissions.ReadRolePermissions)
   @Get('/roles')
   // eslint-disable-next-line prettier/prettier
-  async getPermissionsOfRole(@Req() req: Request, @Res() res: Response): Promise<object> {
+  async getPermissionsOfRole(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<object> {
     const query = req.query;
     // eslint-disable-next-line prettier/prettier
-    const role: string | undefined = query.role ? String(query.role) : undefined;
-    const permissions: object =
+    const role: string | undefined = query.role
+      ? String(query.role)
+      : undefined;
+    const permissions: Array<Permission> =
       await this.permissionsService.getRolePermissions(role);
     return res.status(200).json(permissions);
   }

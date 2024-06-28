@@ -13,7 +13,9 @@ export class PermissionsGuard implements CanActivate {
   constructor(private usersService: UserService) {}
 
   // eslint-disable-next-line prettier/prettier
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
     try {
       const req: any = context.switchToHttp().getRequest();
       const user: any = req.user;

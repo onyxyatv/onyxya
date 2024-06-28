@@ -34,9 +34,11 @@ export class PermissionsService implements OnModuleInit {
 
   async onModuleInit(): Promise<void> {
     // eslint-disable-next-line prettier/prettier
-    const permissionsDb: Array<Permission> = await this.permissionsRepository.find();
+    const permissionsDb: Array<Permission> =
+      await this.permissionsRepository.find();
     // eslint-disable-next-line prettier/prettier
-    const permissionsConfig: Array<{ name: string; description: string }> = permissions;
+    const permissionsConfig: Array<{ name: string; description: string }> =
+      permissions;
     const rolesDb: Array<Role> = await this.rolesRepository.find();
 
     if (rolesDb.length === 0) {

@@ -13,7 +13,7 @@ import { MediaPath } from '../models/media-path.model';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'onyxya.sqlite',
-      entities: [User, Role, Permission, Media, MediaCard,MediaPath],
+      entities: [User, Role, Permission, Media, MediaCard, MediaPath],
       migrations: [],
       synchronize: syncDbStatus,
       migrationsRun: migrationRunStatus,
