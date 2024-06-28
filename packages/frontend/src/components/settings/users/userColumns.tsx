@@ -38,7 +38,6 @@ export const userColumns: ColumnDef<User>[] = [
       );
     },
     cell: ({ getValue }) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const role: any = getValue();
       return (
         <p>{role.name}</p>

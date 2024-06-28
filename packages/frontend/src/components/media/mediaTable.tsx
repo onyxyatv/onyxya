@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import FrontUtilService from "@/utils/frontUtilService";
+import { EditMediaCard } from "@common/validation/media/editMediaCart.schema";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -23,8 +24,8 @@ import {
 } from "@tanstack/react-table";
 import { ReactNode, useEffect, useState } from "react";
 import { Media } from "../models/media";
-import { SyncMediaButton } from "./syncMediaButton";
 import EditMediaPopop from "./editMedia";
+import { SyncMediaButton } from "./syncMediaButton";
 
 export function MediaTable() {
   const [medias, setMedias] = useState<Media[]>([]);
@@ -32,7 +33,9 @@ export function MediaTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [popupOpened, setPopupOpened] = useState(false);
-  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [selectedMedia, setSelectedMedia] = useState<EditMediaCard | null>(
+    null
+  );
 
   const columns: ColumnDef<Media>[] = [
     {
@@ -79,7 +82,7 @@ export function MediaTable() {
     },
   ];
 
-  const openEditDialog = (media) => {
+  const openEditDialog = (media: EditMediaCard) => {
     setSelectedMedia(media);
     setPopupOpened(true);
   };
@@ -99,7 +102,7 @@ export function MediaTable() {
   const reloadMediaCarts = () => {
     // Logique pour recharger les données des médias
     fetchData(); // Exemple d'une fonction fetchData qui récupère les données des médias
-  };  
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -211,8 +214,8 @@ export function MediaTable() {
           isOpen={popupOpened}
           onClose={() => setPopupOpened(false)}
         />
-      )}    
-      </div>
+      )}
+    </div>
   );
 }
 
