@@ -32,9 +32,10 @@ export class MediaController {
     @Res() res: Response,
   ): Promise<object> {
     const mediaType: string = req.params.mediaType;
-    const data: any = await this.mediaService.getMediasByCategories(mediaType);
+    // eslint-disable-next-line prettier/prettier
+    const data: object = await this.mediaService.getMediasByCategories(mediaType);
     return res.status(200).json({
-      categoriesCount: data.length,
+      categoriesCount: Object.keys(data).length,
       categories: data,
     });
   }

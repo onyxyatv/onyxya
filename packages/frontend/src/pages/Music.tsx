@@ -8,14 +8,14 @@ import 'react-h5-audio-player/lib/styles.css';
 const Music = () => {
   const [music, setMusic] = useState('');
 
-  const fetchMusic = (async (musicId: number) => {
+  async function fetchMusic (musicId: number) {
     const endpoint: string = '/media/getFile/' + musicId;
     const res: Blob = await FrontUtilService.getBlobFromApi(endpoint);
     if (res.size > 0) {
       const url = URL.createObjectURL(res);
       setMusic(url);
     }
-  });
+  }
 
   useEffect(() => {
   }, []);
