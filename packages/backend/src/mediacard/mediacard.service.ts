@@ -37,4 +37,33 @@ export class MediaCardService {
       return false;
     }
   }
+
+  async getMediaCards(): Promise<MediaCard[]> {
+    try {
+      return await this.mediaCardRepository.find();
+    } catch (error) {
+      console.log('Error at getMediaCards : ', error);
+      return null;
+    }
+  }
+
+  async updateMediaCard(id, body): Promise<MediaCard> {
+    try {
+      const mediaCard: MediaCard = await this.mediaCardRepository.findOne({
+        where: { id: id },
+      });
+      if (mediaCard) {
+        console.log('MediaCard found : ', mediaCard);
+        mediaCard.name = body.name;
+        mediaCard.description = body.description;
+        mediaCard.type = body.type;
+        mediaCard.category = body.category;
+        return await this.mediaCardRepository.save(mediaCard);
+      }
+      return null;
+    } catch (error) {
+      console.log('Error at updateMediaCard : ', error);
+      return null;
+    }
+  }
 }

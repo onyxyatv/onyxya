@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import FrontUtilService from "@/utils/frontUtilService";
-import { EditMediaCard } from "@common/validation/media/editMediaCard.schema";
+import { MediaCard } from "@common/validation/media/mediaCard.schema";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -33,7 +33,7 @@ export function MediaTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [popupOpened, setPopupOpened] = useState(false);
-  const [selectedMedia, setSelectedMedia] = useState<EditMediaCard | null>(
+  const [selectedMedia, setSelectedMedia] = useState<MediaCard | null>(
     null
   );
 
@@ -82,7 +82,7 @@ export function MediaTable() {
     },
   ];
 
-  const openEditDialog = (media: EditMediaCard) => {
+  const openEditDialog = (media: MediaCard) => {
     setSelectedMedia(media);
     setPopupOpened(true);
   };
@@ -100,9 +100,8 @@ export function MediaTable() {
   };
 
   const reloadMediaCards = () => {
-    // Logique pour recharger les données des médias
-    fetchData(); // Exemple d'une fonction fetchData qui récupère les données des médias
-  };
+    fetchData(); 
+  }
 
   useEffect(() => {
     setIsLoading(true);

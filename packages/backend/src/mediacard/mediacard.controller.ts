@@ -1,3 +1,4 @@
+import { mediaCardSchema } from '@common/validation/media/mediaCard.schema';
 import {
   SearchMediaName,
   searchMediaNameSchema,
@@ -5,13 +6,17 @@ import {
 import {
   Body,
   Controller,
+  Get,
+  Patch,
   Post,
+  Req,
   Res,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthGuard } from 'src/middlewares/auth.guard';
+import { MediaCard } from 'src/models/mediacard.model';
 import { ZodValidationPipe } from 'src/pipes/zod.pipe';
 import { MediaCardService } from './mediacard.service';
 
@@ -38,5 +43,26 @@ export class MediaCardController {
       count: foundMedias.length,
       medias: foundMedias,
     });
+  }
+
+  @Get()
+  async getMediaCards(@Res() res: Response): Promise<Response> {
+    const mediaCards: MediaCard[] = await this.mediaCardService.getMediaCards();
+    return res.status(200).json(mediaCards);
+  }
+
+  @Patch('/:id')
+  @UsePipes(new ZodValidationPipe(mediaCardSchema))
+  async updateMediaCard(
+    @Req() req: any,
+    @Res() res: Response,
+    @Body() body: any,
+  ): Promise<Response> {
+    const id = req.params.id;
+    console.log('ID : ', id);
+    console.log('Body : ', body);
+    const updatedMediaCard: MediaCard =
+      await this.mediaCardService.updateMediaCard(id, body);
+    return res.status(200).json(updatedMediaCard);
   }
 }

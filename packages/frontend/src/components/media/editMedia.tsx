@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/dialog";
 import FrontUtilService from "@/utils/frontUtilService";
 import {
-  EditMediaCard,
-  editMediaCardSchema,
-} from "@common/validation/media/editMediaCard.schema";
+  MediaCard,
+  mediaCardSchema,
+} from "@common/validation/media/mediaCard.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
@@ -38,7 +38,7 @@ import {
 } from "../ui/select";
 
 type EditMediaPopupProps = {
-  mediaCard: EditMediaCard;
+  mediaCard: MediaCard;
   reloadMediaCards: () => void;
   isOpen: boolean;
   onClose: () => void;
@@ -53,13 +53,13 @@ const EditMediaPopup = ({
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
 
-  const form = useForm<EditMediaCard>({
-    resolver: zodResolver(editMediaCardSchema),
+  const form = useForm<MediaCard>({
+    resolver: zodResolver(mediaCardSchema),
     mode: "onSubmit",
     defaultValues: mediaCard,
   });
 
-  const handleEditMedia = async (values: EditMediaCard) => {
+  const handleEditMedia = async (values: MediaCard) => {
     try {
       const res: AxiosResponse = await FrontUtilService.patchApi(
         `/media/${values.id}`,
@@ -157,7 +157,6 @@ const EditMediaPopup = ({
                               <SelectContent>
                                 <SelectItem value="movie">Movie</SelectItem>
                                 <SelectItem value="series">Series</SelectItem>
-                                {/* Add other media types here */}
                               </SelectContent>
                             </Select>
                             <FormDescription>

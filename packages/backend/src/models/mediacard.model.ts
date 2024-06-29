@@ -16,7 +16,13 @@ export class MediaCard {
   name: string;
 
   @Column({ nullable: true })
-  image: string;
+  description: string;
+
+  @Column({ nullable: true })
+  type: string;
+
+  @Column({ nullable: true })
+  category: string;
 
   @OneToOne(() => Media, (media) => media.mediaCard, {
     cascade: true,

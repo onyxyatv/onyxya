@@ -53,9 +53,7 @@ const App: React.FC = () => {
           <Route
             path="/media"
             element={
-              <ProtectedRoute>
                 <Media />
-              </ProtectedRoute>
             }
           />
           <Route
