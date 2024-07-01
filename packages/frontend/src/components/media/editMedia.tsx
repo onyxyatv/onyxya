@@ -9,6 +9,8 @@ import {
 import FrontUtilService from "@/utils/frontUtilService";
 import {
   MediaCard,
+  MediaType,
+  MediaCategory,
   mediaCardSchema,
 } from "@common/validation/media/mediaCard.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -82,6 +84,7 @@ const EditMediaPopup = ({
 
   useEffect(() => {
     form.reset(mediaCard);
+    console.log("Media Card", mediaCard);
   }, [form, mediaCard]);
 
   return (
@@ -148,19 +151,66 @@ const EditMediaPopup = ({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Type</FormLabel>
-                            <Select onValueChange={field.onChange}>
+                            <Select value={field.value} onValueChange={field.onChange}>
                               <FormControl>
                                 <SelectTrigger className="p-2 rounded-md w-full border-slate-200 border-2 bg-slate-100">
                                   <SelectValue placeholder="Choose Type" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="movie">Movie</SelectItem>
-                                <SelectItem value="series">Series</SelectItem>
+                                {Object.keys(MediaType).map((key) => (
+                                  <SelectItem
+                                    key={key}
+                                    value={
+                                      MediaType[key as keyof typeof MediaType]
+                                    }
+                                  >
+                                    {MediaType[key as keyof typeof MediaType]}
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
                             <FormDescription>
                               Select the type of media
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="mt-2">
+                      <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category</FormLabel>
+                            <Select value={field.value} onValueChange={field.onChange}>
+                              <FormControl>
+                                <SelectTrigger className="p-2 rounded-md w-full border-slate-200 border-2 bg-slate-100">
+                                  <SelectValue placeholder="Choose Category" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {Object.keys(MediaCategory).map((key) => (
+                                  <SelectItem
+                                    key={key}
+                                    value={
+                                      MediaCategory[
+                                        key as keyof typeof MediaCategory
+                                      ]
+                                    }
+                                  >
+                                    {MediaCategory[
+                                      key as keyof typeof MediaCategory
+                                    ]}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Select the category of media
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -194,15 +244,6 @@ const EditMediaPopup = ({
             </Card>
           </DialogDescription>
         </DialogHeader>
-        <DialogClose asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="absolute top-4 right-4"
-          >
-            Close
-          </Button>
-        </DialogClose>
       </DialogContent>
     </Dialog>
   );

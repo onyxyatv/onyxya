@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-enum MediaType {
-  Music = "music",
-  Film = "film",
-  Series = "series",
+export enum MediaType {
+  Music = "Music",
+  Film = "Film",
+  Series = "Series",
 }
 
-enum MediaCategory {
+export enum MediaCategory {
   // Music
   Pop = "Pop",
   Rock = "Rock",

@@ -87,8 +87,9 @@ export function MediaTable() {
     },
   ];
 
-  const openEditDialog = (media: MediaCard) => {
-    setSelectedMedia(media);
+  const openEditDialog = async (media: MediaCard) => {
+    const mediaCard: MediaCard = await FrontUtilService.getDataFromApi('/mediacard/media/' + media.id);
+    setSelectedMedia(mediaCard);
     setPopupOpened(true);
   };
 
