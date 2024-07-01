@@ -45,12 +45,35 @@ export class MediaCardController {
     });
   }
 
+  /**
+   * This route is used to list all media cards.
+   * @returns a list of media cards
+   */
   @Get()
   async getMediaCards(@Res() res: Response): Promise<Response> {
     const mediaCards: MediaCard[] = await this.mediaCardService.getMediaCards();
     return res.status(200).json(mediaCards);
   }
 
+  /**
+   * This route is used to get a media card by its id.
+   * @param id the id of the media card
+   * @returns a media card
+   */
+  @Get('/media/:id')
+  async getMediaCard(@Res() res: Response, @Req() req: any): Promise<Response> {
+    const id = req.params.id;
+    const mediaCard: MediaCard =
+      await this.mediaCardService.getMediaCardByMedia(id);
+    return res.status(200).json(mediaCard);
+  }
+
+  /**
+   * This route is used patch a media card by its id.
+   * @param id
+   * @body the updated values
+   * @returns the updated media card
+   */
   @Patch('/:id')
   @UsePipes(new ZodValidationPipe(mediaCardSchema))
   async updateMediaCard(
@@ -59,8 +82,6 @@ export class MediaCardController {
     @Body() body: any,
   ): Promise<Response> {
     const id = req.params.id;
-    console.log('ID : ', id);
-    console.log('Body : ', body);
     const updatedMediaCard: MediaCard =
       await this.mediaCardService.updateMediaCard(id, body);
     return res.status(200).json(updatedMediaCard);
