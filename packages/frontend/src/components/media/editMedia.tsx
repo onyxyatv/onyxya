@@ -1,6 +1,5 @@
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -8,9 +7,11 @@ import {
 } from "@/components/ui/dialog";
 import FrontUtilService from "@/utils/frontUtilService";
 import {
-  EditMediaCard,
-  editMediaCardSchema,
-} from "@common/validation/media/editMediaCard.schema";
+  MediaCard,
+  MediaCategory,
+  MediaType,
+  mediaCardSchema,
+} from "@common/validation/media/mediaCard.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
@@ -38,7 +39,7 @@ import {
 } from "../ui/select";
 
 type EditMediaPopupProps = {
-  mediaCard: EditMediaCard;
+  mediaCard: MediaCard;
   reloadMediaCards: () => void;
   isOpen: boolean;
   onClose: () => void;
@@ -53,16 +54,16 @@ const EditMediaPopup = ({
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
 
-  const form = useForm<EditMediaCard>({
-    resolver: zodResolver(editMediaCardSchema),
+  const form = useForm<MediaCard>({
+    resolver: zodResolver(mediaCardSchema),
     mode: "onSubmit",
     defaultValues: mediaCard,
   });
 
-  const handleEditMedia = async (values: EditMediaCard) => {
+  const handleEditMedia = async (values: MediaCard) => {
     try {
       const res: AxiosResponse = await FrontUtilService.patchApi(
-        `/media/${values.id}`,
+        `/mediacard/${values.id}`,
         values
       );
       if (res.status === HttpStatusCode.Ok) {
@@ -148,20 +149,74 @@ const EditMediaPopup = ({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Type</FormLabel>
-                            <Select onValueChange={field.onChange}>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
                               <FormControl>
                                 <SelectTrigger className="p-2 rounded-md w-full border-slate-200 border-2 bg-slate-100">
                                   <SelectValue placeholder="Choose Type" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="movie">Movie</SelectItem>
-                                <SelectItem value="series">Series</SelectItem>
-                                {/* Add other media types here */}
+                                {Object.keys(MediaType).map((key) => (
+                                  <SelectItem
+                                    key={key}
+                                    value={
+                                      MediaType[key as keyof typeof MediaType]
+                                    }
+                                  >
+                                    {MediaType[key as keyof typeof MediaType]}
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
                             <FormDescription>
                               Select the type of media
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="mt-2">
+                      <FormField
+                        control={form.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category</FormLabel>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="p-2 rounded-md w-full border-slate-200 border-2 bg-slate-100">
+                                  <SelectValue placeholder="Choose Category" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {Object.keys(MediaCategory).map((key) => (
+                                  <SelectItem
+                                    key={key}
+                                    value={
+                                      MediaCategory[
+                                        key as keyof typeof MediaCategory
+                                      ]
+                                    }
+                                  >
+                                    {
+                                      MediaCategory[
+                                        key as keyof typeof MediaCategory
+                                      ]
+                                    }
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Select the category of media
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -195,15 +250,6 @@ const EditMediaPopup = ({
             </Card>
           </DialogDescription>
         </DialogHeader>
-        <DialogClose asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="absolute top-4 right-4"
-          >
-            Close
-          </Button>
-        </DialogClose>
       </DialogContent>
     </Dialog>
   );

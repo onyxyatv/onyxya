@@ -5,14 +5,15 @@ interface AuthContextType {
   authUser: AuthUser | null;
   login: (token: string) => void;
   logout: () => void;
+  isLoading: boolean;
 }
 
 interface AuthUser {
   id: number;
   username: string;
   role: {
-    id: number,
-    name: string,
+    id: number;
+    name: string;
     isActive: boolean,
   };
   exp: number;
@@ -27,20 +28,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("onyxyaToken");
     if (token) {
       const user = parseJwt(token);
-      setAuthUser(user);
-      console.log("User logged in : ", user);
+      if (user && user.exp * 1000 > Date.now()) {
+        setAuthUser(user);
+      } else {
+        localStorage.removeItem("onyxyaToken");
+      }
     }
+    setIsLoading(false);
   }, []);
 
   const login = (token: string) => {
     localStorage.setItem("onyxyaToken", token);
     const user = parseJwt(token);
-    setAuthUser(user);
+    if (user && user.exp * 1000 > Date.now()) {
+      setAuthUser(user);
+    } else {
+      localStorage.removeItem("onyxyaToken");
+    }
   };
 
   const logout = () => {
@@ -49,7 +59,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ authUser, login, logout }}>
+    <AuthContext.Provider value={{ authUser, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
@@ -57,7 +67,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
 const parseJwt = (token: string): AuthUser | null => {
   try {
-    return jwtDecode<AuthUser>(token);
+    const decoded = jwtDecode<AuthUser>(token);
+    return decoded;
   } catch (e) {
     console.error("Invalid token");
     return null;

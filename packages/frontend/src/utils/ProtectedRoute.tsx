@@ -14,15 +14,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     throw new Error("ProtectedRoute must be used within an AuthProvider");
   }
 
-  const { authUser } = context;
-  console.log("ProtectedRoute authUser : ", authUser);
+  const { authUser, isLoading } = context;
+
+  if (isLoading) {
+    return null;
+  }
 
   if (!authUser) {
     return <Navigate to="/" />;
   }
 
   if (role && authUser.role.name !== role) {
-    return <Navigate to="/unauthorized" />; // Rediriger vers une page d'accès refusé
+    return <Navigate to="/unauthorized" />;
   }
 
   return <>{children}</>;

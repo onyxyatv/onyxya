@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import FrontUtilService from "@/utils/frontUtilService";
-import { EditMediaCard } from "@common/validation/media/editMediaCard.schema";
+import { MediaCard } from "@common/validation/media/mediaCard.schema";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -33,9 +33,7 @@ export function MediaTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [popupOpened, setPopupOpened] = useState(false);
-  const [selectedMedia, setSelectedMedia] = useState<EditMediaCard | null>(
-    null
-  );
+  const [selectedMedia, setSelectedMedia] = useState<MediaCard | null>(null);
 
   const columns: ColumnDef<Media>[] = [
     {
@@ -51,19 +49,25 @@ export function MediaTable() {
     {
       accessorKey: "size",
       header: "Size",
-      cell: (info) => `${info.getValue()} bytes`,
+      cell: (info) => `${(info.row.original.size / 1024 / 1024).toFixed(2)} MB`,
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created At",
+      cell: (info) => new Date(info.row.original.createdAt).toLocaleString(),
     },
     {
       id: "actions",
       header: "Actions",
       cell: (info) => (
-        <div className="flex justify-center space-x-2">
-          <Button variant="outline" size="sm">
+        <div className="">
+          <Button variant="outline" size="sm" className="m-1">
             View
           </Button>
           <Button
             variant="outline"
             size="sm"
+            className="m-1"
             onClick={() => {
               FrontUtilService.deleteApi(`/media/${info.row.original.id}`);
             }}
@@ -73,6 +77,7 @@ export function MediaTable() {
           <Button
             variant="outline"
             size="sm"
+            className="m-1"
             onClick={() => openEditDialog(info.row.original)}
           >
             Edit
@@ -82,8 +87,9 @@ export function MediaTable() {
     },
   ];
 
-  const openEditDialog = (media: EditMediaCard) => {
-    setSelectedMedia(media);
+  const openEditDialog = async (media: MediaCard) => {
+    const mediaCard: MediaCard = await FrontUtilService.getDataFromApi('/mediacard/media/' + media.id);
+    setSelectedMedia(mediaCard);
     setPopupOpened(true);
   };
 
@@ -100,8 +106,7 @@ export function MediaTable() {
   };
 
   const reloadMediaCards = () => {
-    // Logique pour recharger les données des médias
-    fetchData(); // Exemple d'une fonction fetchData qui récupère les données des médias
+    fetchData();
   };
 
   useEffect(() => {
