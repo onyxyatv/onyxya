@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
 
 interface Music {
   id: number;
@@ -40,28 +41,37 @@ const MusicsLists = (props: MusicsListProps) => {
   }, []);
 
   return (
-    <div id="musicsListContainer" className="max-w-7xl m-auto">
+    <div id="musicsListContainer" className="w-5/6 p-2">
       {
         musicsByCategories !== null &&
         Object.keys(musicsByCategories).map((musicCategoryName: string) => {
           return (
-            <div className={`musics-list-${musicCategoryName}-category border-2 border-gray-300 p-2 mt-2`}>
+            <div className={`musics-list-${musicCategoryName}-category border-2 border-gray-300 p-2`}>
               <h3>{musicCategoryName}</h3>
               <p>
-                { musicsByCategories[musicCategoryName].length } musiques
+                {musicsByCategories[musicCategoryName].length} musiques
               </p>
-              {
-                musicsByCategories[musicCategoryName].map((music: Music) => {
-                  return (
-                    <div>
-                      <h4>{music.mediaCard.name}</h4>
-                      <Button onClick={() => props.playMusic(music.id)}>
-                        Play
-                      </Button>
-                    </div>
-                  );
-                })
-              }
+              <div id={`${musicCategoryName}MusicContainer`} className="flex flex-row align-middle">
+                {
+                  musicsByCategories[musicCategoryName].map((music: Music) => {
+                    return (
+                      <Card className="m-2">
+                        <CardHeader>
+                          <CardTitle className="text-sm">
+                            {music.mediaCard.name}
+                          </CardTitle>
+                          <CardDescription>
+                            Pas de description
+                          </CardDescription>
+                        </CardHeader>
+                        <CardFooter>
+                          <Button onClick={() => props.playMusic(music.id)}>Play</Button>
+                        </CardFooter>
+                      </Card>
+                    );
+                  })
+                }
+              </div>
             </div>
           );
         })
