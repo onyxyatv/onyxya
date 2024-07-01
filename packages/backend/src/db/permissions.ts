@@ -7,6 +7,8 @@ export enum Permissions {
   AdminUsers = 'admin_users',
   AdminRoles = 'admin_roles',
   AdminUserPermissions = 'admin_user_permissions',
+  UploadMedia = 'upload_media',
+  DeleteMedia = 'delete_media',
 }
 
 export const permissions = [
@@ -42,6 +44,14 @@ export const permissions = [
     name: Permissions.AdminUserPermissions,
     description: 'Can administrate roles and edit their permissions',
   },
+  {
+    name: Permissions.UploadMedia,
+    description: 'Can upload a new media',
+  },
+  {
+    name: Permissions.DeleteMedia,
+    description: 'Can delete a media',
+  },
 ];
 
 export const rolesPermissions = {
@@ -54,6 +64,8 @@ export const rolesPermissions = {
     Permissions.AdminUsers,
     Permissions.AdminRoles,
     Permissions.AdminUserPermissions,
+    Permissions.UploadMedia,
+    Permissions.DeleteMedia,
   ],
   user: [Permissions.ReadMedias],
 };
