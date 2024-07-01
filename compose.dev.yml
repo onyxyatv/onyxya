@@ -1,3 +1,4 @@
+# Version can be obsolet depending on your docker / docker compose version
 version: '3.8'
 
 services:
@@ -11,7 +12,10 @@ services:
     volumes:
       - ./packages:/home/node/packages
       - ./package.json:/home/node/package.json
-      # Add medias folder if needed
+#      - your-music-path:/home/node/media/music
+#      - your-movies-path:/home/node/media/movies
+#      - your-series-path:/home/node/media/series
+      # Add other medias folder if needed
     tty: true
     stdin_open: true
     environment:

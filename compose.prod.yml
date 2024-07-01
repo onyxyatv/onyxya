@@ -8,6 +8,10 @@ services:
     container_name: onyxya-prod-backend
     ports:
       - "3000:3000"
+#    volumes:
+#      - your-music-path:/home/node/media/music
+#      - your-movies-path:/home/node/media/movies
+#      - your-series-path:/home/node/media/series
 
   frontend:
     build:

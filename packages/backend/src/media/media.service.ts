@@ -214,15 +214,20 @@ export class MediaService implements OnModuleInit {
 
   async getMediasByCategories(mediaType: string) {
     const musics: Array<Media> = await this.mediaRepository.find({
-      select: {
-        id: true,
-        name: true,
-        extension: true,
-        mimeType: true,
-      },
       where: { type: mediaType },
       relations: { mediaCard: true },
     });
-    return musics;
+
+    const musicsByCategories = {};
+    musics.forEach((music) => {
+      if (musicsByCategories[music.mediaCard.category] === undefined)
+        musicsByCategories[music.mediaCard.category] = [];
+      const tempMusic: object = {
+        id: music.id,
+        mediaCard: music.mediaCard,
+      };
+      musicsByCategories[music.mediaCard.category].push(tempMusic);
+    });
+    return musicsByCategories;
   }
 }

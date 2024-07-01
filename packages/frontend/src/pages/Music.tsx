@@ -1,5 +1,6 @@
 import Header from "@/components/header/header";
 import MusicsLists from "@/components/music/musicsList";
+import MusicsPlaylistMenu from "@/components/music/musicsPlaylistMenu";
 import FrontUtilService from "@/utils/frontUtilService";
 import { useEffect, useState } from "react";
 import AudioPlayer from 'react-h5-audio-player';
@@ -8,14 +9,18 @@ import 'react-h5-audio-player/lib/styles.css';
 const Music = () => {
   const [music, setMusic] = useState('');
 
-  const fetchMusic = (async (musicId: number) => {
+  async function fetchMusic (musicId: number) {
     const endpoint: string = '/media/getFile/' + musicId;
     const res: Blob = await FrontUtilService.getBlobFromApi(endpoint);
     if (res.size > 0) {
       const url = URL.createObjectURL(res);
       setMusic(url);
     }
-  });
+  }
+
+  async function selectPlaylist(playlistId: number): Promise<void> {
+    console.log(playlistId);
+  }
 
   useEffect(() => {
   }, []);
@@ -24,7 +29,8 @@ const Music = () => {
     <div>
       <Header />
 
-      <section>
+      <section className="flex justify-start p-2">
+        <MusicsPlaylistMenu selectPlaylist={(playlistId: number) => selectPlaylist(playlistId)} />
         <MusicsLists playMusic={(musicId: number) => fetchMusic(musicId)} />
       </section>
 
