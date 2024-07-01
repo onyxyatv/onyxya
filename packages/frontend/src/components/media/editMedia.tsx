@@ -46,6 +46,18 @@ type EditMediaPopupProps = {
   onClose: () => void;
 };
 
+const formatDate = (date) => {
+  const d = new Date(date);
+  let month = "" + (d.getMonth() + 1);
+  let day = "" + d.getDate();
+  const year = d.getFullYear();
+
+  if (month.length < 2) month = "0" + month;
+  if (day.length < 2) day = "0" + day;
+
+  return [year, month, day].join("-");
+};
+
 const EditMediaPopup = ({
   mediaCard,
   reloadMediaCards,
@@ -225,6 +237,34 @@ const EditMediaPopup = ({
                       />
                     </div>
 
+                    {/* TODO: Change this form to a shadcn component (a little more difficult to setup for the first time) */}
+                    <div className="mt-2">
+                      <FormField
+                        control={form.control}
+                        name="releaseDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Release Date</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="date"
+                                className="border-slate-200 border-2 bg-slate-100"
+                                value={
+                                  field.value ? formatDate(field.value) : ""
+                                }
+                                onChange={(e) =>
+                                  field.onChange(new Date(e.target.value))
+                                }
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Select the release date of the media
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                     <div className="mt-2">
                       <FormField
                         control={form.control}

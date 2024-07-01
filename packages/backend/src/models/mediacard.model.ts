@@ -24,6 +24,9 @@ export class MediaCard {
   @Column({ default: 'default' })
   category: string;
 
+  @Column({ nullable: true })
+  releaseDate: Date;
+
   @Column({ default: true })
   isActive: boolean;
 

@@ -92,14 +92,20 @@ export const mediaCardSchema = z.object({
       message: "Category must be one of the available categories",
     })
     .optional(),
-  release: z.date().optional(),
-  isActive: z.preprocess(
-    (value) => {
-      if (typeof value === "string") return value === "true";
-      return value;
-    },
-    z.boolean({ message: "isActive must be a boolean" })
-  ).optional(),
+  releaseDate: z.coerce
+    .date({
+      message: "Release date must be a date",
+    })
+    .optional(),
+  isActive: z
+    .preprocess(
+      (value) => {
+        if (typeof value === "string") return value === "true";
+        return value;
+      },
+      z.boolean({ message: "isActive must be a boolean" })
+    )
+    .optional(),
 });
 
 export type MediaCard = z.infer<typeof mediaCardSchema>;

@@ -108,6 +108,7 @@ export class MediaCardService {
       mediaCard.type = body.type;
       mediaCard.category = body.category;
       mediaCard.isActive = body.isActive;
+      mediaCard.releaseDate = body.releaseDate;
       return await this.mediaCardRepository.save(mediaCard);
     } catch (error) {
       if (error instanceof BadRequestError) {
