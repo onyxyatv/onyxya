@@ -151,14 +151,12 @@ export class UserService {
       user.role.permissions.forEach((rolePerm) => (rolePerm['isUser'] = false));
       const finalPermissions = [...user.permissions, ...user.role.permissions];
 
-      // eslint-disable-next-line prettier/prettier
       const allPermissions: Array<Permission> =
         await this.permissionsRepository.find({
           relations: ['roles'],
         });
       const ownedPermsNames = finalPermissions.map((perm) => perm.name);
       allPermissions.forEach((permission) => {
-        // eslint-disable-next-line prettier/prettier
         permission['owned'] = ownedPermsNames.includes(permission.name)
           ? true
           : false;
@@ -203,7 +201,6 @@ export class UserService {
       let userPermissions = [];
       if (userPermissions !== undefined)
         userPermissions = fullUser.permissions.map((perm) => perm.name);
-      // eslint-disable-next-line prettier/prettier
       const userRolePermissions = fullUser.role.permissions.map(
         (perm) => perm.name,
       );
@@ -218,7 +215,6 @@ export class UserService {
     authUser: User,
     editedUser: EditUser,
   ): Promise<CustomResponse> {
-    // eslint-disable-next-line prettier/prettier
     const toEditUser: User = await this.usersRepository.findOne({
       where: { id: userIdEdited },
     });
@@ -246,7 +242,6 @@ export class UserService {
       where: { id: userIdToDelete },
     });
     if (userToDelete) {
-      // eslint-disable-next-line prettier/prettier
       const checkPerms = this.userHasPermission(
         authUser,
         Permissions.AdminUsers,
@@ -257,7 +252,6 @@ export class UserService {
         );
       }
 
-      // eslint-disable-next-line prettier/prettier
       const resRepo: DeleteResult = await this.usersRepository.delete(
         userToDelete.id,
       );

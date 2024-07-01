@@ -35,7 +35,7 @@ export class PermissionsGuard implements CanActivate {
             'Server Error : Permission needed not found',
           );
         }
-        // eslint-disable-next-line prettier/prettier
+
         const userPermissions: Permission[] =
           await this.usersService.getUserOwnedPermissions(user.id);
         const permissionsNamesList = userPermissions.map((perm) => perm.name);
