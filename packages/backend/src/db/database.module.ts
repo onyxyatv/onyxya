@@ -7,13 +7,14 @@ import { syncDbStatus, migrationRunStatus } from '../../config.json';
 import { Role } from 'src/models/role.model';
 import { Media } from '../models/media.model';
 import { MediaPath } from '../models/media-path.model';
+import { Playlist } from 'src/models/playlist.model';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'onyxya.sqlite',
-      entities: [User, Role, Permission, Media, MediaCard, MediaPath],
+      entities: [User, Role, Permission, Media, MediaCard, MediaPath, Playlist],
       migrations: [],
       synchronize: syncDbStatus,
       migrationsRun: migrationRunStatus,

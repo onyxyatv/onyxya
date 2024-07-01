@@ -9,6 +9,7 @@ interface Music {
   id: number;
   mediaCard: {
     name: string;
+    description: string;
   };
 }
 
@@ -46,10 +47,16 @@ const MusicsLists = (props: MusicsListProps) => {
         musicsByCategories !== null &&
         Object.keys(musicsByCategories).map((musicCategoryName: string) => {
           return (
-            <div className={`musics-list-${musicCategoryName}-category border-2 border-gray-300 p-2`}>
-              <h3>{musicCategoryName}</h3>
+            <div className={`musics-list-${musicCategoryName}-category border-2 mb-2 border-gray-300 p-2`}>
+              <h2 className="text-lg font-bold">
+                {
+                  FrontUtilService.capitalizeString(musicCategoryName)
+                }
+              </h2>
               <p>
-                {musicsByCategories[musicCategoryName].length} musiques
+                {musicsByCategories[musicCategoryName].length} {
+                  (musicsByCategories[musicCategoryName].length > 1) ? 'musics' : 'music'
+                }
               </p>
               <div id={`${musicCategoryName}MusicContainer`} className="flex flex-row align-middle">
                 {
@@ -61,11 +68,18 @@ const MusicsLists = (props: MusicsListProps) => {
                             {music.mediaCard.name}
                           </CardTitle>
                           <CardDescription>
-                            Pas de description
+                            {
+                              (music.mediaCard.description !== null && 
+                                music.mediaCard.description.length > 0) ?
+                              music.mediaCard.description : 'No description'
+                            }
                           </CardDescription>
                         </CardHeader>
-                        <CardFooter>
+                        <CardFooter className="space-x-2">
                           <Button onClick={() => props.playMusic(music.id)}>Play</Button>
+                          <Button variant="outline" onClick={() => props.playMusic(1)}>
+                            Add to Playlist
+                          </Button>
                         </CardFooter>
                       </Card>
                     );

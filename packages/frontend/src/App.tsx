@@ -36,7 +36,11 @@ const App: React.FC = () => {
           />
           <Route
             path="/music"
-            element={ <Music /> }
+            element={
+              <ProtectedRoute>
+                <Music />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/series"

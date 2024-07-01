@@ -11,7 +11,7 @@ function useGetPlaylists(): [ playlists: Array<User>, getPlaylists: () => Promis
     try {
       const token: string | null = localStorage.getItem("onyxyaToken");
       if (token !== null) {
-        const res = await axios.get(`${api_url}/users`, {
+        const res = await axios.get(`${api_url}/playlists`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
         if (res.status === HttpStatusCode.Ok) setPlaylists(res.data.playlists);

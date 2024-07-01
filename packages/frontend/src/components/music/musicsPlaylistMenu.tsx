@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
-import { Button } from "../ui/button";
 import useGetPlaylists from "@/hooks/useGetPlaylists";
+import NewPlaylistPopup from "./newPlaylist";
 
 interface PlaylistMenuProps {
   selectPlaylist: (playlistId: number) => Promise<void>;
@@ -23,9 +22,7 @@ const MusicsPlaylistMenu = (props: PlaylistMenuProps) => {
   return (
     <div id="MusicsPlaylistMenu" 
     className="w-1/6 items-center border-r-4 mr-2 h-[80vh] border-gray-500 flex flex-col p-2">
-      <Button variant="outline" className="w-52 border-2 border-gray-500 hover:border-transparent">
-        <Plus /> New Playlist
-      </Button>
+        <NewPlaylistPopup reloadPlaylists={() => setNeedReload(true)} />
       {
         playlists !== undefined &&
         playlists.length > 0
