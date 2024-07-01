@@ -28,7 +28,7 @@ import EditMediaPopop from "./editMedia";
 import { SyncMediaButton } from "./syncMediaButton";
 
 export function MediaTable() {
-  const [medias, setMedias] = useState<Media[]>([]);
+  const [medias, setMedias] = useState<Array<Media>>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -92,9 +92,7 @@ export function MediaTable() {
     setIsLoading(true);
     const data = await FrontUtilService.getDataFromApi("/media");
     setTimeout(() => {
-      if (data) {
-        setMedias(data);
-      }
+      if (data) setMedias(data);
       setIsLoading(false);
     }, 2000);
   };

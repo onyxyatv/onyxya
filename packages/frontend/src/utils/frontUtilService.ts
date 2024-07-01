@@ -8,7 +8,8 @@ class FrontUtilService {
   static setUserPermissionsEndpoint = '/permissions/setUserPermissions';
   static getMediaByTypeCategories = '/media/:mediaType/byCategories';
 
-  public static async getDataFromApi(endpoint: string): Promise<object | null> {
+  // TODO: Need to talk about return any
+  public static async getDataFromApi(endpoint: string): Promise<any | null> {
     try {
       const res: AxiosResponse<any, any> = await axios.get(api_url + endpoint, {
         headers: { "Authorization": `Bearer ${this.token}` }
