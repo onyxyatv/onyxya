@@ -36,7 +36,11 @@ const App: React.FC = () => {
           />
           <Route
             path="/music"
-            element={ <Music /> }
+            element={
+            <ProtectedRoute> 
+              <Music /> 
+            </ProtectedRoute>
+            }
           />
           <Route
             path="/series"
@@ -49,7 +53,9 @@ const App: React.FC = () => {
           <Route
             path="/media"
             element={
-              <Media />
+              <ProtectedRoute>
+                <Media />
+              </ProtectedRoute>
             }
           />
           <Route
