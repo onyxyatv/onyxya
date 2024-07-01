@@ -78,7 +78,7 @@ export function MediaTable() {
             variant="outline"
             size="sm"
             className="m-1"
-            onClick={() => openEditDialog(info.row.original)}
+            onClick={() => openEditDialog(info.row.original.id)}
           >
             Edit
           </Button>
@@ -87,8 +87,8 @@ export function MediaTable() {
     },
   ];
 
-  const openEditDialog = async (media: MediaCard) => {
-    const mediaCard: MediaCard = await FrontUtilService.getDataFromApi('/mediacard/media/' + media.id);
+  const openEditDialog = async (id: number) => {
+    const mediaCard: MediaCard = await FrontUtilService.getDataFromApi('/mediacard/media/' + id);
     setSelectedMedia(mediaCard);
     setPopupOpened(true);
   };
