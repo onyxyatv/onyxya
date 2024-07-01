@@ -64,7 +64,7 @@ const EditMediaPopup = ({
   const handleEditMedia = async (values: MediaCard) => {
     try {
       const res: AxiosResponse = await FrontUtilService.patchApi(
-        `/media/${values.id}`,
+        `/mediacard/${values.id}`,
         values
       );
       if (res.status === HttpStatusCode.Ok) {
@@ -84,7 +84,6 @@ const EditMediaPopup = ({
 
   useEffect(() => {
     form.reset(mediaCard);
-    console.log("Media Card", mediaCard);
   }, [form, mediaCard]);
 
   return (
