@@ -24,9 +24,6 @@ export class MediaCard {
   @Column({ default: 'default' })
   category: string;
 
-  @Column({ default: 'default' })
-  category: string;
-
   @OneToOne(() => Media, (media) => media.mediaCard, {
     cascade: true,
     onDelete: 'CASCADE',
