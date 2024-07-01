@@ -6,14 +6,19 @@ import { PermissionsGuard } from 'src/middlewares/permissions.guard';
 import { Playlist } from 'src/models/playlist.model';
 import { PlaylistsController } from './playlists.controller';
 import { PlaylistsService } from './playlists.service';
+import { Permission } from 'src/models/permission.model';
+import { User } from 'src/models/user.model';
+import { Role } from 'src/models/role.model';
+import { UserService } from 'src/users/users.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Playlist])],
+  imports: [TypeOrmModule.forFeature([Playlist, Permission, User, Role])],
   controllers: [PlaylistsController],
   providers: [
     PlaylistsService,
     AuthGuard,
     PermissionsService,
+    UserService,
     PermissionsGuard,
   ],
 })
