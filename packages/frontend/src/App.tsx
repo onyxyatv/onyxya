@@ -53,14 +53,8 @@ const App: React.FC = () => {
           <Route
             path="/media"
             element={
+              <ProtectedRoute>
                 <Media />
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute role="admin">
-                <Settings />
               </ProtectedRoute>
             }
           />

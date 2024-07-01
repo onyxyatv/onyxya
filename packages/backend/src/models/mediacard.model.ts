@@ -21,7 +21,7 @@ export class MediaCard {
   @Column({ nullable: true })
   type: string;
 
-  @Column({ nullable: true })
+  @Column({ default: 'default' })
   category: string;
 
   @OneToOne(() => Media, (media) => media.mediaCard, {

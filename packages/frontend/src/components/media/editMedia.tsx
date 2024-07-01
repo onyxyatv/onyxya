@@ -1,6 +1,5 @@
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -9,8 +8,8 @@ import {
 import FrontUtilService from "@/utils/frontUtilService";
 import {
   MediaCard,
-  MediaType,
   MediaCategory,
+  MediaType,
   mediaCardSchema,
 } from "@common/validation/media/mediaCard.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -150,7 +149,10 @@ const EditMediaPopup = ({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Type</FormLabel>
-                            <Select value={field.value} onValueChange={field.onChange}>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
                               <FormControl>
                                 <SelectTrigger className="p-2 rounded-md w-full border-slate-200 border-2 bg-slate-100">
                                   <SelectValue placeholder="Choose Type" />
@@ -185,7 +187,10 @@ const EditMediaPopup = ({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Category</FormLabel>
-                            <Select value={field.value} onValueChange={field.onChange}>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
                               <FormControl>
                                 <SelectTrigger className="p-2 rounded-md w-full border-slate-200 border-2 bg-slate-100">
                                   <SelectValue placeholder="Choose Category" />
@@ -201,9 +206,11 @@ const EditMediaPopup = ({
                                       ]
                                     }
                                   >
-                                    {MediaCategory[
-                                      key as keyof typeof MediaCategory
-                                    ]}
+                                    {
+                                      MediaCategory[
+                                        key as keyof typeof MediaCategory
+                                      ]
+                                    }
                                   </SelectItem>
                                 ))}
                               </SelectContent>
