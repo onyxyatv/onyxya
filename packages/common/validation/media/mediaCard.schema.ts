@@ -93,6 +93,13 @@ export const mediaCardSchema = z.object({
     })
     .optional(),
   release: z.date().optional(),
+  isActive: z.preprocess(
+    (value) => {
+      if (typeof value === "string") return value === "true";
+      return value;
+    },
+    z.boolean({ message: "isActive must be a boolean" })
+  ).optional(),
 });
 
 export type MediaCard = z.infer<typeof mediaCardSchema>;

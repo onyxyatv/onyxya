@@ -105,6 +105,7 @@ export class MediaCardService {
       mediaCard.description = body.description;
       mediaCard.type = body.type;
       mediaCard.category = body.category;
+      mediaCard.isActive = body.isActive;
       return await this.mediaCardRepository.save(mediaCard);
     } catch (error) {
       console.log('Error at updateMediaCard : ', error);

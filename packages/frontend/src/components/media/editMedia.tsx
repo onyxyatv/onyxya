@@ -37,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Switch } from "../ui/switch";
 
 type EditMediaPopupProps = {
   mediaCard: MediaCard;
@@ -217,6 +218,28 @@ const EditMediaPopup = ({
                             </Select>
                             <FormDescription>
                               Select the category of media
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="mt-2">
+                      <FormField
+                        control={form.control}
+                        name="isActive"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Active</FormLabel>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Toggle to activate or deactivate media
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
