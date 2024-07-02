@@ -11,11 +11,13 @@ import EditUser from "./pages/settings/EditUser";
 import Settings from "./pages/settings/Settings";
 import { AuthProvider } from "./utils/AuthContext";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import { Toaster } from "./components/ui/toaster";
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
+      <Toaster />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route
@@ -37,9 +39,9 @@ const App: React.FC = () => {
           <Route
             path="/music"
             element={
-            <ProtectedRoute> 
-              <Music /> 
-            </ProtectedRoute>
+              <ProtectedRoute>
+                <Music />
+              </ProtectedRoute>
             }
           />
           <Route
