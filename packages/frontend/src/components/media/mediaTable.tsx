@@ -94,13 +94,14 @@ export function MediaTable() {
       toast({
         title: "Delete media",
         description: "You don't have the permission to delete media",
-
+        variant: "destructive",
       });
       return;
     }
     toast({
       title: "Delete media",
       description: "Media removed successfully",
+      variant: "default",
     });
   };
 

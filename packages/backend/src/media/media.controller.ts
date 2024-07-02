@@ -1,7 +1,8 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Req, Res, UseGuards } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthGuard } from '../middlewares/auth.guard';
 import { MediaService } from './media.service';
-import { Request, Response } from 'express';
+import { NeedPermissions } from 'src/permissions/permissions.decorator';
 
 @UseGuards(AuthGuard)
 @Controller('media')
@@ -38,5 +39,16 @@ export class MediaController {
       categoriesCount: Object.keys(data).length,
       categories: data,
     });
+  }
+
+  @NeedPermissions('delete_media')
+  @Delete(':id')
+  async deleteMedia(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ): Promise<object> {
+    const data: { statusCode: number; message: string } =
+      await this.mediaService.deleteMedia(id);
+    return res.status(data.statusCode).json({ message: data.message });
   }
 }
