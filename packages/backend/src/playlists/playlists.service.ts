@@ -2,8 +2,8 @@ import { CustomError, NotFoundError } from '@common/errors/CustomError';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  CreatedResponse,
   CustomResponse,
-  SuccessResponse,
 } from '@common/errors/customResponses';
 import { Playlist } from 'src/models/playlist.model';
 import { CreatePlaylist } from '@common/validation/playlist/createPlaylist.schema';
@@ -42,7 +42,7 @@ export class PlaylistsService {
       const playlist: Playlist = new Playlist(playlistData.name);
       playlist.user = user;
       const resDb: Playlist = await this.playlistsRepository.save(playlist);
-      if (resDb) return new SuccessResponse();
+      if (resDb) return new CreatedResponse();
     }
 
     throw new NotFoundError(
@@ -50,7 +50,7 @@ export class PlaylistsService {
     );
   }
 
-  async getPlaylistBy(
+  async getPlaylistsBy(
     query: GetPlaylistBy,
   ): Promise<Array<Playlist> | CustomError> {
     const finalSearch = {};
@@ -65,5 +65,17 @@ export class PlaylistsService {
     const playlists: Array<Playlist> =
       await this.playlistsRepository.findBy(finalSearch);
     return playlists;
+  }
+
+  async getPlaylistById(playlistId: number): Promise<Playlist> {
+    if (playlistId !== 0) {
+      const playlist: Playlist = await this.playlistsRepository.findOne({
+        where: { id: playlistId },
+        relations: { medias: true },
+      });
+      if (playlist) return playlist;
+    }
+
+    throw new NotFoundError('Playlist not found or missing permissions');
   }
 }

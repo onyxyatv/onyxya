@@ -1,9 +1,11 @@
 import FrontUtilService from "@/utils/frontUtilService";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import AddMusicPlaylistPopup from "./addMusicPlaylist";
+import AuthContext from "@/utils/AuthContext";
 
 interface Music {
   id: number;
@@ -20,6 +22,7 @@ interface MusicsListProps {
 type MusicCategories = Record<string, Array<Music>>;
 
 const MusicsLists = (props: MusicsListProps) => {
+  const userId: number | undefined = useContext(AuthContext)?.authUser?.id;
   const [musicsByCategories, setMusics] = useState<MusicCategories>({});
   const [error, setError] = useState('');
 
@@ -77,9 +80,11 @@ const MusicsLists = (props: MusicsListProps) => {
                         </CardHeader>
                         <CardFooter className="space-x-2">
                           <Button onClick={() => props.playMusic(music.id)}>Play</Button>
-                          <Button variant="outline" onClick={() => props.playMusic(1)}>
-                            Add to Playlist
-                          </Button>
+                          <AddMusicPlaylistPopup 
+                            reloadPlaylists={null}
+                            userId={(userId) ? userId : 0}
+                            musicId={music.id}
+                          />
                         </CardFooter>
                       </Card>
                     );

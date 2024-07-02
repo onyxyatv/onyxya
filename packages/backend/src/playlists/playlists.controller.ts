@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   Req,
@@ -61,9 +62,9 @@ export class PlaylistsController {
 
   @Get('/by')
   @UsePipes(new ZodValidationPipe(getPlaylistBySchema))
-  async getPlaylistBy(@Query() query: GetPlaylistBy, @Res() res: Response) {
+  async getPlaylistsBy(@Query() query: GetPlaylistBy, @Res() res: Response) {
     const data: Array<Playlist> | CustomError =
-      await this.playlistsService.getPlaylistBy(query);
+      await this.playlistsService.getPlaylistsBy(query);
 
     // Check that data is not an error
     if (data instanceof Array) {
@@ -72,5 +73,16 @@ export class PlaylistsController {
         playlists: data,
       });
     }
+  }
+
+  @Get('/playlist/:id')
+  async getPlaylistById(
+    @Param() params: any,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const data: Playlist = await this.playlistsService.getPlaylistById(
+      params.id,
+    );
+    if (data instanceof Playlist) return res.status(200).json(data);
   }
 }

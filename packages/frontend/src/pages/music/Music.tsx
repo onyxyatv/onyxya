@@ -18,10 +18,6 @@ const Music = () => {
     }
   }
 
-  async function selectPlaylist(playlistId: number): Promise<void> {
-    console.log(playlistId);
-  }
-
   useEffect(() => {
   }, []);
 
@@ -30,7 +26,7 @@ const Music = () => {
       <Header />
 
       <section className="flex justify-start p-2">
-        <MusicsPlaylistMenu selectPlaylist={(playlistId: number) => selectPlaylist(playlistId)} />
+        <MusicsPlaylistMenu />
         <MusicsLists playMusic={(musicId: number) => fetchMusic(musicId)} />
       </section>
 

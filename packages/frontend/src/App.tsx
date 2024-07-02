@@ -4,13 +4,14 @@ import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Media from "./pages/Media";
 import Movies from "./pages/Movies";
-import Music from "./pages/Music";
+import Music from "./pages/music/Music";
 import Series from "./pages/Series";
 import Unauthorized from "./pages/Unauthorized";
 import EditUser from "./pages/settings/EditUser";
 import Settings from "./pages/settings/Settings";
 import { AuthProvider } from "./utils/AuthContext";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import MyPlaylist from "./pages/music/MyPlaylist";
 
 const App: React.FC = () => {
   return (
@@ -69,6 +70,14 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute role="admin">
                 <EditUser />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/music/playlist/:id"
+            element={
+              <ProtectedRoute>
+                <MyPlaylist />
               </ProtectedRoute>
             }
           />

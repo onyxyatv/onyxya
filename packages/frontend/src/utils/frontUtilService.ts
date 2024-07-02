@@ -8,6 +8,8 @@ class FrontUtilService {
   static setUserPermissionsEndpoint = '/permissions/setUserPermissions';
   static getMediaByTypeCategories = '/media/:mediaType/byCategories';
   static newPlaylistEndpoint = '/playlists/new';
+  static getPlaylists = '/playlists';
+  static playlistById = '/playlists/playlist/:id';
 
   // TODO: Need to talk about return any
   public static async getDataFromApi(endpoint: string): Promise<any | null> {
