@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useGetPerms } from "@/hooks/useGetPerms";
 import FrontUtilService from "@/utils/frontUtilService";
 import { MediaCard } from "@common/validation/media/mediaCard.schema";
 import {
@@ -25,7 +24,7 @@ import {
 } from "@tanstack/react-table";
 import { ReactNode, useEffect, useState } from "react";
 import { Media } from "../models/media";
-import { useToast } from "../ui/use-toast";
+import DeleteMediaDialog from "./deleteMediaDialog";
 import EditMediaPopop from "./editMedia";
 import { SyncMediaButton } from "./syncMediaButton";
 
@@ -36,8 +35,6 @@ export function MediaTable() {
   const [isLoading, setIsLoading] = useState(false);
   const [popupOpened, setPopupOpened] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<MediaCard | null>(null);
-  const { toast } = useToast();
-  const perms = useGetPerms();
 
   const columns: ColumnDef<Media>[] = [
     {
@@ -68,14 +65,7 @@ export function MediaTable() {
           <Button variant="outline" size="sm" className="m-1">
             View
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="m-1"
-            onClick={() => handleDeleteMedia()}
-          >
-            Delete
-          </Button>
+          <DeleteMediaDialog mediaId={info.row.original.id} />
           <Button
             variant="outline"
             size="sm"
@@ -88,22 +78,6 @@ export function MediaTable() {
       ),
     },
   ];
-
-  const handleDeleteMedia = () => {
-    if (!perms?.includes("delete_media")) {
-      toast({
-        title: "Delete media",
-        description: "You don't have the permission to delete media",
-        variant: "destructive",
-      });
-      return;
-    }
-    toast({
-      title: "Delete media",
-      description: "Media removed successfully",
-      variant: "default",
-    });
-  };
 
   const openEditDialog = async (id: number) => {
     const mediaCard: MediaCard = await FrontUtilService.getDataFromApi(
