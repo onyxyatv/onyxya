@@ -3,9 +3,10 @@ import { Playlist } from "@/components/models/playlist";
 import MusicsPlaylistMenu from "@/components/music/musicsPlaylistMenu";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import MusicPlayerContext from "@/utils/MusicPlayerContext";
 import FrontUtilService from "@/utils/frontUtilService";
 import { AlertCircle, ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import 'react-h5-audio-player/lib/styles.css';
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -13,6 +14,27 @@ const MyPlaylist = () => {
   const { id }: any = useParams();
   const navigate = useNavigate();
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
+  const fetchMusic = useContext(MusicPlayerContext)?.fetchMusic;
+  const setPlaylistsMusics = useContext(MusicPlayerContext)?.setPlaylistsMusics;
+  const setPlaylistMode = useContext(MusicPlayerContext)?.setPlaylistMode;
+
+  const playMusic = (musicId: number): void => {
+    if (fetchMusic) fetchMusic(musicId);
+  }
+
+  const playPlaylist = async (): Promise<void> => {
+    const musicsToPlay: Array<string> = [];
+    if (playlist && playlist.medias) {
+      for (const media of playlist.medias) {
+        const musicSrc: string | null = await FrontUtilService.fetchMusic(media.id);
+        if (musicSrc) musicsToPlay.push(musicSrc);
+      }
+    }
+    if (setPlaylistsMusics && setPlaylistMode) {
+      setPlaylistMode();
+      setPlaylistsMusics(musicsToPlay);
+    }
+  }
 
   const fetchPlaylist = async (playlistId: number) => {
     try {
@@ -47,7 +69,7 @@ const MyPlaylist = () => {
                 { FrontUtilService.capitalizeString(playlist.name) }
               </h2>
               <div className="flex flex-row mt-2 space-x-2">
-                <Button>
+                <Button onClick={() => playPlaylist()}>
                   Play
                 </Button>
                 <Button variant="destructive">
@@ -61,6 +83,9 @@ const MyPlaylist = () => {
                       return (
                         <li>
                           {music.name}
+                          <Button onClick={() => playMusic(music.id)}>
+                            Play
+                          </Button>
                         </li>
                       );
                     })

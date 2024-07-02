@@ -27,6 +27,11 @@ import {
   getPlaylistBySchema,
 } from '@common/validation/playlist/getPlaylistBy.schema';
 import { CustomError } from '@common/errors/CustomError';
+import {
+  AddMediaPlaylist,
+  addMediaPlaylistSchema,
+} from '@common/validation/playlist/addMediaPlaylist.schema';
+import { CustomResponse } from '@common/errors/customResponses';
 
 @UseGuards(AuthGuard) // AuthGuard for all routes of this module
 @Controller('playlists')
@@ -84,5 +89,16 @@ export class PlaylistsController {
       params.id,
     );
     if (data instanceof Playlist) return res.status(200).json(data);
+  }
+
+  @Post('/addMusic')
+  @UsePipes(new ZodValidationPipe(addMediaPlaylistSchema))
+  async addMusicToPlaylist(
+    @Body() addMediaPlaylist: AddMediaPlaylist,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const resService: CustomResponse | CustomError =
+      await this.playlistsService.addMusicToPlaylist(addMediaPlaylist);
+    return res.status(resService.statusCode).json(resService);
   }
 }

@@ -12,79 +12,84 @@ import Settings from "./pages/settings/Settings";
 import { AuthProvider } from "./utils/AuthContext";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import MyPlaylist from "./pages/music/MyPlaylist";
+import MusicPlayer from "./components/music/musicPlayer";
+import { MusicPlayerProvider } from "./utils/MusicPlayerContext";
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/movies"
-            element={
-              <ProtectedRoute>
-                <Movies />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/music"
-            element={
-              <ProtectedRoute>
-                <Music />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/series"
-            element={
-              <ProtectedRoute>
-                <Series />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/media"
-            element={
-              <Media />
-            }
-          />
-          <Route
-            path="/settings/*"
-            element={
-              <ProtectedRoute role="admin">
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings/user/:id"
-            element={
-              <ProtectedRoute role="admin">
-                <EditUser />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/music/playlist/:id"
-            element={
-              <ProtectedRoute>
-                <MyPlaylist />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/unauthorized" element={<Unauthorized />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+      <MusicPlayerProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/movies"
+              element={
+                <ProtectedRoute>
+                  <Movies />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/music"
+              element={
+                <ProtectedRoute>
+                  <Music />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/series"
+              element={
+                <ProtectedRoute>
+                  <Series />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/media"
+              element={
+                <Media />
+              }
+            />
+            <Route
+              path="/settings/*"
+              element={
+                <ProtectedRoute role="admin">
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings/user/:id"
+              element={
+                <ProtectedRoute role="admin">
+                  <EditUser />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/music/playlist/:id"
+              element={
+                <ProtectedRoute>
+                  <MyPlaylist />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+          </Routes>
+          <MusicPlayer />
+        </Router>
+      </MusicPlayerProvider>
+    </AuthProvider >
   );
 };
 

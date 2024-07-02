@@ -1,15 +1,22 @@
-import { CustomError, NotFoundError } from '@common/errors/CustomError';
+import {
+  BadRequestError,
+  CustomError,
+  NotFoundError,
+} from '@common/errors/CustomError';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreatedResponse,
   CustomResponse,
+  SuccessResponse,
 } from '@common/errors/customResponses';
 import { Playlist } from 'src/models/playlist.model';
 import { CreatePlaylist } from '@common/validation/playlist/createPlaylist.schema';
 import { Repository } from 'typeorm';
 import { User } from 'src/models/user.model';
 import { GetPlaylistBy } from '@common/validation/playlist/getPlaylistBy.schema';
+import { AddMediaPlaylist } from '@common/validation/playlist/addMediaPlaylist.schema';
+import { Media } from 'src/models/media.model';
 
 @Injectable()
 export class PlaylistsService {
@@ -18,6 +25,8 @@ export class PlaylistsService {
     private playlistsRepository: Repository<Playlist>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Media)
+    private readonly mediaRepository: Repository<Media>,
   ) {}
 
   getAllPlaylists(): Promise<Array<Playlist> | null> {
@@ -77,5 +86,30 @@ export class PlaylistsService {
     }
 
     throw new NotFoundError('Playlist not found or missing permissions');
+  }
+
+  async addMusicToPlaylist(
+    addMediaPlaylist: AddMediaPlaylist,
+  ): Promise<CustomResponse | CustomError> {
+    const music: Media = await this.mediaRepository.findOneBy({
+      id: addMediaPlaylist.mediaId,
+    });
+    const playlist: Playlist = await this.playlistsRepository.findOne({
+      where: { id: addMediaPlaylist.playlistId },
+      relations: { medias: true },
+    });
+
+    if (playlist && music) {
+      const playlistsMusicsNames: Array<number> = playlist.medias.map(
+        (music) => music.id,
+      );
+      if (playlistsMusicsNames.includes(music.id))
+        throw new BadRequestError('Playlist already have this music');
+      playlist.medias.push(music);
+      await this.playlistsRepository.save(playlist);
+      return new SuccessResponse();
+    }
+
+    throw new NotFoundError('Playlist or Music not found');
   }
 }

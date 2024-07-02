@@ -10,9 +10,12 @@ import { Permission } from 'src/models/permission.model';
 import { User } from 'src/models/user.model';
 import { Role } from 'src/models/role.model';
 import { UserService } from 'src/users/users.service';
+import { Media } from 'src/models/media.model';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Playlist, Permission, User, Role])],
+  imports: [
+    TypeOrmModule.forFeature([Playlist, Permission, User, Role, Media]),
+  ],
   controllers: [PlaylistsController],
   providers: [
     PlaylistsService,

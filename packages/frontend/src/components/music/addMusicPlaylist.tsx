@@ -1,14 +1,14 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Plus } from 'lucide-react';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { AxiosResponse, HttpStatusCode } from 'axios';
 import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -35,16 +35,14 @@ const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps) => {
       if (playlistId === 0 || isNaN(playlistId)) return;
       const values = {
         mediaId: props.musicId,
-        playlistId: playlistId
+        playlistId: playlistId,
       };
-      const res: AxiosResponse = await FrontUtilService.postApi(FrontUtilService.newPlaylistEndpoint, values);
-      if (res.status === HttpStatusCode.Ok) {
-        props.reloadPlaylists();
-      }
+      const res: AxiosResponse = await FrontUtilService.postApi(FrontUtilService.addMusicPlaylistEndpoint, values);
+      if (res.status === HttpStatusCode.Ok) props.reloadPlaylists();
 
     } catch (error: any) {
       const errorMessage: string = (error.response !== undefined) ? error.response.statusText : "No More details";
-      setError('User creation failed. Please try again');
+      setError('Music add to playlist failed. Please try again');
       setErrorText(`Error status : ${errorMessage}`);
     }
   }
@@ -59,34 +57,36 @@ const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps) => {
       <DialogContent className="bg-slate-100">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl">Add music to a playlist</DialogTitle>
-          <DialogDescription>
-            <Card>
-              <CardContent>
-                {
-                  playlists.map((playlist) => {
-                    return (
-                      playlist.name + ' ' + playlist.id
-                    );
-                  })
-                }
-              </CardContent>
-              <CardFooter>
-                {
-                  error.length > 0 &&
-                  <Alert variant="destructive" className="mb-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>
-                      {error}
-                      <br />
-                      {errorText}
-                    </AlertDescription>
-                  </Alert>
-                }
-              </CardFooter>
-            </Card>
-          </DialogDescription>
         </DialogHeader>
+        {
+          playlists.map((playlist) => {
+            return (
+              <Card key={playlist.name + '-' + playlist.id}>
+                <CardContent className='flex flex-row align-middle justify-between items-center'>
+                  <h5>{playlist.name}</h5>
+                  <div>
+                    <Button variant="outline" onClick={() => addToPlaylist(playlist.id)}>Add</Button>
+                    <Button variant="outline">Remove</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })
+        }
+        <DialogFooter>
+          {
+            error.length > 0 &&
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                {error}
+                <br />
+                {errorText}
+              </AlertDescription>
+            </Alert>
+          }
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

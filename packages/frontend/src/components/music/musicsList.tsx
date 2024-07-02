@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import AddMusicPlaylistPopup from "./addMusicPlaylist";
 import AuthContext from "@/utils/AuthContext";
+import MusicPlayerContext from "@/utils/MusicPlayerContext";
 
 interface Music {
   id: number;
@@ -15,16 +16,20 @@ interface Music {
   };
 }
 
-interface MusicsListProps {
-  playMusic: (musicId: number) => Promise<void>;
-}
-
 type MusicCategories = Record<string, Array<Music>>;
 
-const MusicsLists = (props: MusicsListProps) => {
+const MusicsLists = () => {
   const userId: number | undefined = useContext(AuthContext)?.authUser?.id;
   const [musicsByCategories, setMusics] = useState<MusicCategories>({});
   const [error, setError] = useState('');
+  const musicContext = useContext(MusicPlayerContext);
+
+  const playMusic = (musicId: number) => {
+    if (musicContext?.fetchMusic) {
+      musicContext.setMusicMode();
+      musicContext?.fetchMusic(musicId);
+    }
+  }
 
   const fetchAllMusics = async () => {
     try {
@@ -61,7 +66,7 @@ const MusicsLists = (props: MusicsListProps) => {
                   (musicsByCategories[musicCategoryName].length > 1) ? 'musics' : 'music'
                 }
               </p>
-              <div id={`${musicCategoryName}MusicContainer`} className="flex flex-row align-middle">
+              <div id={`${musicCategoryName}MusicContainer`} key={musicCategoryName} className="flex flex-row align-middle">
                 {
                   musicsByCategories[musicCategoryName].map((music: Music) => {
                     return (
@@ -79,7 +84,7 @@ const MusicsLists = (props: MusicsListProps) => {
                           </CardDescription>
                         </CardHeader>
                         <CardFooter className="space-x-2">
-                          <Button onClick={() => props.playMusic(music.id)}>Play</Button>
+                          <Button onClick={() => playMusic(music.id)}>Play</Button>
                           <AddMusicPlaylistPopup 
                             reloadPlaylists={null}
                             userId={(userId) ? userId : 0}

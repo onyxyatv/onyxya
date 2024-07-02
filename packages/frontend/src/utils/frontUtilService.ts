@@ -10,6 +10,7 @@ class FrontUtilService {
   static newPlaylistEndpoint = '/playlists/new';
   static getPlaylists = '/playlists';
   static playlistById = '/playlists/playlist/:id';
+  static addMusicPlaylistEndpoint = '/playlists/addMusic';
 
   // TODO: Need to talk about return any
   public static async getDataFromApi(endpoint: string): Promise<any | null> {
@@ -102,6 +103,16 @@ class FrontUtilService {
    */
   public static capitalizeString(str: string): string {
     return str[0].toUpperCase() + str.slice(1);
+  }
+
+  public static async fetchMusic(musicId: number): Promise<string | null> {
+    const endpoint: string = '/media/getFile/' + musicId;
+    const res: Blob = await FrontUtilService.getBlobFromApi(endpoint);
+    if (res.size > 0) {
+      const url = URL.createObjectURL(res);
+      return url;
+    }
+    return null;
   }
 }
 
