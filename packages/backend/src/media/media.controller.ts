@@ -1,8 +1,16 @@
-import { Controller, Delete, Get, Param, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
+import { NeedPermissions } from 'src/permissions/permissions.decorator';
 import { AuthGuard } from '../middlewares/auth.guard';
 import { MediaService } from './media.service';
-import { NeedPermissions } from 'src/permissions/permissions.decorator';
 
 @UseGuards(AuthGuard)
 @Controller('media')
@@ -34,7 +42,8 @@ export class MediaController {
   ): Promise<object> {
     const mediaType: string = req.params.mediaType;
     // eslint-disable-next-line prettier/prettier
-    const data: object = await this.mediaService.getMediasByCategories(mediaType);
+    const data: object =
+      await this.mediaService.getMediasByCategories(mediaType);
     return res.status(200).json({
       categoriesCount: Object.keys(data).length,
       categories: data,

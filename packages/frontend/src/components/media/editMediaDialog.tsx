@@ -39,6 +39,8 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Switch } from "../ui/switch";
+import { useGetPerms } from "@/hooks/useGetPerms";
+import { toast } from "../ui/use-toast";
 
 type EditMediaPopupProps = {
   mediaId: number;
@@ -63,7 +65,7 @@ const EditMediaDialog = ({
 }: EditMediaPopupProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
-  const [mediaCard, setMediaCard] = useState<MediaCard>();
+  const perms = useGetPerms();
 
   const form = useForm<MediaCard>({
     resolver: zodResolver(mediaCardSchema),
@@ -73,6 +75,16 @@ const EditMediaDialog = ({
 
   const handleEditMedia = async (values: MediaCard) => {
     try {
+
+      if (!perms?.includes("edit_media")) {
+        toast({
+          title: "Edit media",
+          description: "You don't have the permission to edit media",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const res: AxiosResponse = await FrontUtilService.patchApi(
         `/mediacard/${values.id}`,
         values
@@ -98,12 +110,11 @@ const EditMediaDialog = ({
   }, []);
 
   const fetchMediaCard = async () => {
-    const mediaCard: MediaCard = await FrontUtilService.getDataFromApi(
+    const card: MediaCard = await FrontUtilService.getDataFromApi(
       `/mediacard/media/${mediaId}`
     );
-    if (mediaCard) {
-      setMediaCard(mediaCard);
-      form.reset(mediaCard);
+    if (card) {
+      form.reset(card);
     }
   };
 
