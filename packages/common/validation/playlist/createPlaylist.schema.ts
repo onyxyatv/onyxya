@@ -5,6 +5,7 @@ import {
 } from '../../schemaConstants';
 
 const visibilityEnum = z.enum(['private', 'public']);
+const playlistType = z.enum(['music', 'movies', 'serie']);
 
 export const createPlaylistSchema = z.object({
   name: z.string().min(playlistNameMinLength, {
@@ -18,7 +19,8 @@ export const createPlaylistSchema = z.object({
   }).max(playlistDescMaxLength, {
     message: `Playlist description must not have more than ${playlistDescMaxLength} characters.`
   }).optional(),
-  visibility: visibilityEnum
+  visibility: visibilityEnum,
+  type: playlistType,
 }).refine((data) => data !== undefined, {
   message: 'Data not found or missing needed keys',
   path: [],

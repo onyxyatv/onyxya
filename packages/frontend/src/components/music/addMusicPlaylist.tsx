@@ -21,7 +21,7 @@ interface AddMusicPlaylistProps {
   playlists: Array<Playlist>;
 }
 
-const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps) => {
+const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps): JSX.Element => {
   const [popupOpened, setPopupOpened] = useState(false);
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
@@ -32,8 +32,9 @@ const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps) => {
     setErrorText('');
   }
 
-  const addToPlaylist = async (playlistId: number) => {
+  const addToPlaylist = async (playlistId: number): Promise<void> => {
     try {
+      // TODO: Change returned value
       if (playlistId === 0 || isNaN(playlistId)) return;
       const values = {
         mediaId: props.musicId,
@@ -45,8 +46,8 @@ const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps) => {
         throw new Error(res.message);
       if (res.status === HttpStatusCode.Ok) props.reloadPlaylists();
     } catch (error: any) {
-      setError('Music add to playlist failed. Please try again');
-      setErrorText(`Error status : ${error.message}`);
+      setError('Adding music to playlist failed');
+      setErrorText(`${error.message ? error.message : 'No more details'}`);
       setTimeout(() => { resetError() }, 4000);
     }
   }

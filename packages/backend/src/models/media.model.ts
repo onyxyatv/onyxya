@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { MediaCard } from './mediacard.model';
-import { MediasPlaylist } from './playlistmedia.model';
+import { MediasPlaylist } from './mediasplaylist.model';
 
 @Entity()
 export class Media {

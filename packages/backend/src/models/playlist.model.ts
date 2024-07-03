@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.model';
-import { MediasPlaylist } from './playlistmedia.model';
+import { MediasPlaylist } from './mediasplaylist.model';
 
 @Entity()
 export class Playlist {

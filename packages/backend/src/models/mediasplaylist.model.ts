@@ -4,6 +4,8 @@ import { Playlist } from './playlist.model';
 
 @Entity()
 export class MediasPlaylist {
+  constructor() {}
+
   @PrimaryGeneratedColumn()
   id: number;
 

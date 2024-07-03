@@ -33,6 +33,7 @@ const NewPlaylistPopup = (props: { reloadPlaylists: any }) => {
       name: "",
       description: "",
       visibility: 'private',
+      type: 'music',
     }
   });
 

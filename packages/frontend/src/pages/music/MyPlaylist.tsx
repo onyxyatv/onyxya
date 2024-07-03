@@ -24,9 +24,9 @@ const MyPlaylist = () => {
 
   const playPlaylist = async (): Promise<void> => {
     const musicsToPlay: Array<string> = [];
-    if (playlist && playlist.medias) {
-      for (const media of playlist.medias) {
-        const musicSrc: string | null = await FrontUtilService.fetchMusic(media.id);
+    if (playlist && playlist.mediasPlaylist) {
+      for (const mediaPlaylist of playlist.mediasPlaylist) {
+        const musicSrc: string | null = await FrontUtilService.fetchMusic(mediaPlaylist.media.id);
         if (musicSrc) musicsToPlay.push(musicSrc);
       }
     }
@@ -79,16 +79,16 @@ const MyPlaylist = () => {
               <div id="MyPlaylistMusicsContainer">
                 <ol className="border-t-2 border-gray-500 mt-4 pt-2 space-y-2">
                   {
-                    playlist.medias.map((music) => {
+                    playlist.mediasPlaylist.map((mediaPlaylist) => {
                       return (
                         <li className="space-x-2 border-2 border-green-500 p-2 flex flex-row items-center">
                           <p>
-                            {music.name}
+                            {mediaPlaylist.media.name}
                           </p>
-                          <Button onClick={() => playMusic(music.id)}>
+                          <Button onClick={() => playMusic(mediaPlaylist.media.id)}>
                             Play
                           </Button>
-                          <Button variant="destructive" onClick={() => playMusic(music.id)}>
+                          <Button variant="destructive" onClick={() => playMusic(mediaPlaylist.media.id)}>
                             Remove
                           </Button>
                         </li>

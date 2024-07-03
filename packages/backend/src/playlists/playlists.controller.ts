@@ -98,7 +98,7 @@ export class PlaylistsController {
     @Res() res: Response,
   ): Promise<Response> {
     const resService: CustomResponse | CustomError =
-      await this.playlistsService.addMusicToPlaylist(addMediaPlaylist);
+      await this.playlistsService.addMediaToPlaylist(addMediaPlaylist);
     return res.status(resService.statusCode).json(resService);
   }
 }

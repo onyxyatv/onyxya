@@ -1,11 +1,18 @@
 import { Media } from "./media";
 import { User } from "./user";
 
+type MediasPlaylist = {
+  id: number;
+  position: number;
+  playlist: Playlist;
+  media: Media;
+}
+
 export type Playlist = {
   id: number;
   name: string;
   desription: string;
   isActive: boolean;
   user: User;
-  medias: Media[];
+  mediasPlaylist: MediasPlaylist[];
 };

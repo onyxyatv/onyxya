@@ -17,6 +17,7 @@ import { User } from 'src/models/user.model';
 import { GetPlaylistBy } from '@common/validation/playlist/getPlaylistBy.schema';
 import { AddMediaPlaylist } from '@common/validation/playlist/addMediaPlaylist.schema';
 import { Media } from 'src/models/media.model';
+import { MediasPlaylist } from 'src/models/mediasplaylist.model';
 
 @Injectable()
 export class PlaylistsService {
@@ -27,8 +28,13 @@ export class PlaylistsService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Media)
     private readonly mediaRepository: Repository<Media>,
+    @InjectRepository(MediasPlaylist)
+    private readonly mediaPlaylistRepo: Repository<MediasPlaylist>,
   ) {}
 
+  /**
+   * @returns an array of all Playlists
+   */
   getAllPlaylists(): Promise<Array<Playlist> | null> {
     try {
       return this.playlistsRepository.find();
@@ -50,6 +56,7 @@ export class PlaylistsService {
     if (checkPlaylist === null) {
       const playlist: Playlist = new Playlist(playlistData.name);
       playlist.user = user;
+      playlist.type = playlistData.type;
       const resDb: Playlist = await this.playlistsRepository.save(playlist);
       if (resDb) return new CreatedResponse();
     }
@@ -80,7 +87,7 @@ export class PlaylistsService {
     if (playlistId !== 0) {
       const playlist: Playlist = await this.playlistsRepository.findOne({
         where: { id: playlistId },
-        relations: { medias: true },
+        relations: ['mediasPlaylist', 'mediasPlaylist.media'],
       });
       if (playlist) return playlist;
     }
@@ -88,7 +95,12 @@ export class PlaylistsService {
     throw new NotFoundError('Playlist not found or missing permissions');
   }
 
-  async addMusicToPlaylist(
+  /**
+   * Add media to a playlist, checking to see if it's already there
+   * @param addMediaPlaylist
+   * @returns CustomResponse or CustomError
+   */
+  async addMediaToPlaylist(
     addMediaPlaylist: AddMediaPlaylist,
   ): Promise<CustomResponse | CustomError> {
     const music: Media = await this.mediaRepository.findOneBy({
@@ -96,17 +108,28 @@ export class PlaylistsService {
     });
     const playlist: Playlist = await this.playlistsRepository.findOne({
       where: { id: addMediaPlaylist.playlistId },
-      relations: { medias: true },
+      relations: ['mediasPlaylist', 'mediasPlaylist.media'],
     });
 
     if (playlist && music) {
-      const playlistsMusicsNames: Array<number> = playlist.medias.map(
-        (music) => music.id,
+      const playlistsMusicsIds: Array<number> = playlist.mediasPlaylist.map(
+        (mediaPlaylist) => mediaPlaylist.media.id,
       );
-      if (playlistsMusicsNames.includes(music.id))
+      if (playlistsMusicsIds.includes(music.id))
         throw new BadRequestError('Playlist already have this music');
-      playlist.medias.push(music);
-      await this.playlistsRepository.save(playlist);
+
+      // { max: null | number } -> to calculate the position of the added media
+      const maxPos = await this.mediaPlaylistRepo
+        .createQueryBuilder('medias_playlist')
+        .select('MAX(id)', 'max')
+        .where('playlistId = :id', { id: playlist.id })
+        .getRawOne();
+
+      const mediaPlaylist: MediasPlaylist = new MediasPlaylist();
+      mediaPlaylist.playlist = playlist;
+      mediaPlaylist.media = music;
+      mediaPlaylist.position = maxPos.max ? maxPos.max + 1 : 1;
+      await this.mediaPlaylistRepo.save(mediaPlaylist);
       return new SuccessResponse();
     }
 
