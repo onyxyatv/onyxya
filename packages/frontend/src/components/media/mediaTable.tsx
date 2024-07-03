@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import FrontUtilService from "@/utils/frontUtilService";
-import { MediaCard } from "@common/validation/media/mediaCard.schema";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -25,7 +24,7 @@ import {
 import { ReactNode, useEffect, useState } from "react";
 import { Media } from "../models/media";
 import DeleteMediaDialog from "./deleteMediaDialog";
-import EditMediaPopop from "./editMedia";
+import EditMediaDialog from "./editMediaDialog";
 import { SyncMediaButton } from "./syncMediaButton";
 
 export function MediaTable() {
@@ -33,8 +32,6 @@ export function MediaTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [popupOpened, setPopupOpened] = useState(false);
-  const [selectedMedia, setSelectedMedia] = useState<MediaCard | null>(null);
 
   const columns: ColumnDef<Media>[] = [
     {
@@ -65,27 +62,12 @@ export function MediaTable() {
           <Button variant="outline" size="sm" className="m-1">
             View
           </Button>
+          <EditMediaDialog mediaId={info.row.original.id} reloadMediaCards={fetchData} />
           <DeleteMediaDialog mediaId={info.row.original.id} />
-          <Button
-            variant="outline"
-            size="sm"
-            className="m-1"
-            onClick={() => openEditDialog(info.row.original.id)}
-          >
-            Edit
-          </Button>
         </div>
       ),
     },
   ];
-
-  const openEditDialog = async (id: number) => {
-    const mediaCard: MediaCard = await FrontUtilService.getDataFromApi(
-      "/mediacard/media/" + id
-    );
-    setSelectedMedia(mediaCard);
-    setPopupOpened(true);
-  };
 
   // TODO: change isLoading gestion and his display
   const fetchData = async () => {
@@ -93,10 +75,6 @@ export function MediaTable() {
     const data = await FrontUtilService.getDataFromApi("/media");
     if (data) setMedias(data);
     setIsLoading(false);
-  };
-
-  const reloadMediaCards = () => {
-    fetchData();
   };
 
   useEffect(() => {
@@ -202,14 +180,6 @@ export function MediaTable() {
           Next
         </Button>
       </div>
-      {selectedMedia && (
-        <EditMediaPopop
-          mediaCard={selectedMedia}
-          reloadMediaCards={reloadMediaCards}
-          isOpen={popupOpened}
-          onClose={() => setPopupOpened(false)}
-        />
-      )}
     </div>
   );
 }

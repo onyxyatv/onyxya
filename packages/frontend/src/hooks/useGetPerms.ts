@@ -3,6 +3,7 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { api_url } from "../../config.json";
 
+// TODO : Fix the multiple requests
 export function useGetPerms(): string[] | null | undefined {
   const { authUser } = useContext(AuthContext) ?? {};
   const [permissions, setPermissions] = useState<string[] | null | undefined>(undefined);

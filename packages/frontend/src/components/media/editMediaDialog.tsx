@@ -4,6 +4,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import FrontUtilService from "@/utils/frontUtilService";
 import {
@@ -40,13 +41,11 @@ import {
 import { Switch } from "../ui/switch";
 
 type EditMediaPopupProps = {
-  mediaCard: MediaCard;
+  mediaId: number;
   reloadMediaCards: () => void;
-  isOpen: boolean;
-  onClose: () => void;
 };
 
-const formatDate = (date) => {
+const formatDate = (date: Date) => {
   const d = new Date(date);
   let month = "" + (d.getMonth() + 1);
   let day = "" + d.getDate();
@@ -58,19 +57,18 @@ const formatDate = (date) => {
   return [year, month, day].join("-");
 };
 
-const EditMediaPopup = ({
-  mediaCard,
+const EditMediaDialog = ({
+  mediaId,
   reloadMediaCards,
-  isOpen,
-  onClose,
 }: EditMediaPopupProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
+  const [mediaCard, setMediaCard] = useState<MediaCard>();
 
   const form = useForm<MediaCard>({
     resolver: zodResolver(mediaCardSchema),
     mode: "onSubmit",
-    defaultValues: mediaCard,
+    defaultValues: {},
   });
 
   const handleEditMedia = async (values: MediaCard) => {
@@ -82,9 +80,9 @@ const EditMediaPopup = ({
       if (res.status === HttpStatusCode.Ok) {
         form.reset();
         reloadMediaCards();
-        onClose();
       }
     } catch (error: any) {
+      console.log(error);
       const errorMessage: string =
         error.response !== undefined
           ? error.response.statusText
@@ -95,11 +93,31 @@ const EditMediaPopup = ({
   };
 
   useEffect(() => {
-    form.reset(mediaCard);
-  }, [form, mediaCard]);
+    fetchMediaCard();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchMediaCard = async () => {
+    const mediaCard: MediaCard = await FrontUtilService.getDataFromApi(
+      `/mediacard/media/${mediaId}`
+    );
+    if (mediaCard) {
+      setMediaCard(mediaCard);
+      form.reset(mediaCard);
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="m-1"
+        >
+          Edit Media
+        </Button>
+      </DialogTrigger>
       <DialogContent className="bg-slate-100">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl">Edit Media</DialogTitle>
@@ -237,7 +255,6 @@ const EditMediaPopup = ({
                       />
                     </div>
 
-                    {/* TODO: Change this form to a shadcn component (a little more difficult to setup for the first time) */}
                     <div className="mt-2">
                       <FormField
                         control={form.control}
@@ -318,4 +335,4 @@ const EditMediaPopup = ({
   );
 };
 
-export default EditMediaPopup;
+export default EditMediaDialog;
