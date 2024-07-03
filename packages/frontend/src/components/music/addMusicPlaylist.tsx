@@ -9,26 +9,28 @@ import {
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { AxiosResponse, HttpStatusCode } from 'axios';
+import { HttpStatusCode } from 'axios';
 import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import FrontUtilService from '@/utils/frontUtilService';
-import useGetPlaylistsBy from '@/hooks/useGetPlaylistsBy';
+import { Playlist } from '../models/playlist';
 
 interface AddMusicPlaylistProps {
   reloadPlaylists: any;
   musicId: number;
-  userId: number;
+  playlists: Array<Playlist>;
 }
 
 const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps) => {
   const [popupOpened, setPopupOpened] = useState(false);
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
-  const [playlists] = useGetPlaylistsBy({
-    userId: props.userId,
-    name: ""
-  });
+  const playlists: Array<Playlist> = props.playlists;
+
+  const resetError = (): void => {
+    setError('');
+    setErrorText('');
+  }
 
   const addToPlaylist = async (playlistId: number) => {
     try {
@@ -37,13 +39,15 @@ const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps) => {
         mediaId: props.musicId,
         playlistId: playlistId,
       };
-      const res: AxiosResponse = await FrontUtilService.postApi(FrontUtilService.addMusicPlaylistEndpoint, values);
+      const res: any = await FrontUtilService.postApi(FrontUtilService.addMusicPlaylistEndpoint, values);
+      
+      if (res.statusCode !== HttpStatusCode.Ok)
+        throw new Error(res.message);
       if (res.status === HttpStatusCode.Ok) props.reloadPlaylists();
-
     } catch (error: any) {
-      const errorMessage: string = (error.response !== undefined) ? error.response.statusText : "No More details";
       setError('Music add to playlist failed. Please try again');
-      setErrorText(`Error status : ${errorMessage}`);
+      setErrorText(`Error status : ${error.message}`);
+      setTimeout(() => { resetError() }, 4000);
     }
   }
 

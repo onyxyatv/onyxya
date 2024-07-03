@@ -1,13 +1,12 @@
 import {
   Column,
   Entity,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.model';
-import { Media } from './media.model';
+import { MediasPlaylist } from './playlistmedia.model';
 
 @Entity()
 export class Playlist {
@@ -30,17 +29,10 @@ export class Playlist {
   @ManyToOne(() => User, (user) => user.playlists)
   user: User;
 
-  @ManyToMany(() => Media, (media) => media.playlists)
-  @JoinTable({
-    name: 'medias_playlist',
-    joinColumn: {
-      name: 'playlist_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'media_id',
-      referencedColumnName: 'id',
-    },
-  })
-  medias: Media[];
+  @OneToMany(() => MediasPlaylist, (playlistMedia) => playlistMedia.playlist)
+  mediasPlaylist: MediasPlaylist[];
+
+  // movies and music playlist
+  @Column({ nullable: false })
+  type: string;
 }

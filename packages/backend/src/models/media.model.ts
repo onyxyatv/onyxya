@@ -2,13 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { MediaCard } from './mediacard.model';
-import { Playlist } from './playlist.model';
+import { MediasPlaylist } from './playlistmedia.model';
 
 @Entity()
 export class Media {
@@ -45,8 +45,8 @@ export class Media {
   @OneToOne(() => MediaCard, (mediaCard) => mediaCard.media)
   mediaCard: MediaCard;
 
-  @ManyToMany(() => Playlist, (playlist) => playlist.medias)
-  playlists: Playlist[];
+  @OneToMany(() => MediasPlaylist, (mediasPlaylist) => mediasPlaylist.media)
+  mediasPlaylist: MediasPlaylist[];
 
   constructor(
     name: string,

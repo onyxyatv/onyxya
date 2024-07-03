@@ -91,7 +91,9 @@ class FrontUtilService {
         return res;
       }
       return null;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response && error.response.data)
+        return error.response.data;
       return null;
     }
   }

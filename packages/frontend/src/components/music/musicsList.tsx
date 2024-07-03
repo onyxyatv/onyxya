@@ -7,6 +7,7 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/
 import AddMusicPlaylistPopup from "./addMusicPlaylist";
 import AuthContext from "@/utils/AuthContext";
 import MusicPlayerContext from "@/utils/MusicPlayerContext";
+import useGetPlaylistsBy from "@/hooks/useGetPlaylistsBy";
 
 interface Music {
   id: number;
@@ -23,6 +24,10 @@ const MusicsLists = () => {
   const [musicsByCategories, setMusics] = useState<MusicCategories>({});
   const [error, setError] = useState('');
   const musicContext = useContext(MusicPlayerContext);
+  const [playlists] = useGetPlaylistsBy({
+    userId: (userId) ? userId : 0,
+    name: ""
+  });
 
   const playMusic = (musicId: number) => {
     if (musicContext?.fetchMusic) {
@@ -86,8 +91,8 @@ const MusicsLists = () => {
                         <CardFooter className="space-x-2">
                           <Button onClick={() => playMusic(music.id)}>Play</Button>
                           <AddMusicPlaylistPopup 
+                            playlists={playlists}
                             reloadPlaylists={null}
-                            userId={(userId) ? userId : 0}
                             musicId={music.id}
                           />
                         </CardFooter>

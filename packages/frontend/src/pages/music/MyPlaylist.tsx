@@ -66,7 +66,7 @@ const MyPlaylist = () => {
             playlist !== null &&
             <div id="MyPlaylistContainer">
               <h2 className="text-xl font-bold">
-                { FrontUtilService.capitalizeString(playlist.name) }
+                {FrontUtilService.capitalizeString(playlist.name)}
               </h2>
               <div className="flex flex-row mt-2 space-x-2">
                 <Button onClick={() => playPlaylist()}>
@@ -77,14 +77,19 @@ const MyPlaylist = () => {
                 </Button>
               </div>
               <div id="MyPlaylistMusicsContainer">
-                <ol>
+                <ol className="border-t-2 border-gray-500 mt-4 pt-2 space-y-2">
                   {
                     playlist.medias.map((music) => {
                       return (
-                        <li>
-                          {music.name}
+                        <li className="space-x-2 border-2 border-green-500 p-2 flex flex-row items-center">
+                          <p>
+                            {music.name}
+                          </p>
                           <Button onClick={() => playMusic(music.id)}>
                             Play
+                          </Button>
+                          <Button variant="destructive" onClick={() => playMusic(music.id)}>
+                            Remove
                           </Button>
                         </li>
                       );
