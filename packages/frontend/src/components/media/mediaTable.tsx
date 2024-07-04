@@ -26,6 +26,7 @@ import { Media } from "../models/media";
 import DeleteMediaDialog from "./deleteMediaDialog";
 import EditMediaDialog from "./editMediaDialog";
 import { SyncMediaButton } from "./syncMediaButton";
+import NewMediaDialog from "./newMediaDialog";
 
 export function MediaTable() {
   const [medias, setMedias] = useState<Array<Media>>([]);
@@ -109,6 +110,7 @@ export function MediaTable() {
           className="max-w-sm"
         />
         <SyncMediaButton onSyncComplete={fetchData} />
+        <NewMediaDialog />
       </div>
       <ScrollArea className="h-[250px] pr-3">
         <Table className="border-2 border-gray-200">

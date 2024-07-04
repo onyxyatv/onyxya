@@ -92,6 +92,12 @@ const EditMediaDialog = ({
       if (res.status === HttpStatusCode.Ok) {
         form.reset();
         reloadMediaCards();
+
+        toast({
+          title: "Media updated",
+          description: "Media has been updated successfully",
+          variant: "default",
+        });
       }
     } catch (error: any) {
       console.log(error);
