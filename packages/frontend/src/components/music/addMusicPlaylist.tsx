@@ -64,6 +64,12 @@ const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps): JSX.Element => {
           <DialogTitle className="text-center text-2xl">Add music to a playlist</DialogTitle>
         </DialogHeader>
         {
+          playlists.length === 0 && 
+          <p className='text-center'>
+            No playlists found
+          </p>
+        }
+        {
           playlists.map((playlist) => {
             return (
               <Card key={playlist.name + '-' + playlist.id}>

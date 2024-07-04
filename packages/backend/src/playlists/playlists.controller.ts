@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -99,6 +100,17 @@ export class PlaylistsController {
   ): Promise<Response> {
     const resService: CustomResponse | CustomError =
       await this.playlistsService.addMediaToPlaylist(addMediaPlaylist);
+    return res.status(resService.statusCode).json(resService);
+  }
+
+  @Delete('/remove')
+  @UsePipes(new ZodValidationPipe(addMediaPlaylistSchema))
+  async removeMediaFromPlaylist(
+    @Body() addMediaPlaylist: AddMediaPlaylist,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const resService: CustomResponse | CustomError =
+      await this.playlistsService.removeMediaFromPlaylist(addMediaPlaylist);
     return res.status(resService.statusCode).json(resService);
   }
 }

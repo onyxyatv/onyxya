@@ -1,5 +1,5 @@
 import { QueryRunner } from 'typeorm';
-import { rolesPermissions } from '../permissions';
+import { rolesPermissions } from '../rolesPermissions';
 
 export class CreateRolesPermissionsDb {
   static async up(queryRunner: QueryRunner): Promise<void> {

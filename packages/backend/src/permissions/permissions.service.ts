@@ -3,15 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Permission } from 'src/models/permission.model';
 import { User } from 'src/models/user.model';
 import { QueryRunner, Repository } from 'typeorm';
-import { permissions, rolesPermissions } from 'src/db/permissions';
+import { permissions } from 'src/db/permissions';
+import { rolesPermissions } from 'src/db/rolesPermissions';
 import { Role } from 'src/models/role.model';
-import { CreateRoleDb } from 'src/db/migrations/createRoles.db';
+import { CreateRoleDb } from 'src/db/inits/createRoles.db';
 import {
   BadRequestError,
   CustomError,
   NotFoundError,
 } from '@common/errors/CustomError';
-import { CreateRolesPermissionsDb } from 'src/db/migrations/createRolesPermissions.db';
+import { CreateRolesPermissionsDb } from 'src/db/inits/createRolesPermissions.db';
 import { AddUserPerm } from '@common/validation/permissions/addUserPerm.schema';
 import {
   CustomResponse,

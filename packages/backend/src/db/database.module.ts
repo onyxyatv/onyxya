@@ -25,7 +25,7 @@ import { MediasPlaylist } from 'src/models/mediasplaylist.model';
         Playlist,
         MediasPlaylist,
       ],
-      migrations: [],
+      //migrations: [],
       synchronize: syncDbStatus,
       migrationsRun: migrationRunStatus,
     }),

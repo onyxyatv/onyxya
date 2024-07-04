@@ -13,9 +13,9 @@ import { PLaylistsModule } from './playlists/playlists.module';
 @Module({
   imports: [
     DatabaseModule,
+    PermissionsModule,
     UsersModule,
     MediaCardModule,
-    PermissionsModule,
     MediaModule,
     MediaPathModule,
     PLaylistsModule,

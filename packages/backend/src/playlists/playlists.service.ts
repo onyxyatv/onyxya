@@ -135,4 +135,22 @@ export class PlaylistsService {
 
     throw new NotFoundError('Playlist or Music not found');
   }
+
+  async removeMediaFromPlaylist(
+    addMediaPlaylist: AddMediaPlaylist,
+  ): Promise<CustomResponse | CustomError> {
+    const mediaPlaylist: MediasPlaylist = await this.mediaPlaylistRepo
+      .createQueryBuilder('medias_playlist')
+      .select('*')
+      .where('playlist_id = :playlistId AND media_id = :mediaId', {
+        mediaId: addMediaPlaylist.mediaId,
+        playlistId: addMediaPlaylist.playlistId,
+      })
+      .getRawOne();
+    console.log(mediaPlaylist);
+    if (mediaPlaylist) {
+      await this.mediaPlaylistRepo.remove(mediaPlaylist);
+    }
+    throw new NotFoundError('Playlist or Music not found');
+  }
 }

@@ -65,13 +65,19 @@ const MyPlaylist = () => {
           {
             playlist !== null &&
             <div id="MyPlaylistContainer">
-              <h2 className="text-xl font-bold">
+              <h2 className="text-2xl font-bold">
                 {FrontUtilService.capitalizeString(playlist.name)}
               </h2>
+              <p>
+                {playlist.mediasPlaylist.length} music(s)
+              </p>
               <div className="flex flex-row mt-2 space-x-2">
-                <Button onClick={() => playPlaylist()}>
-                  Play
-                </Button>
+                {
+                  playlist.mediasPlaylist.length > 0 &&
+                  <Button onClick={() => playPlaylist()}>
+                    Play
+                  </Button>
+                }
                 <Button variant="destructive">
                   Delete Playlist
                 </Button>
