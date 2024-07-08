@@ -1,7 +1,7 @@
 import Header from "@/components/header/header";
 import { Playlist } from "@/components/models/playlist";
 import MusicsPlaylistMenu from "@/components/music/musicsPlaylistMenu";
-import { playlistMusicsCols } from "@/components/playlists/playlistMusicsCols";
+import playlistMusicsCols from "@/components/playlists/playlistMusicsCols";
 import { PlaylistMusicsTable } from "@/components/playlists/playlistMusicsTable";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,11 @@ const MyPlaylist = () => {
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const setPlaylistsMusics = useContext(MusicPlayerContext)?.setPlaylistsMusics;
   const setPlaylistMode = useContext(MusicPlayerContext)?.setPlaylistMode;
+  const fetchMusic = useContext(MusicPlayerContext)?.fetchMusic;
+
+  const playMusic = (musicId: number): void => {
+    if (fetchMusic) fetchMusic(musicId);
+  }
 
   const playPlaylist = async (): Promise<void> => {
     const musicsToPlay: Array<string> = [];
@@ -80,7 +85,10 @@ const MyPlaylist = () => {
                 </Button>
               </div>
               <div id="MyPlaylistMusicsContainer">
-                <PlaylistMusicsTable columns={playlistMusicsCols} data={playlist.mediasPlaylist} />
+                <PlaylistMusicsTable 
+                  columns={playlistMusicsCols({playMusic: playMusic})} 
+                  data={playlist.mediasPlaylist} 
+                />
               </div>
             </div>
           }

@@ -30,11 +30,6 @@ export function PlaylistMusicsTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const fetchMusic = useContext(MusicPlayerContext)?.fetchMusic;
-  
-  const playMusic = (musicId: number): void => {
-    if (fetchMusic) fetchMusic(musicId);
-  }
 
   const table = useReactTable({
     data,
@@ -56,9 +51,9 @@ export function PlaylistMusicsTable<TData, TValue>({
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter by name"
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("mediaName")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("mediaName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
