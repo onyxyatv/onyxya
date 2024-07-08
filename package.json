@@ -4,5 +4,8 @@
     "packages/frontend",
     "packages/backend",
     "packages/common"
-  ]
+  ],
+  "dependencies": {
+    "file-type": "^19.0.0"
+  }
 }
