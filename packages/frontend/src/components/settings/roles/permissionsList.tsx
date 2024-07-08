@@ -52,8 +52,7 @@ const PermissionsList = (props: { role: any; }) => {
               <TableRow>
                 <TableCell className="font-medium">{permission.name}</TableCell>
                 <TableCell>{permission.description}</TableCell>
-                <TableCell>{(permission.isActive) ?
-                  <BadgeCheck className="ml-2" color="#2ec27e" /> : <X />}</TableCell>
+                <TableCell><BadgeCheck className="ml-2" color="#2ec27e" /> </TableCell>
               </TableRow>
             );
           })

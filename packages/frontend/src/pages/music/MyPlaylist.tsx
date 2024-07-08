@@ -1,6 +1,8 @@
 import Header from "@/components/header/header";
 import { Playlist } from "@/components/models/playlist";
 import MusicsPlaylistMenu from "@/components/music/musicsPlaylistMenu";
+import { playlistMusicsCols } from "@/components/playlists/playlistMusicsCols";
+import { PlaylistMusicsTable } from "@/components/playlists/playlistMusicsTable";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import MusicPlayerContext from "@/utils/MusicPlayerContext";
@@ -14,13 +16,8 @@ const MyPlaylist = () => {
   const { id }: any = useParams();
   const navigate = useNavigate();
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
-  const fetchMusic = useContext(MusicPlayerContext)?.fetchMusic;
   const setPlaylistsMusics = useContext(MusicPlayerContext)?.setPlaylistsMusics;
   const setPlaylistMode = useContext(MusicPlayerContext)?.setPlaylistMode;
-
-  const playMusic = (musicId: number): void => {
-    if (fetchMusic) fetchMusic(musicId);
-  }
 
   const playPlaylist = async (): Promise<void> => {
     const musicsToPlay: Array<string> = [];
@@ -83,25 +80,7 @@ const MyPlaylist = () => {
                 </Button>
               </div>
               <div id="MyPlaylistMusicsContainer">
-                <ol className="border-t-2 border-gray-500 mt-4 pt-2 space-y-2">
-                  {
-                    playlist.mediasPlaylist.map((mediaPlaylist) => {
-                      return (
-                        <li className="space-x-2 border-2 border-green-500 p-2 flex flex-row items-center">
-                          <p>
-                            {mediaPlaylist.media.name}
-                          </p>
-                          <Button onClick={() => playMusic(mediaPlaylist.media.id)}>
-                            Play
-                          </Button>
-                          <Button variant="destructive" onClick={() => playMusic(mediaPlaylist.media.id)}>
-                            Remove
-                          </Button>
-                        </li>
-                      );
-                    })
-                  }
-                </ol>
+                <PlaylistMusicsTable columns={playlistMusicsCols} data={playlist.mediasPlaylist} />
               </div>
             </div>
           }

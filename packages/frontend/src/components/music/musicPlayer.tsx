@@ -1,5 +1,5 @@
 import MusicPlayerContext from "@/utils/MusicPlayerContext";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 
@@ -9,6 +9,7 @@ const MusicPlayer = () => {
   const [visibility, setVisibility] = useState(false);
   const [currentMusic, setCurrentMusic] = useState(0);
   const playlist = useContext(MusicPlayerContext)?.playlist;
+  const refPlayer = useRef<AudioPlayer>(null);
 
   const handleClickNext = () => {
     if (playlist) {
@@ -18,12 +19,30 @@ const MusicPlayer = () => {
     }
   };
 
+  const handleClickPrevious = () => {
+    if (playlist) {
+      const previous = currentMusic > 0 ? currentMusic - 1 : 0;
+      setCurrentMusic(previous);
+      const audio = refPlayer.current?.audio.current;
+      if (!previous && audio) {
+        console.log('ee');
+        audio.currentTime = 0;
+        audio.play();
+      }
+    }
+  };
+
   const handleEnd = () => {
     if (playlist) {
       setCurrentMusic((currentMusic) =>
         currentMusic < playlist.length - 1 ? currentMusic + 1 : 0
       );
     }
+  }
+
+  const handleOnPlay = (e: object) => {
+    console.log(e);
+    console.log(refPlayer.current);
   }
 
   useEffect(() => {
@@ -41,8 +60,12 @@ const MusicPlayer = () => {
           volume={0.5}
           onEnded={isPlaylist ? handleEnd : undefined}
           showSkipControls={isPlaylist ? true : false}
+          onClickPrevious={isPlaylist ? handleClickPrevious : undefined}
           onClickNext={isPlaylist ? handleClickNext : undefined}
-          onPlay={(e) => console.log("onPlay", e)}
+          onPlay={(e) => handleOnPlay(e)}
+          showFilledProgress={true}
+          autoPlayAfterSrcChange={true}
+          ref={refPlayer}
         />
       </div>
     </section>

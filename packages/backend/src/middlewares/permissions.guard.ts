@@ -1,6 +1,6 @@
 import {
   ForbiddenError,
-  InternalServerError,
+  //InternalServerError,
   UnauthorizedError,
 } from '@common/errors/CustomError';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
@@ -31,9 +31,10 @@ export class PermissionsGuard implements CanActivate {
 
       const fetchUserPerms = async (): Promise<boolean> => {
         if (needPermissions === undefined) {
-          throw new InternalServerError(
+          return true;
+          /*throw new InternalServerError(
             'Server Error : Permission needed not found',
-          );
+          );*/
         }
 
         const userPermissions: Permission[] =

@@ -1,8 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import useGetPlaylistsBy from "@/hooks/useGetPlaylistsBy";
 import NewPlaylistPopup from "./newPlaylist";
-import { Button } from "../ui/button";
-import { Play } from "lucide-react";
 import AuthContext from "@/utils/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -45,9 +43,6 @@ const MusicsPlaylistMenu = () => {
                 <div key={`playlist-${playlist.name}`} onClick={() => selectPlaylist(playlist.id)}
                   className="flex justify-between w-full flex-row hover:cursor-pointer hover:bg-gray-300 p-2 rounded-sm">
                   <h5>{playlist.name}</h5>
-                  <Button variant="default">
-                    <Play />
-                  </Button>
                 </div>
               );
             })

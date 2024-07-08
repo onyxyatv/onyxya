@@ -1,7 +1,7 @@
 import { Media } from "./media";
 import { User } from "./user";
 
-type MediasPlaylist = {
+export type MediasPlaylist = {
   id: number;
   position: number;
   playlist: Playlist;
