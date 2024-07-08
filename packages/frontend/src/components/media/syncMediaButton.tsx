@@ -8,7 +8,7 @@ type SyncMediaButtonProps = {
 export const SyncMediaButton = ({ onSyncComplete }: SyncMediaButtonProps): JSX.Element => {
 
   function syncMedia() {
-    FrontUtilService.getDataFromApi("/media/sync/music");
+    FrontUtilService.getDataFromApi("/media/sync");
   }
 
   return (

@@ -18,6 +18,8 @@ import { basename, extname } from 'path';
 import { AuthGuard } from 'src/middlewares/auth.guard';
 import { NeedPermissions } from 'src/permissions/permissions.decorator';
 import { MediaService } from './media.service';
+import { PermissionsGuard } from 'src/middlewares/permissions.guard';
+import { Permissions } from 'src/db/permissions';
 
 const fileFilter = (req, file, cb) => {
   // Vérification du type de fichier
@@ -62,21 +64,25 @@ const fileFilter = (req, file, cb) => {
   cb(null, true);
 };
 
-@UseGuards(AuthGuard)
+// TODO: Change every permissions to the correct ones
+@UseGuards(AuthGuard, PermissionsGuard)
 @Controller('media')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
+  @NeedPermissions(Permissions.ReadMedias)
   @Get()
   async findAll() {
     return this.mediaService.findAll();
   }
 
-  @Get('sync/music')
+  @NeedPermissions(Permissions.ReadMedias)
+  @Get('sync')
   async syncMedia(): Promise<object> {
     return this.mediaService.syncMedia();
   }
 
+  @NeedPermissions(Permissions.ReadMedias)
   @Get('getFile/:fileId')
   async getFile(@Req() req: Request, @Res() res: Response): Promise<void> {
     const fileId: number = Number.parseInt(req.params.fileId);
@@ -85,6 +91,7 @@ export class MediaController {
     return res.status(data.statusCode).sendFile(data.file);
   }
 
+  @NeedPermissions(Permissions.ReadMedias)
   @Get(':mediaType/byCategories')
   async getMediasByCategories(
     @Req() req: Request,
@@ -99,7 +106,7 @@ export class MediaController {
     });
   }
 
-  @NeedPermissions('delete_media')
+  @NeedPermissions(Permissions.DeleteMedia)
   @Delete(':id')
   async deleteMedia(
     @Param('id') id: string,
@@ -110,19 +117,19 @@ export class MediaController {
     return res.status(data.statusCode).json({ message: data.message });
   }
 
+  @NeedPermissions(Permissions.UploadMedia)
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
         destination: (req, file, cb) => {
-          // Déterminer le dossier de destination en fonction du type de fichier
           let uploadPath = '';
           if (
             ['audio/mpeg', 'audio/mp3', 'audio/wav'].includes(file.mimetype)
           ) {
-            uploadPath = './music';
+            uploadPath = '/home/node/media/music';
           } else if (file.mimetype === 'video/mp4') {
-            uploadPath = './movies';
+            uploadPath = '/home/node/media/movies';
           }
           cb(null, uploadPath);
         },
