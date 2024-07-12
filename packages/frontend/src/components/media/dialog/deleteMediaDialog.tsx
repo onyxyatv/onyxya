@@ -1,6 +1,7 @@
-import { useGetPerms } from "@/hooks/useGetPerms";
+import AuthContext from "@/utils/AuthContext";
 import FrontUtilService from "@/utils/frontUtilService";
 import { AxiosResponse, HttpStatusCode } from "axios";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
@@ -25,7 +26,7 @@ const DeleteMediaDialog = ({
   onMediaDeleted,
 }: DeleteMediaDialogProps) => {
   const navigate = useNavigate();
-  const perms = useGetPerms();
+  const perms = useContext(AuthContext)?.authUser?.permissions;
 
   const confirmDeleteMedia = async (): Promise<void> => {
     try {

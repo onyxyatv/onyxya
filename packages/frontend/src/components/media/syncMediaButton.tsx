@@ -3,9 +3,10 @@ import FrontUtilService from "@/utils/frontUtilService";
 
 type SyncMediaButtonProps = {
   onSyncComplete: () => void;
+  children?: React.ReactNode;
 };
 
-export const SyncMediaButton = ({ onSyncComplete }: SyncMediaButtonProps): JSX.Element => {
+export const SyncMediaButton = ({ onSyncComplete, children }: SyncMediaButtonProps): JSX.Element => {
 
   function syncMedia() {
     FrontUtilService.getDataFromApi("/media/sync");
@@ -21,7 +22,7 @@ export const SyncMediaButton = ({ onSyncComplete }: SyncMediaButtonProps): JSX.E
         onSyncComplete();
       }}
     >
-      Sync Media
+      {children || "Sync Media"}
     </Button>
   );
 };

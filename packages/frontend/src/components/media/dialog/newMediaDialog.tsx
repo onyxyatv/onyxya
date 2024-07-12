@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "../../ui/alert-dialog";
 import { Button } from "../../ui/button";
+import { Input } from "@/components/ui/input";
 
 type NewMediaDialogProps = {
   onMediaAdded?: () => void;
@@ -30,7 +31,6 @@ const NewMediaDialog = ({ onMediaAdded }: NewMediaDialogProps) => {
 
   const handleSubmit = async () => {
     try {
-      console.log(file);
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
@@ -45,11 +45,21 @@ const NewMediaDialog = ({ onMediaAdded }: NewMediaDialogProps) => {
             onMediaAdded();
           }
         } else {
-          console.error("Error while uploading media");
+          console.error("Failed to upload media");
+          toast({
+            title: "Media upload failed",
+            description: "Failed to upload media",
+            variant: "destructive",
+          });
         }
       }
     } catch (error) {
       console.error("Error while uploading media", error);
+      toast({
+        title: "Media upload failed",
+        description: `Failed to upload media ${error}`,
+        variant: "destructive",
+      });
     }
   };
 
@@ -57,8 +67,7 @@ const NewMediaDialog = ({ onMediaAdded }: NewMediaDialogProps) => {
     <AlertDialog>
       <AlertDialogTrigger>
         <Button
-          variant="destructive"
-          className="bg-white text-red-600 border-2 border-red-600 hover:text-white"
+          variant="default"
         >
           Add media
         </Button>
@@ -68,7 +77,9 @@ const NewMediaDialog = ({ onMediaAdded }: NewMediaDialogProps) => {
           <AlertDialogTitle>Add media</AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogDescription>
-          <input type="file" onChange={handleFileChange} />
+          <div>
+            <Input type="file" onChange={handleFileChange}/>
+          </div>
         </AlertDialogDescription>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>

@@ -112,7 +112,7 @@ export function MediaTable() {
           }
           className="max-w-sm"
         />
-        <SyncMediaButton onSyncComplete={fetchData} />
+        <SyncMediaButton onSyncComplete={fetchData}>Sync Media</SyncMediaButton>
         <NewMediaDialog onMediaAdded={fetchData}/>
       </div>
       <ScrollArea className="h-[250px] pr-3">
