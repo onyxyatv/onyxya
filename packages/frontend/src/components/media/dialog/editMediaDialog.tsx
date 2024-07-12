@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useGetPerms } from "@/hooks/useGetPerms";
 import FrontUtilService from "@/utils/frontUtilService";
 import {
   MediaCard,
@@ -18,9 +19,9 @@ import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader } from "../ui/card";
+import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardDescription, CardHeader } from "../../ui/card";
 import {
   Form,
   FormControl,
@@ -29,22 +30,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
+} from "../../ui/form";
+import { Input } from "../../ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { Switch } from "../ui/switch";
-import { useGetPerms } from "@/hooks/useGetPerms";
-import { toast } from "../ui/use-toast";
+} from "../../ui/select";
+import { Switch } from "../../ui/switch";
+import { toast } from "../../ui/use-toast";
 
 type EditMediaPopupProps = {
   mediaId: number;
-  reloadMediaCards: () => void;
+  onUpdate?: () => void;
 };
 
 const formatDate = (date: Date) => {
@@ -59,10 +59,7 @@ const formatDate = (date: Date) => {
   return [year, month, day].join("-");
 };
 
-const EditMediaDialog = ({
-  mediaId,
-  reloadMediaCards,
-}: EditMediaPopupProps) => {
+const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
   const perms = useGetPerms();
@@ -75,7 +72,6 @@ const EditMediaDialog = ({
 
   const handleEditMedia = async (values: MediaCard) => {
     try {
-
       if (!perms?.includes("edit_media")) {
         toast({
           title: "Edit media",
@@ -91,7 +87,9 @@ const EditMediaDialog = ({
       );
       if (res.status === HttpStatusCode.Ok) {
         form.reset();
-        reloadMediaCards();
+        if (onUpdate) {
+          onUpdate();
+        }
 
         toast({
           title: "Media updated",
@@ -112,7 +110,7 @@ const EditMediaDialog = ({
 
   useEffect(() => {
     fetchMediaCard();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchMediaCard = async () => {
@@ -127,11 +125,7 @@ const EditMediaDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="m-1"
-        >
+        <Button variant="outline" size="sm" className="m-1">
           Edit Media
         </Button>
       </DialogTrigger>

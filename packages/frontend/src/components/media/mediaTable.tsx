@@ -23,10 +23,10 @@ import {
 } from "@tanstack/react-table";
 import { ReactNode, useEffect, useState } from "react";
 import { Media } from "../models/media";
-import DeleteMediaDialog from "./deleteMediaDialog";
-import EditMediaDialog from "./editMediaDialog";
+import DeleteMediaDialog from "./dialog/deleteMediaDialog";
+import NewMediaDialog from "./dialog/newMediaDialog";
+import EditMediaDialog from "./dialog/editMediaDialog";
 import { SyncMediaButton } from "./syncMediaButton";
-import NewMediaDialog from "./newMediaDialog";
 
 export function MediaTable() {
   const [medias, setMedias] = useState<Array<Media>>([]);
@@ -63,7 +63,10 @@ export function MediaTable() {
           <Button variant="outline" size="sm" className="m-1">
             View
           </Button>
-          <EditMediaDialog mediaId={info.row.original.id} reloadMediaCards={fetchData} />
+          <EditMediaDialog
+            mediaId={info.row.original.id}
+            onUpdate={fetchData}
+          />
           <DeleteMediaDialog mediaId={info.row.original.id} />
         </div>
       ),
@@ -110,7 +113,7 @@ export function MediaTable() {
           className="max-w-sm"
         />
         <SyncMediaButton onSyncComplete={fetchData} />
-        <NewMediaDialog />
+        <NewMediaDialog onMediaAdded={fetchData}/>
       </div>
       <ScrollArea className="h-[250px] pr-3">
         <Table className="border-2 border-gray-200">

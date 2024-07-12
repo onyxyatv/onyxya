@@ -1,18 +1,21 @@
 import AuthContext from "@/utils/AuthContext";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { api_url } from "../../config.json";
 
 // TODO : Fix the multiple requests
 export function useGetPerms(): string[] | null | undefined {
   const { authUser } = useContext(AuthContext) ?? {};
-  const [permissions, setPermissions] = useState<string[] | null | undefined>(undefined);
+  const [permissions, setPermissions] = useState<string[] | null | undefined>(
+    undefined
+  );
   const token = localStorage.getItem("onyxyaToken");
+  const hasFetchedPermissions = useRef(false);
 
   useEffect(() => {
-    if (authUser?.id && token) {
+    if (authUser?.id && token && !hasFetchedPermissions.current) {
       getPermissions(authUser.id, token);
-    } else {
+    } else if (!authUser?.id || !token) {
       setPermissions(null);
     }
   }, [authUser, token]);
@@ -31,6 +34,7 @@ export function useGetPerms(): string[] | null | undefined {
         .map((perm: any) => perm.name);
 
       setPermissions(activePermissions);
+      hasFetchedPermissions.current = true;
     } catch (error: any) {
       console.error(error);
       setPermissions(null);

@@ -82,7 +82,6 @@ export class MediaCardController {
     @Body() body: any,
   ): Promise<Response> {
     const id = req.params.id;
-    console.log('controller : ', body);
     const updatedMediaCard: MediaCard =
       await this.mediaCardService.updateMediaCard(id, body);
     return res.status(200).json(updatedMediaCard);

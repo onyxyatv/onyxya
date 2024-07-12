@@ -11,11 +11,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../ui/alert-dialog";
-import { Button } from "../ui/button";
-import { toast } from "../ui/use-toast";
+} from "../../ui/alert-dialog";
+import { Button } from "../../ui/button";
+import { toast } from "../../ui/use-toast";
 
-const DeleteMediaDialog = (props: { mediaId: number }) => {
+type DeleteMediaDialogProps = {
+  mediaId: number;
+  onMediaDeleted?: () => void;
+};
+
+const DeleteMediaDialog = ({
+  mediaId,
+  onMediaDeleted,
+}: DeleteMediaDialogProps) => {
   const navigate = useNavigate();
   const perms = useGetPerms();
 
@@ -27,10 +35,13 @@ const DeleteMediaDialog = (props: { mediaId: number }) => {
           description: "You don't have the permission to delete media",
           variant: "destructive",
         });
+        if (onMediaDeleted) {
+          onMediaDeleted();
+        }
         return;
       }
 
-      const endpoint = `/media/${props.mediaId}`;
+      const endpoint = `/media/${mediaId}`;
       const res: AxiosResponse = await FrontUtilService.deleteApi(endpoint);
 
       if (res.status === HttpStatusCode.Ok) {
@@ -63,7 +74,7 @@ const DeleteMediaDialog = (props: { mediaId: number }) => {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center">
-            Are you sure to delete media #{props.mediaId}
+            Are you sure to delete media #{mediaId}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-center">
             This action cannot be undone. This will permanently delete the
