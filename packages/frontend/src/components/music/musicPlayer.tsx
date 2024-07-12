@@ -2,6 +2,15 @@ import MusicPlayerContext from "@/utils/MusicPlayerContext";
 import { useContext, useEffect, useRef, useState } from "react";
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
+import ExtendedMusicPlayer from "./extendedMusicPlayer";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const MusicPlayer = () => {
   const music = useContext(MusicPlayerContext)?.music;
@@ -46,17 +55,17 @@ const MusicPlayer = () => {
   }
 
   useEffect(() => {
-    if (music && music.length > 0) setVisibility(true);
+    if (music && music.src.length > 0) setVisibility(true);
     if (playlist && playlist.length > 0) setVisibility(true);
   }, [music, playlist, isPlaylist]);
 
   return (
     (visibility && (music !== null || (playlist && isPlaylist))) &&
-    <section className="bg-blue-400 p-2 flex flex-row fixed bottom-0 w-full justify-center" >
+    <section className="bg-blue-400 p-2 flex flex-row fixed bottom-0 w-full justify-between">
       <div className="w-10/12">
         <AudioPlayer
           autoPlay={true}
-          src={(isPlaylist && playlist) ? playlist[currentMusic] : (music) ? music : undefined}
+          src={(isPlaylist && playlist) ? playlist[currentMusic] : (music?.src) ? music.src : undefined}
           volume={0.5}
           onEnded={isPlaylist ? handleEnd : undefined}
           showSkipControls={isPlaylist ? true : false}
@@ -68,6 +77,18 @@ const MusicPlayer = () => {
           ref={refPlayer}
         />
       </div>
+      <Sheet>
+        <SheetTrigger>Open</SheetTrigger>
+        <SheetContent side="bottom">
+          <SheetHeader>
+            <SheetTitle>Titre de la musique</SheetTitle>
+            <SheetDescription>
+              Description de la musique
+            </SheetDescription>
+          </SheetHeader>
+          <ExtendedMusicPlayer currentMusicTime={refPlayer.current?.audio.current?.currentTime} />
+        </SheetContent>
+      </Sheet>
     </section>
   );
 };

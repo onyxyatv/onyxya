@@ -1,8 +1,13 @@
 import { FC, ReactNode, createContext, useState } from "react";
 import FrontUtilService from "./frontUtilService";
 
+interface MusicPlayed {
+  mediaId: number;
+  src: string;
+}
+
 interface MusicPlayerContextT {
-  music: string | null;
+  music: MusicPlayed | null;
   fetchMusic: (musicId: number) => void;
   isLoading: boolean;
   isPlaylist: boolean;
@@ -19,7 +24,7 @@ interface MusicPlayerProps {
 const MusicPlayerContext = createContext<MusicPlayerContextT | undefined>(undefined);
 
 export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
-  const [music, setMusic] = useState<string | null>(null);
+  const [music, setMusic] = useState<MusicPlayed | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPlaylist, setIsPlaylist] = useState(false);
   const [playlist, setPlaylist] = useState<Array<string>>([]);
@@ -31,7 +36,10 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
     const res: Blob = await FrontUtilService.getBlobFromApi(endpoint);
     if (res.size > 0) {
       const url = URL.createObjectURL(res);
-      setMusic(url);
+      setMusic({
+        mediaId: musicId,
+        src: url
+      });
     }
     setIsLoading(false);
   };

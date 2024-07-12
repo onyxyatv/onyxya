@@ -1,7 +1,6 @@
 import {
   flexRender,
   getCoreRowModel, useReactTable,
-  getPaginationRowModel,
   SortingState,
   getSortedRowModel,
   ColumnFiltersState,
@@ -13,11 +12,12 @@ import {
   TableCell, TableHead,
   TableHeader, TableRow,
 } from "@/components/ui/table";
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "../ui/button";
-import MusicPlayerContext from "@/utils/MusicPlayerContext";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { SortableItem } from "./sortableMusic";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -28,6 +28,7 @@ export function PlaylistMusicsTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [items, setItems] = useState([1, 2, 3]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -35,7 +36,6 @@ export function PlaylistMusicsTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
@@ -46,8 +46,41 @@ export function PlaylistMusicsTable<TData, TValue>({
     }
   });
 
+  function handleDragEnd(event: any) {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setItems((items) => {
+        const oldIndex = items.indexOf(active.id);
+        const newIndex = items.indexOf(over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   return (
     <div className="rounded-md border p-2 mt-2">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={items}
+          strategy={verticalListSortingStrategy}
+        >
+          {items.map(id => <SortableItem className="border-2 border-green-500 mt-2" value={id} handle key={id} id={id} />)}
+        </SortableContext>
+      </DndContext>
+      { /* Search by name input */}
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter by name"
@@ -58,8 +91,9 @@ export function PlaylistMusicsTable<TData, TValue>({
           className="max-w-sm"
         />
       </div>
-      <ScrollArea className="h-[250px] pr-3">
+      <ScrollArea className="h-[350px] pr-3">
         <Table className="border-2 border-gray-200">
+          { /* Columns header */}
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -78,6 +112,7 @@ export function PlaylistMusicsTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
+          { /* Musics list  */}
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -102,16 +137,6 @@ export function PlaylistMusicsTable<TData, TValue>({
           </TableBody>
         </Table>
       </ScrollArea>
-      <div className="flex items-center justify-end mr-3 space-x-2 mt-2">
-        <Button variant="outline" size="sm"
-          onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-          Previous
-        </Button>
-        <Button variant="outline" size="sm"
-          onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-          Next
-        </Button>
-      </div>
     </div>
   )
 }
