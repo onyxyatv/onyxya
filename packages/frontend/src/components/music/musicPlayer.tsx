@@ -19,6 +19,7 @@ const MusicPlayer = () => {
   const [currentMusic, setCurrentMusic] = useState(0);
   const playlist = useContext(MusicPlayerContext)?.playlist;
   const refPlayer = useRef<AudioPlayer>(null);
+  const [isPaused, setPaused] = useState(false);
 
   const handleClickNext = () => {
     if (playlist) {
@@ -51,7 +52,7 @@ const MusicPlayer = () => {
 
   const handleOnPlay = (e: object) => {
     console.log(e);
-    console.log(refPlayer.current);
+    setPaused(false);
   }
 
   useEffect(() => {
@@ -72,6 +73,7 @@ const MusicPlayer = () => {
           onClickPrevious={isPlaylist ? handleClickPrevious : undefined}
           onClickNext={isPlaylist ? handleClickNext : undefined}
           onPlay={(e) => handleOnPlay(e)}
+          onPause={() => setPaused(true)}
           showFilledProgress={true}
           autoPlayAfterSrcChange={true}
           ref={refPlayer}
@@ -86,7 +88,10 @@ const MusicPlayer = () => {
               Description de la musique
             </SheetDescription>
           </SheetHeader>
-          <ExtendedMusicPlayer currentMusicTime={refPlayer.current?.audio.current?.currentTime} />
+          <ExtendedMusicPlayer 
+            currentMusicTime={refPlayer.current?.audio.current?.currentTime} 
+            isPaused={isPaused}
+          />
         </SheetContent>
       </Sheet>
     </section>
