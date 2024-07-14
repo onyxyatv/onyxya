@@ -4,7 +4,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
+import { useGetPerms } from "@/hooks/useGetPerms";
 import FrontUtilService from "@/utils/frontUtilService";
 import {
   MediaCard,
@@ -17,9 +19,9 @@ import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader } from "../ui/card";
+import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardDescription, CardHeader } from "../../ui/card";
 import {
   Form,
   FormControl,
@@ -28,50 +30,75 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
+} from "../../ui/form";
+import { Input } from "../../ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "../../ui/select";
+import { Switch } from "../../ui/switch";
+import { toast } from "../../ui/use-toast";
 
 type EditMediaPopupProps = {
-  mediaCard: MediaCard;
-  reloadMediaCards: () => void;
-  isOpen: boolean;
-  onClose: () => void;
+  mediaId: number;
+  onUpdate?: () => void;
 };
 
-const EditMediaPopup = ({
-  mediaCard,
-  reloadMediaCards,
-  isOpen,
-  onClose,
-}: EditMediaPopupProps) => {
+const formatDate = (date: Date) => {
+  const d = new Date(date);
+  let month = "" + (d.getMonth() + 1);
+  let day = "" + d.getDate();
+  const year = d.getFullYear();
+
+  if (month.length < 2) month = "0" + month;
+  if (day.length < 2) day = "0" + day;
+
+  return [year, month, day].join("-");
+};
+
+const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
+  const perms = useGetPerms();
 
   const form = useForm<MediaCard>({
     resolver: zodResolver(mediaCardSchema),
     mode: "onSubmit",
-    defaultValues: mediaCard,
+    defaultValues: {},
   });
 
   const handleEditMedia = async (values: MediaCard) => {
     try {
+      if (!perms?.includes("edit_media")) {
+        toast({
+          title: "Edit media",
+          description: "You don't have the permission to edit media",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const res: AxiosResponse = await FrontUtilService.patchApi(
         `/mediacard/${values.id}`,
         values
       );
       if (res.status === HttpStatusCode.Ok) {
         form.reset();
-        reloadMediaCards();
-        onClose();
+        if (onUpdate) {
+          onUpdate();
+        }
+
+        toast({
+          title: "Media updated",
+          description: "Media has been updated successfully",
+          variant: "default",
+        });
       }
     } catch (error: any) {
+      console.log(error);
       const errorMessage: string =
         error.response !== undefined
           ? error.response.statusText
@@ -82,11 +109,26 @@ const EditMediaPopup = ({
   };
 
   useEffect(() => {
-    form.reset(mediaCard);
-  }, [form, mediaCard]);
+    fetchMediaCard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchMediaCard = async () => {
+    const card: MediaCard = await FrontUtilService.getDataFromApi(
+      `/mediacard/media/${mediaId}`
+    );
+    if (card) {
+      form.reset(card);
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="m-1">
+          Edit Media
+        </Button>
+      </DialogTrigger>
       <DialogContent className="bg-slate-100">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl">Edit Media</DialogTitle>
@@ -224,6 +266,55 @@ const EditMediaPopup = ({
                       />
                     </div>
 
+                    <div className="mt-2">
+                      <FormField
+                        control={form.control}
+                        name="releaseDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Release Date</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="date"
+                                className="border-slate-200 border-2 bg-slate-100"
+                                value={
+                                  field.value ? formatDate(field.value) : ""
+                                }
+                                onChange={(e) =>
+                                  field.onChange(new Date(e.target.value))
+                                }
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Select the release date of the media
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="mt-2">
+                      <FormField
+                        control={form.control}
+                        name="isActive"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Active</FormLabel>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Toggle to activate or deactivate media
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
                     <div className="mt-4">
                       <Button
                         type="submit"
@@ -255,4 +346,4 @@ const EditMediaPopup = ({
   );
 };
 
-export default EditMediaPopup;
+export default EditMediaDialog;

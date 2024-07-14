@@ -22,6 +22,7 @@ const DeleteUserDialog = (props: { userId: number }) => {
       const res: AxiosResponse = await FrontUtilService.deleteApi(endpoint);
       if (res.status === HttpStatusCode.Ok) navigate('/settings/users-administration');
     } catch (error) {
+      // TODO handle error plz
       alert('ee');
     }
   }

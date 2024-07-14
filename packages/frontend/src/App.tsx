@@ -14,12 +14,14 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 import MyPlaylist from "./pages/music/MyPlaylist";
 import MusicPlayer from "./components/music/musicPlayer";
 import { MusicPlayerProvider } from "./utils/MusicPlayerContext";
+import { Toaster } from "./components/ui/toaster";
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <MusicPlayerProvider>
         <Router>
+          <Toaster />
           <Routes>
             <Route path="/" element={<Login />} />
             <Route

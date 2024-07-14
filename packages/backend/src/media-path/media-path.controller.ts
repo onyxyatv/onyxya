@@ -10,6 +10,7 @@ import {
   Param,
   Post,
   Put,
+  Req,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -27,7 +28,7 @@ export class MediaPathController {
     return this.mediapathService.findAll();
   }
 
-  @Get('/:id')
+  @Get(':id')
   findOne(@Param() param: any): Promise<MediaPath> {
     return this.mediapathService.findOne(param.id);
   }
@@ -38,17 +39,15 @@ export class MediaPathController {
     return this.mediapathService.create(path.path);
   }
 
-  @Delete('/:id')
+  @Delete(':id')
   delete(@Param() param: any): Promise<object> {
     return this.mediapathService.delete(param.id);
   }
 
-  // TODO: Add validation for path
-  @Put('/:id')
-  update(
-    @Body() path: MediaPath,
-    @Param() param: { id: number },
-  ): Promise<object> {
-    return this.mediapathService.update(param.id, path.path);
+  @Put(':id')
+  @UsePipes(new ZodValidationPipe(mediaPathSchema))
+  update(@Body() path: MediaPath, @Req() req: any): Promise<object> {
+    const id = req.params.id;
+    return this.mediapathService.update(id, path.path);
   }
 }

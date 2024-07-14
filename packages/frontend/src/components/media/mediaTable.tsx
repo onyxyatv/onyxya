@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import FrontUtilService from "@/utils/frontUtilService";
-import { MediaCard } from "@common/validation/media/mediaCard.schema";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -24,7 +23,9 @@ import {
 } from "@tanstack/react-table";
 import { ReactNode, useEffect, useState } from "react";
 import { Media } from "../models/media";
-import EditMediaPopop from "./editMedia";
+import DeleteMediaDialog from "./dialog/deleteMediaDialog";
+import NewMediaDialog from "./dialog/newMediaDialog";
+import EditMediaDialog from "./dialog/editMediaDialog";
 import { SyncMediaButton } from "./syncMediaButton";
 
 export function MediaTable() {
@@ -32,8 +33,6 @@ export function MediaTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [popupOpened, setPopupOpened] = useState(false);
-  const [selectedMedia, setSelectedMedia] = useState<MediaCard | null>(null);
 
   const columns: ColumnDef<Media>[] = [
     {
@@ -64,47 +63,22 @@ export function MediaTable() {
           <Button variant="outline" size="sm" className="m-1">
             View
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="m-1"
-            onClick={() => {
-              FrontUtilService.deleteApi(`/media/${info.row.original.id}`);
-            }}
-          >
-            Delete
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="m-1"
-            onClick={() => openEditDialog(info.row.original.id)}
-          >
-            Edit
-          </Button>
+          <EditMediaDialog
+            mediaId={info.row.original.id}
+            onUpdate={fetchData}
+          />
+          <DeleteMediaDialog mediaId={info.row.original.id} />
         </div>
       ),
     },
   ];
 
-  const openEditDialog = async (id: number) => {
-    const mediaCard: MediaCard = await FrontUtilService.getDataFromApi('/mediacard/media/' + id);
-    setSelectedMedia(mediaCard);
-    setPopupOpened(true);
-  };
-
   // TODO: change isLoading gestion and his display
   const fetchData = async () => {
     setIsLoading(true);
     const data = await FrontUtilService.getDataFromApi("/media");
-    setTimeout(() => {
-      if (data) setMedias(data);
-      setIsLoading(false);
-    }, 2000);
-  };
-
-  const reloadMediaCards = () => {
-    fetchData();
+    if (data) setMedias(data);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -138,7 +112,8 @@ export function MediaTable() {
           }
           className="max-w-sm"
         />
-        <SyncMediaButton onSyncComplete={fetchData} />
+        <SyncMediaButton onSyncComplete={fetchData}>Sync Media</SyncMediaButton>
+        <NewMediaDialog onMediaAdded={fetchData}/>
       </div>
       <ScrollArea className="h-[250px] pr-3">
         <Table className="border-2 border-gray-200">
@@ -210,14 +185,6 @@ export function MediaTable() {
           Next
         </Button>
       </div>
-      {selectedMedia && (
-        <EditMediaPopop
-          mediaCard={selectedMedia}
-          reloadMediaCards={reloadMediaCards}
-          isOpen={popupOpened}
-          onClose={() => setPopupOpened(false)}
-        />
-      )}
     </div>
   );
 }
