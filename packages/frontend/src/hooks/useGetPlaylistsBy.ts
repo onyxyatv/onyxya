@@ -6,6 +6,7 @@ import { Playlist } from "@/components/models/playlist";
 interface GetPlaylistsByProps {
   userId: number;
   name: string;
+  withMedias: boolean;
 }
 
 function useGetPlaylistsBy(props: GetPlaylistsByProps): [playlists: Array<Playlist>, getPlaylists: () => Promise<void>, error: any] {
@@ -15,9 +16,12 @@ function useGetPlaylistsBy(props: GetPlaylistsByProps): [playlists: Array<Playli
   let endpoint = `${api_url}/playlists`;
 
   if (props) {
+    const query = [];
     endpoint += '/by?';
-    if (props.userId !== 0) endpoint += 'userId=' + props.userId;
-    if (props.name.length > 0) endpoint += 'name=' + props.name;
+    if (props.userId !== 0) query.push('userId=' + props.userId);
+    if (props.name.length > 0) query.push('name=' + props.name);
+    if (props.withMedias) query.push('withMedias=true'); 
+    endpoint += query.join('&');
   }
 
   const getPlaylists = async () => {

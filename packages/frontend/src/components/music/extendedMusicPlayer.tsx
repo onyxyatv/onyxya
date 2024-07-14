@@ -31,7 +31,7 @@ const ExtendedMusicPlayer = (props: ExtendedMplayerProps) => {
         music &&
         <div className="bg-red-300">
           <MediaPlayer 
-            paused={props.isPaused}
+            paused={paused}
             viewType="video" 
             currentTime={props.currentMusicTime} 
             volume={0} title="Titre"

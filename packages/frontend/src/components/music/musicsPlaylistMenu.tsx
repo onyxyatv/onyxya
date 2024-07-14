@@ -10,7 +10,8 @@ const MusicsPlaylistMenu = () => {
   const [needReload, setNeedReload] = useState(false);
   const [playlists, setPlaylists] = useGetPlaylistsBy({
     userId: userId,
-    name: ""
+    name: "",
+    withMedias: false,
   });
   const navigate = useNavigate();
 

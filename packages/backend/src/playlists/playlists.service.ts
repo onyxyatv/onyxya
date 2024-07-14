@@ -78,8 +78,18 @@ export class PlaylistsService {
       else throw new NotFoundError('User not found or permission missing');
     }
 
-    const playlists: Array<Playlist> =
-      await this.playlistsRepository.findBy(finalSearch);
+    const playlists: Array<Playlist> = await this.playlistsRepository.find({
+      where: finalSearch,
+      select: {
+        id: true,
+        name: true,
+        isActive: true,
+        mediasPlaylist: { media: { id: true }, id: true },
+      },
+      relations: query.withMedias
+        ? ['mediasPlaylist', 'mediasPlaylist.media']
+        : null,
+    });
     return playlists;
   }
 
@@ -121,7 +131,7 @@ export class PlaylistsService {
       // { max: null | number } -> to calculate the position of the added media
       const maxPos = await this.mediaPlaylistRepo
         .createQueryBuilder('medias_playlist')
-        .select('MAX(id)', 'max')
+        .select('MAX(position)', 'max')
         .where('playlistId = :id', { id: playlist.id })
         .getRawOne();
 
@@ -137,20 +147,46 @@ export class PlaylistsService {
   }
 
   async removeMediaFromPlaylist(
-    addMediaPlaylist: AddMediaPlaylist,
+    playlistId: number,
+    mediaId: number,
   ): Promise<CustomResponse | CustomError> {
-    const mediaPlaylist: MediasPlaylist = await this.mediaPlaylistRepo
-      .createQueryBuilder('medias_playlist')
-      .select('*')
-      .where('playlist_id = :playlistId AND media_id = :mediaId', {
-        mediaId: addMediaPlaylist.mediaId,
-        playlistId: addMediaPlaylist.playlistId,
-      })
-      .getRawOne();
-    console.log(mediaPlaylist);
+    const mediaPlaylist: MediasPlaylist =
+      await this.mediaPlaylistRepo.findOneBy({
+        media: { id: mediaId },
+        playlist: { id: playlistId },
+      });
     if (mediaPlaylist) {
-      await this.mediaPlaylistRepo.remove(mediaPlaylist);
+      const pose: number = mediaPlaylist.position;
+      await this.mediaPlaylistRepo.delete(mediaPlaylist);
+
+      const mediasPlaylistsAfter: Array<MediasPlaylist> =
+        await this.getMediasPLaylistsByPosition(pose, 'after');
+      for (const mediaPlaylist of mediasPlaylistsAfter) {
+        mediaPlaylist.position = mediaPlaylist.position - 1;
+        await this.mediaPlaylistRepo.save(mediaPlaylist);
+      }
+
+      return new SuccessResponse();
     }
     throw new NotFoundError('Playlist or Music not found');
+  }
+
+  async getMediasPLaylistsByPosition(
+    position: number,
+    type: string,
+  ): Promise<Array<MediasPlaylist> | null> {
+    const types: object = {
+      after: '>',
+      before: '<',
+      equal: '=',
+    };
+    const positionType: string = types[type];
+    if (positionType === undefined) return null;
+
+    const medias: Array<MediasPlaylist> = await this.mediaPlaylistRepo
+      .createQueryBuilder('medias_playlist')
+      .where(`position ${positionType} :pose`, { pose: position })
+      .getMany();
+    return medias;
   }
 }

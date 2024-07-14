@@ -1,10 +1,13 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, ListOrdered, Play, Trash } from "lucide-react";
+import { ArrowUpDown, ListOrdered, Play } from "lucide-react";
 import { MediasPlaylist } from "../models/playlist";
+import RemoveMusicFromPlaylist from "./removeMusic";
 
 interface colsProps {
   playMusic: (musicId: number) => void;
+  playlistId: number;
+  setReload: (v: boolean) => void;
 }
 
 const playlistMusicsCols = (props: colsProps): ColumnDef<MediasPlaylist>[] => [
@@ -32,17 +35,20 @@ const playlistMusicsCols = (props: colsProps): ColumnDef<MediasPlaylist>[] => [
     },
   },
   {
-    accessorKey: "media.id", header: "Actions",
+    accessorKey: "media", header: "Actions",
     cell: ({ getValue }) => {
-      const musicId: any = getValue();
+      const music: any = getValue();
       return (
         <div className="space-x-4">
-          <Button variant="outline" onClick={() => props.playMusic(musicId)}>
+          <Button variant="outline" onClick={() => props.playMusic(music.id)}>
             <Play className="w-5" />
           </Button>
-          <Button variant="destructive" onClick={() => props.playMusic(musicId)}>
-            <Trash className="w-5" />
-          </Button>
+          <RemoveMusicFromPlaylist 
+            musicName={music.name} 
+            playlistId={props.playlistId} 
+            musicId={music.id}
+            setReload={props.setReload}
+          />
         </div>
       );
     }

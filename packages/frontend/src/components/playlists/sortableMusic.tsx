@@ -17,9 +17,6 @@ export function SortableItem(props: any) {
   
   return (
     <div ref={setNodeRef} style={style} {...props} {...attributes} {...listeners}>
-      {
-        props.value
-      }
     </div>
   );
 }

@@ -16,8 +16,9 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
-import { SortableItem } from "./sortableMusic";
+import { closestCenter, DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import MusicItemDraggableRow from "./musicItemDraggableRow";
+import { defaultDropAnimationConfiguration } from "@dnd-kit/core/dist/components/DragOverlay/hooks/useDropAnimation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -28,7 +29,7 @@ export function PlaylistMusicsTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [items, setItems] = useState([1, 2, 3]);
+  const [items, setItems] = useState(data.map((_item, index) => index));
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -68,19 +69,6 @@ export function PlaylistMusicsTable<TData, TValue>({
 
   return (
     <div className="rounded-md border p-2 mt-2">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={items}
-          strategy={verticalListSortingStrategy}
-        >
-          {items.map(id => <SortableItem className="border-2 border-green-500 mt-2" value={id} handle key={id} id={id} />)}
-        </SortableContext>
-      </DndContext>
-      { /* Search by name input */}
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter by name"
@@ -91,52 +79,52 @@ export function PlaylistMusicsTable<TData, TValue>({
           className="max-w-sm"
         />
       </div>
-      <ScrollArea className="h-[350px] pr-3">
-        <Table className="border-2 border-gray-200">
-          { /* Columns header */}
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          { /* Musics list  */}
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+      { /* Playlist table / Area */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <ScrollArea className="h-[350px] pr-3">
+          <Table className="border-2 border-gray-200">
+            { /* Columns header */}
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                      </TableHead>
+                    )
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </ScrollArea>
-    </div>
+              ))}
+            </TableHeader>
+            { /* Musics list  */}
+            <TableBody>
+              <SortableContext items={items} strategy={verticalListSortingStrategy}>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => {
+                    return <MusicItemDraggableRow row={row} id={row.id} />;
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </SortableContext>
+            </TableBody>
+          </Table>
+        </ScrollArea>
+      </DndContext>
+    </div >
   )
 }

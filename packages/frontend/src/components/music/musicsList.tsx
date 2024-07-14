@@ -24,10 +24,12 @@ const MusicsLists = () => {
   const [musicsByCategories, setMusics] = useState<MusicCategories>({});
   const [error, setError] = useState('');
   const musicContext = useContext(MusicPlayerContext);
-  const [playlists] = useGetPlaylistsBy({
+  const [playlists, getPlaylists] = useGetPlaylistsBy({
     userId: (userId) ? userId : 0,
-    name: ""
+    name: "",
+    withMedias: true,
   });
+  const [needReload, setReload] = useState<boolean>(false);
 
   const playMusic = (musicId: number) => {
     if (musicContext?.fetchMusic) {
@@ -52,7 +54,12 @@ const MusicsLists = () => {
 
   useEffect(() => {
     fetchAllMusics();
-  }, []);
+    if (needReload) {
+      getPlaylists();
+      setReload(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [needReload]);
 
   return (
     <div id="musicsListContainer" className="w-5/6 p-2">
@@ -92,7 +99,8 @@ const MusicsLists = () => {
                           <Button onClick={() => playMusic(music.id)}>Play</Button>
                           <AddMusicPlaylistPopup 
                             playlists={playlists}
-                            reloadPlaylists={null}
+                            musicName={music.mediaCard.name}
+                            reloadPlaylists={() => setReload(true)}
                             musicId={music.id}
                           />
                         </CardFooter>

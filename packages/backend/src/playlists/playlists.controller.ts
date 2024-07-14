@@ -33,6 +33,10 @@ import {
   addMediaPlaylistSchema,
 } from '@common/validation/playlist/addMediaPlaylist.schema';
 import { CustomResponse } from '@common/errors/customResponses';
+import {
+  RemoveMediaPlaylist,
+  removeMediaPlaylistSchema,
+} from '@common/validation/playlist/removeMediaPlaylist.schema';
 
 @UseGuards(AuthGuard) // AuthGuard for all routes of this module
 @Controller('playlists')
@@ -103,14 +107,17 @@ export class PlaylistsController {
     return res.status(resService.statusCode).json(resService);
   }
 
-  @Delete('/remove')
-  @UsePipes(new ZodValidationPipe(addMediaPlaylistSchema))
+  @Delete('/playlist/:playlistId/removeMedia/:mediaId')
+  @UsePipes(new ZodValidationPipe(removeMediaPlaylistSchema))
   async removeMediaFromPlaylist(
-    @Body() addMediaPlaylist: AddMediaPlaylist,
     @Res() res: Response,
+    @Param() params: RemoveMediaPlaylist,
   ): Promise<Response> {
     const resService: CustomResponse | CustomError =
-      await this.playlistsService.removeMediaFromPlaylist(addMediaPlaylist);
+      await this.playlistsService.removeMediaFromPlaylist(
+        params.playlistId,
+        params.mediaId,
+      );
     return res.status(resService.statusCode).json(resService);
   }
 }

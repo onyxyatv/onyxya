@@ -19,6 +19,7 @@ const MyPlaylist = () => {
   const setPlaylistsMusics = useContext(MusicPlayerContext)?.setPlaylistsMusics;
   const setPlaylistMode = useContext(MusicPlayerContext)?.setPlaylistMode;
   const fetchMusic = useContext(MusicPlayerContext)?.fetchMusic;
+  const [needReload, setReload] = useState<boolean>(false);
 
   const playMusic = (musicId: number): void => {
     if (fetchMusic) fetchMusic(musicId);
@@ -51,7 +52,8 @@ const MyPlaylist = () => {
 
   useEffect(() => {
     fetchPlaylist(id);
-  }, [id]);
+    if (needReload) setReload(false);
+  }, [id, needReload]);
 
   return (
     <div>
@@ -86,7 +88,10 @@ const MyPlaylist = () => {
               </div>
               <div id="MyPlaylistMusicsContainer">
                 <PlaylistMusicsTable 
-                  columns={playlistMusicsCols({playMusic: playMusic})} 
+                  columns={playlistMusicsCols({
+                    playMusic: playMusic, playlistId: playlist.id,
+                    setReload: setReload 
+                  })} 
                   data={playlist.mediasPlaylist} 
                 />
               </div>
