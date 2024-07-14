@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -37,6 +38,10 @@ import {
   RemoveMediaPlaylist,
   removeMediaPlaylistSchema,
 } from '@common/validation/playlist/removeMediaPlaylist.schema';
+import {
+  ChangeMediaPosition,
+  changeMediaPositionSchema,
+} from '@common/validation/playlist/changeMediaPosition.schema';
 
 @UseGuards(AuthGuard) // AuthGuard for all routes of this module
 @Controller('playlists')
@@ -118,6 +123,17 @@ export class PlaylistsController {
         params.playlistId,
         params.mediaId,
       );
+    return res.status(resService.statusCode).json(resService);
+  }
+
+  @Patch('/changeMediaPosition')
+  @UsePipes(new ZodValidationPipe(changeMediaPositionSchema))
+  async changeMediaPosition(
+    @Res() res: Response,
+    @Body() changedMedia: ChangeMediaPosition,
+  ): Promise<Response> {
+    const resService: CustomResponse | CustomError =
+      await this.playlistsService.changeMediaPosition(changedMedia);
     return res.status(resService.statusCode).json(resService);
   }
 }

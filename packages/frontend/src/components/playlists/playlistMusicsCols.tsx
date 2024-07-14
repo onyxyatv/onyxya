@@ -25,12 +25,9 @@ const playlistMusicsCols = (props: colsProps): ColumnDef<MediasPlaylist>[] => [
   },
   {
     accessorKey: "position",
-    header: ({ column }) => {
+    header: () => {
       return (
-        <Button variant="ghost" className="p-0 hover:bg-transparent" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Position
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <p>Position</p>
       );
     },
   },
@@ -54,8 +51,8 @@ const playlistMusicsCols = (props: colsProps): ColumnDef<MediasPlaylist>[] => [
     }
   },
   {
-    accessorKey: "position",
-    header: "Drag Position",
+    accessorKey: "dragPosition",
+    header: "Change position",
     cell: ({ getValue }) => {
       const musicId: any = getValue();
       return (

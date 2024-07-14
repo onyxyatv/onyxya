@@ -18,6 +18,7 @@ import { GetPlaylistBy } from '@common/validation/playlist/getPlaylistBy.schema'
 import { AddMediaPlaylist } from '@common/validation/playlist/addMediaPlaylist.schema';
 import { Media } from 'src/models/media.model';
 import { MediasPlaylist } from 'src/models/mediasplaylist.model';
+import { ChangeMediaPosition } from '@common/validation/playlist/changeMediaPosition.schema';
 
 @Injectable()
 export class PlaylistsService {
@@ -42,6 +43,24 @@ export class PlaylistsService {
       console.log('Error at @getAllPlaylists : ', error);
       return null; // Will generate automatically a 500 internal server error
     }
+  }
+
+  /**
+   * Get a MediaPlaylist by its media and playlist identifier
+   * @param mediaId
+   * @param playlistId
+   * @returns a mediaPlaylist
+   */
+  async getMpByMediaAndPlaylist(
+    mediaId: number,
+    playlistId: number,
+  ): Promise<MediasPlaylist | null> {
+    const mediaPlaylist: MediasPlaylist =
+      await this.mediaPlaylistRepo.findOneBy({
+        media: { id: mediaId },
+        playlist: { id: playlistId },
+      });
+    return mediaPlaylist;
   }
 
   async createNewPlaylist(
@@ -150,11 +169,10 @@ export class PlaylistsService {
     playlistId: number,
     mediaId: number,
   ): Promise<CustomResponse | CustomError> {
-    const mediaPlaylist: MediasPlaylist =
-      await this.mediaPlaylistRepo.findOneBy({
-        media: { id: mediaId },
-        playlist: { id: playlistId },
-      });
+    const mediaPlaylist: MediasPlaylist = await this.getMpByMediaAndPlaylist(
+      mediaId,
+      playlistId,
+    );
     if (mediaPlaylist) {
       const pose: number = mediaPlaylist.position;
       await this.mediaPlaylistRepo.delete(mediaPlaylist);
@@ -171,6 +189,12 @@ export class PlaylistsService {
     throw new NotFoundError('Playlist or Music not found');
   }
 
+  /**
+   * Returns items according to their position
+   * @param position -> a number
+   * @param type -> after | before | equal
+   * @returns an array of mediasPlaylist
+   */
   async getMediasPLaylistsByPosition(
     position: number,
     type: string,
@@ -183,10 +207,31 @@ export class PlaylistsService {
     const positionType: string = types[type];
     if (positionType === undefined) return null;
 
+    // Retrieve items before, after or at a given position
     const medias: Array<MediasPlaylist> = await this.mediaPlaylistRepo
       .createQueryBuilder('medias_playlist')
       .where(`position ${positionType} :pose`, { pose: position })
       .getMany();
     return medias;
+  }
+
+  async changeMediaPosition(
+    changedMedia: ChangeMediaPosition,
+  ): Promise<CustomResponse | CustomError> {
+    const mediaPlaylist: MediasPlaylist = await this.getMpByMediaAndPlaylist(
+      changedMedia.mediaId,
+      changedMedia.playlistId,
+    );
+
+    if (mediaPlaylist) {
+      if (mediaPlaylist.position === changedMedia.newPosition)
+        throw new BadRequestError('This media is already in this position');
+
+      mediaPlaylist.position = changedMedia.newPosition;
+      await this.mediaPlaylistRepo.save(mediaPlaylist);
+      return new SuccessResponse();
+    }
+
+    throw new NotFoundError('Playlist or Media not found');
   }
 }
