@@ -1,9 +1,9 @@
 import axios, { HttpStatusCode } from "axios";
 import { api_url } from "../../config.json";
 import { useEffect, useState } from "react";
-import { User } from "@/components/models/user";
+import { Playlist } from "@/components/models/playlist";
 
-function useGetPlaylists(): [ playlists: Array<User>, getPlaylists: () => Promise<void>, error: any ] {
+function useGetPlaylists(): [ playlists: Array<Playlist>, getPlaylists: () => Promise<void>, error: any ] {
   const [playlists, setPlaylists] = useState([]);
   const [error, setError] = useState(null);
 
@@ -11,7 +11,7 @@ function useGetPlaylists(): [ playlists: Array<User>, getPlaylists: () => Promis
     try {
       const token: string | null = localStorage.getItem("onyxyaToken");
       if (token !== null) {
-        const res = await axios.get(`${api_url}/users`, {
+        const res = await axios.get(`${api_url}/playlists`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
         if (res.status === HttpStatusCode.Ok) setPlaylists(res.data.playlists);

@@ -13,3 +13,9 @@ export class SuccessResponse extends CustomResponse {
     super(200, true);
   }
 }
+
+export class CreatedResponse extends CustomResponse {
+  constructor() {
+    super(201, true);
+  }
+}

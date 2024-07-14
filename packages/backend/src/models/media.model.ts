@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { MediaCard } from './mediacard.model';
+import { MediasPlaylist } from './mediasplaylist.model';
 
 @Entity()
 export class Media {
@@ -42,6 +44,9 @@ export class Media {
 
   @OneToOne(() => MediaCard, (mediaCard) => mediaCard.media)
   mediaCard: MediaCard;
+
+  @OneToMany(() => MediasPlaylist, (mediasPlaylist) => mediasPlaylist.media)
+  mediasPlaylist: MediasPlaylist[];
 
   constructor(
     name: string,

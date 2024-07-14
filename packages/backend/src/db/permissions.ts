@@ -9,6 +9,8 @@ export enum Permissions {
   AdminUserPermissions = 'admin_user_permissions',
   UploadMedia = 'upload_media',
   DeleteMedia = 'delete_media',
+  CreatePlaylist = 'create_playlist',
+  Owner = 'owner',
 }
 
 export const permissions = [
@@ -52,20 +54,12 @@ export const permissions = [
     name: Permissions.DeleteMedia,
     description: 'Can delete a media',
   },
+  {
+    name: Permissions.CreatePlaylist,
+    description: 'Can create a playlist',
+  },
+  {
+    name: Permissions.Owner,
+    description: 'Is the owner of the application',
+  },
 ];
-
-export const rolesPermissions = {
-  admin: [
-    Permissions.ReadMedias,
-    Permissions.EditMedia,
-    Permissions.CreateUser,
-    Permissions.ReadPermissions,
-    Permissions.ReadRolePermissions,
-    Permissions.AdminUsers,
-    Permissions.AdminRoles,
-    Permissions.AdminUserPermissions,
-    Permissions.UploadMedia,
-    Permissions.DeleteMedia,
-  ],
-  user: [Permissions.ReadMedias],
-};

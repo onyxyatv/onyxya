@@ -8,15 +8,17 @@ import { MediaModule } from './media/media.module';
 import { MediaPathModule } from './media-path/media-path.module';
 import { MediaCardModule } from './mediacard/mediacard.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { PLaylistsModule } from './playlists/playlists.module';
 
 @Module({
   imports: [
     DatabaseModule,
+    PermissionsModule,
     UsersModule,
     MediaCardModule,
-    PermissionsModule,
     MediaModule,
     MediaPathModule,
+    PLaylistsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

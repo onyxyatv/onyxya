@@ -50,7 +50,7 @@ const EditUser = () => {
           <Card>
             <CardHeader>
               <CardDescription className="text-center text-2xl font-bold">
-                {user.username[0].toUpperCase() + user.username.slice(1)}'s card
+                {FrontUtilService.capitalizeString(user.username)}'s card
               </CardDescription>
             </CardHeader>
             <CardContent>

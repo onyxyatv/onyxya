@@ -23,6 +23,7 @@ import {
 } from '@common/errors/customResponses';
 import { EditUser } from '@common/validation/auth/editUser.schema';
 import { Permissions } from 'src/db/permissions';
+import { CreateOwner } from 'src/db/inits/createOwner.db';
 const secret: string = process.env.JWT_SECRET_KEY;
 
 @Injectable()
@@ -35,6 +36,20 @@ export class UserService {
     @InjectRepository(Permission)
     private permissionsRepository: Repository<Permission>,
   ) {}
+
+  async onModuleInit(): Promise<void> {
+    const ownerRole: Role = await this.rolesRepository.findOneBy({
+      name: 'owner',
+    });
+    const owner: User = await this.usersRepository.findOneBy({
+      role: ownerRole,
+    });
+    if (owner === null && ownerRole !== null) {
+      await CreateOwner.create(
+        this.usersRepository.manager.connection.createQueryRunner(),
+      );
+    }
+  }
 
   getAllUsers(): Promise<Array<User> | null> {
     try {
@@ -181,10 +196,17 @@ export class UserService {
         where: { id: userId },
         relations: ['role', 'role.permissions', 'permissions'],
       });
-      user.permissions.forEach((userPerm) => (userPerm['isUser'] = true));
-      user.role.permissions.forEach((rolePerm) => (rolePerm['isUser'] = false));
-      const finalPermissions = [...user.permissions, ...user.role.permissions];
-      return finalPermissions;
+      if (user) {
+        user.permissions.forEach((userPerm) => (userPerm['isUser'] = true));
+        user.role.permissions.forEach(
+          (rolePerm) => (rolePerm['isUser'] = false),
+        );
+        const finalPermissions = [
+          ...user.permissions,
+          ...user.role.permissions,
+        ];
+        return finalPermissions;
+      }
     }
     throw new NotFoundError('User with that id does not exists!');
   }

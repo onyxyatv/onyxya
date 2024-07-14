@@ -1,26 +1,42 @@
 import FrontUtilService from "@/utils/frontUtilService";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import AddMusicPlaylistPopup from "./addMusicPlaylist";
+import AuthContext from "@/utils/AuthContext";
+import MusicPlayerContext from "@/utils/MusicPlayerContext";
+import useGetPlaylistsBy from "@/hooks/useGetPlaylistsBy";
 
 interface Music {
   id: number;
   mediaCard: {
     name: string;
+    description: string;
   };
-}
-
-interface MusicsListProps {
-  playMusic: (musicId: number) => Promise<void>;
 }
 
 type MusicCategories = Record<string, Array<Music>>;
 
-const MusicsLists = (props: MusicsListProps) => {
+const MusicsLists = () => {
+  const userId: number | undefined = useContext(AuthContext)?.authUser?.id;
   const [musicsByCategories, setMusics] = useState<MusicCategories>({});
   const [error, setError] = useState('');
+  const musicContext = useContext(MusicPlayerContext);
+  const [playlists, getPlaylists] = useGetPlaylistsBy({
+    userId: (userId) ? userId : 0,
+    name: "",
+    withMedias: true,
+  });
+  const [needReload, setReload] = useState<boolean>(false);
+
+  const playMusic = (musicId: number) => {
+    if (musicContext?.fetchMusic) {
+      musicContext.setMusicMode();
+      musicContext?.fetchMusic(musicId);
+    }
+  }
 
   const fetchAllMusics = async () => {
     try {
@@ -38,7 +54,12 @@ const MusicsLists = (props: MusicsListProps) => {
 
   useEffect(() => {
     fetchAllMusics();
-  }, []);
+    if (needReload) {
+      getPlaylists();
+      setReload(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [needReload]);
 
   return (
     <div id="musicsListContainer" className="w-5/6 p-2">
@@ -46,12 +67,18 @@ const MusicsLists = (props: MusicsListProps) => {
         musicsByCategories !== null &&
         Object.keys(musicsByCategories).map((musicCategoryName: string) => {
           return (
-            <div className={`musics-list-${musicCategoryName}-category border-2 border-gray-300 p-2`}>
-              <h3>{musicCategoryName}</h3>
+            <div className={`musics-list-${musicCategoryName}-category border-2 mb-2 border-gray-300 p-2`}>
+              <h2 className="text-lg font-bold">
+                {
+                  FrontUtilService.capitalizeString(musicCategoryName)
+                }
+              </h2>
               <p>
-                {musicsByCategories[musicCategoryName].length} musiques
+                {musicsByCategories[musicCategoryName].length} {
+                  (musicsByCategories[musicCategoryName].length > 1) ? 'musics' : 'music'
+                }
               </p>
-              <div id={`${musicCategoryName}MusicContainer`} className="flex flex-row align-middle">
+              <div id={`${musicCategoryName}MusicContainer`} key={musicCategoryName} className="flex flex-row align-middle">
                 {
                   musicsByCategories[musicCategoryName].map((music: Music) => {
                     return (
@@ -61,11 +88,21 @@ const MusicsLists = (props: MusicsListProps) => {
                             {music.mediaCard.name}
                           </CardTitle>
                           <CardDescription>
-                            Pas de description
+                            {
+                              (music.mediaCard.description !== null && 
+                                music.mediaCard.description.length > 0) ?
+                              music.mediaCard.description : 'No description'
+                            }
                           </CardDescription>
                         </CardHeader>
-                        <CardFooter>
-                          <Button onClick={() => props.playMusic(music.id)}>Play</Button>
+                        <CardFooter className="space-x-2">
+                          <Button onClick={() => playMusic(music.id)}>Play</Button>
+                          <AddMusicPlaylistPopup 
+                            playlists={playlists}
+                            musicName={music.mediaCard.name}
+                            reloadPlaylists={() => setReload(true)}
+                            musicId={music.id}
+                          />
                         </CardFooter>
                       </Card>
                     );

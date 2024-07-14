@@ -4,14 +4,15 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Permission } from './permission.model';
 import { Role } from './role.model';
+import { Playlist } from './playlist.model';
 
 @Entity()
 export class User {
-  user: Permission;
   constructor(username: string, password: string, role: Role, salt: string) {
     this.username = username;
     this.password = password;
@@ -52,4 +53,7 @@ export class User {
     },
   })
   permissions: Permission[];
+
+  @OneToMany(() => Playlist, (playlist) => playlist.user)
+  playlists: Playlist[];
 }
