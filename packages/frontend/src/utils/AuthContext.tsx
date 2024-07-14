@@ -53,7 +53,6 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     };
 
     initializeAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = async (token: string) => {
