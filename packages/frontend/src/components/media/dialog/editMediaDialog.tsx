@@ -6,7 +6,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useGetPerms } from "@/hooks/useGetPerms";
 import FrontUtilService from "@/utils/frontUtilService";
 import {
   MediaCard,
@@ -17,7 +16,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
 import { Button } from "../../ui/button";
@@ -41,6 +40,7 @@ import {
 } from "../../ui/select";
 import { Switch } from "../../ui/switch";
 import { toast } from "../../ui/use-toast";
+import AuthContext from "@/utils/AuthContext";
 
 type EditMediaPopupProps = {
   mediaId: number;
@@ -62,7 +62,7 @@ const formatDate = (date: Date) => {
 const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
-  const perms = useGetPerms();
+  const perms = useContext(AuthContext)?.authUser?.permissions;
 
   const form = useForm<MediaCard>({
     resolver: zodResolver(mediaCardSchema),

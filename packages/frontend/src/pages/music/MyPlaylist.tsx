@@ -1,6 +1,7 @@
 import Header from "@/components/header/header";
 import { Playlist } from "@/components/models/playlist";
 import MusicsPlaylistMenu from "@/components/music/musicsPlaylistMenu";
+import EditPlaylistPopup from "@/components/playlists/editPlaylist";
 import playlistMusicsCols from "@/components/playlists/playlistMusicsCols";
 import { PlaylistMusicsTable } from "@/components/playlists/playlistMusicsTable";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -75,6 +76,12 @@ const MyPlaylist = () => {
               <p>
                 {playlist.mediasPlaylist.length} music(s)
               </p>
+              {
+                playlist.desription &&
+                <p className="font-thin">
+                  {playlist.desription}
+                </p>
+              }
               <div className="flex flex-row mt-2 space-x-2">
                 {
                   playlist.mediasPlaylist.length > 0 &&
@@ -82,17 +89,18 @@ const MyPlaylist = () => {
                     Play
                   </Button>
                 }
+                <EditPlaylistPopup playlist={playlist} reloadPlaylist={setReload} />
                 <Button variant="destructive">
                   Delete Playlist
                 </Button>
               </div>
               <div id="MyPlaylistMusicsContainer">
-                <PlaylistMusicsTable 
+                <PlaylistMusicsTable
                   columns={playlistMusicsCols({
                     playMusic: playMusic, playlistId: playlist.id,
-                    setReload: setReload 
-                  })} 
-                  data={playlist.mediasPlaylist} 
+                    setReload: setReload
+                  })}
+                  data={playlist.mediasPlaylist}
                 />
               </div>
             </div>

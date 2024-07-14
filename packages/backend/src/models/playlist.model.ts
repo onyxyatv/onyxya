@@ -20,11 +20,14 @@ export class Playlist {
   @Column({ default: 'No name' })
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: 'No description' })
   description: string;
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ default: 'private', nullable: false })
+  visibility: string;
 
   @ManyToOne(() => User, (user) => user.playlists)
   user: User;

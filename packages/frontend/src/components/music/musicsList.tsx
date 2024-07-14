@@ -1,7 +1,7 @@
 import FrontUtilService from "@/utils/frontUtilService";
 import { useContext, useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Play } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import AddMusicPlaylistPopup from "./addMusicPlaylist";
@@ -83,7 +83,7 @@ const MusicsLists = () => {
                   musicsByCategories[musicCategoryName].map((music: Music) => {
                     return (
                       <Card className="m-2">
-                        <CardHeader>
+                        <CardHeader className="h-24">
                           <CardTitle className="text-sm">
                             {music.mediaCard.name}
                           </CardTitle>
@@ -96,7 +96,9 @@ const MusicsLists = () => {
                           </CardDescription>
                         </CardHeader>
                         <CardFooter className="space-x-2">
-                          <Button onClick={() => playMusic(music.id)}>Play</Button>
+                          <Button className="bg-green-700 hover:bg-green-600" onClick={() => playMusic(music.id)}>
+                            <Play />
+                          </Button>
                           <AddMusicPlaylistPopup 
                             playlists={playlists}
                             musicName={music.mediaCard.name}

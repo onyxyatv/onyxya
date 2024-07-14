@@ -14,5 +14,7 @@ export type Playlist = {
   desription: string;
   isActive: boolean;
   user: User;
+  type: 'music' | 'movies' | 'serie';
+  visibility: 'private' | 'public';
   mediasPlaylist: MediasPlaylist[];
 };
