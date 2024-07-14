@@ -79,10 +79,12 @@ export class MediaCardService {
       return card;
     } catch (error) {
       console.log('Error at getMediaCardByMedia : ', error);
+      if (error instanceof BadRequestError) {
+        throw error;
+      }
       throw new InternalServerError('Error at getMediaCardByMedia');
     }
   }
-
   /**
    * This method is used to update a media card.
    * @param id the id of the media card
@@ -105,8 +107,13 @@ export class MediaCardService {
       mediaCard.description = body.description;
       mediaCard.type = body.type;
       mediaCard.category = body.category;
+      mediaCard.isActive = body.isActive;
+      mediaCard.releaseDate = body.releaseDate;
       return await this.mediaCardRepository.save(mediaCard);
     } catch (error) {
+      if (error instanceof BadRequestError) {
+        throw error;
+      }
       console.log('Error at updateMediaCard : ', error);
       throw new InternalServerError('Error at updateMediaCard');
     }

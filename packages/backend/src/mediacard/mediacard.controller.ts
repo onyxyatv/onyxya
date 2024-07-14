@@ -20,6 +20,7 @@ import { MediaCard } from 'src/models/mediacard.model';
 import { ZodValidationPipe } from 'src/pipes/zod.pipe';
 import { MediaCardService } from './mediacard.service';
 
+@UseGuards(AuthGuard)
 @Controller('/mediacard')
 export class MediaCardController {
   constructor(private readonly mediaCardService: MediaCardService) {}
@@ -30,7 +31,6 @@ export class MediaCardController {
    * @param body
    * @returns a list of found medias
    */
-  @UseGuards(AuthGuard)
   @Post('/new/search')
   @UsePipes(new ZodValidationPipe(searchMediaNameSchema))
   async searchNewMedia(

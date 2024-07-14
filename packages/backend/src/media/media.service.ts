@@ -1,11 +1,12 @@
+import { InternalServerError, NotFoundError } from '@common/errors/CustomError';
 import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { promises as fs } from 'fs';
 import * as path from 'path';
+import { MediaCardService } from 'src/mediacard/mediacard.service';
 import { Like, Repository } from 'typeorm';
 import { MediaPathService } from '../media-path/media-path.service';
 import { Media } from '../models/media.model';
-import { MediaCardService } from 'src/mediacard/mediacard.service';
 
 @Injectable()
 export class MediaService implements OnModuleInit {
@@ -229,5 +230,27 @@ export class MediaService implements OnModuleInit {
       musicsByCategories[music.mediaCard.category].push(tempMusic);
     });
     return musicsByCategories;
+  }
+
+  async deleteMedia(id: string) {
+    try {
+      const media = await this.mediaRepository.findOne({
+        where: { id: parseInt(id) },
+      });
+      if (!media) {
+        throw new NotFoundError('Media not found');
+      }
+
+      await fs.unlink(media.path);
+      await this.mediaRepository.remove(media);
+
+      return { statusCode: HttpStatus.OK, message: 'Media deleted' };
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error;
+      }
+      console.log('Error at deleteMedia : ', error);
+      throw new InternalServerError('Error at deleteMedia');
+    }
   }
 }
