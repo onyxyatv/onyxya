@@ -18,10 +18,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import MusicItemDraggableRow from "./musicItemDraggableRow";
+import FrontUtilService from "@/utils/frontUtilService";
+import { ChangeMediaPosition } from '@common/validation/playlist/changeMediaPosition.schema';
+import { MediasPlaylist } from "../models/playlist";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  //reloadPlaylist: (v: boolean) => void;
 }
 
 export function PlaylistMusicsTable<TData, TValue>({
@@ -54,6 +58,28 @@ export function PlaylistMusicsTable<TData, TValue>({
     })
   );
 
+  interface ChangedItem {
+    mediaPlaylist: MediasPlaylist,
+    newPosition: number;
+  }
+
+  async function setNewPositions(items: Array<ChangedItem>): Promise<void> {
+    try {
+      const endpoint: string = '/playlists/changeMediaPosition';
+      for (const item of items) {
+        console.log(item.mediaPlaylist);
+        const data: ChangeMediaPosition = { 
+          mediaPlaylistId: item.mediaPlaylist.id, 
+          newPosition: item.newPosition + 1,
+        };
+        await FrontUtilService.patchApi(endpoint, data);
+      }
+    } catch (error) {
+      // TODO: error handling and alert
+      alert('error');
+    }
+  }
+
   function handleDragEnd(event: any) {
     const { active, over } = event;
 
@@ -61,6 +87,18 @@ export function PlaylistMusicsTable<TData, TValue>({
       setItems((items) => {
         const oldIndex = items.indexOf(active.id);
         const newIndex = items.indexOf(over.id);
+
+        /*
+          selectedChangeItem represents the item that has been dragged and dropped, 
+          so the second is the one that has been moved accordingly.
+        */
+        const selectedChangeItem: any = table.getRowModel().rows[active.id]._valuesCache;
+        const notSelected: any = table.getRowModel().rows[over.id]._valuesCache;
+
+        setNewPositions([
+          { mediaPlaylist: selectedChangeItem, newPosition: newIndex },
+          { mediaPlaylist: notSelected, newPosition: oldIndex },
+        ]);
 
         return arrayMove(items, oldIndex, newIndex);
       });

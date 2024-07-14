@@ -31,7 +31,7 @@ const MusicItemDraggableRow = (props: MusicItemProps) => {
     >
       {
         props.row.getVisibleCells().map((cell: any) => {
-          if (cell.id.includes('dragPosition')) {
+          if (cell.id.includes('id')) {
             return (
               <TableCell key={cell.id} {...attributes} {...listeners}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

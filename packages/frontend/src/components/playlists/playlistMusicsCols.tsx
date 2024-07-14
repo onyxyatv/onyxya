@@ -23,14 +23,14 @@ const playlistMusicsCols = (props: colsProps): ColumnDef<MediasPlaylist>[] => [
       );
     },
   },
-  {
+  /*{
     accessorKey: "position",
     header: () => {
       return (
         <p>Position</p>
       );
     },
-  },
+  },*/
   {
     accessorKey: "media", header: "Actions",
     cell: ({ getValue }) => {
@@ -51,7 +51,7 @@ const playlistMusicsCols = (props: colsProps): ColumnDef<MediasPlaylist>[] => [
     }
   },
   {
-    accessorKey: "dragPosition",
+    accessorKey: "id",
     header: "Change position",
     cell: ({ getValue }) => {
       const musicId: any = getValue();

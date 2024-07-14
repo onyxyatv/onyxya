@@ -116,8 +116,15 @@ export class PlaylistsService {
     if (playlistId !== 0) {
       const playlist: Playlist = await this.playlistsRepository.findOne({
         where: { id: playlistId },
-        relations: ['mediasPlaylist', 'mediasPlaylist.media'],
       });
+      const mediasPlaylist: Array<MediasPlaylist> =
+        await this.mediaPlaylistRepo.find({
+          where: { playlist: { id: playlist.id } },
+          relations: { media: true },
+          order: { position: 'ASC' },
+        });
+
+      playlist.mediasPlaylist = mediasPlaylist;
       if (playlist) return playlist;
     }
 
@@ -215,13 +222,18 @@ export class PlaylistsService {
     return medias;
   }
 
+  /**
+   * Change the position of media in a playlist
+   * @param changedMedia
+   * @returns @CustomError | @CustomResponse
+   */
   async changeMediaPosition(
     changedMedia: ChangeMediaPosition,
   ): Promise<CustomResponse | CustomError> {
-    const mediaPlaylist: MediasPlaylist = await this.getMpByMediaAndPlaylist(
-      changedMedia.mediaId,
-      changedMedia.playlistId,
-    );
+    const mediaPlaylist: MediasPlaylist =
+      await this.mediaPlaylistRepo.findOneBy({
+        id: changedMedia.mediaPlaylistId,
+      });
 
     if (mediaPlaylist) {
       if (mediaPlaylist.position === changedMedia.newPosition)
@@ -232,6 +244,6 @@ export class PlaylistsService {
       return new SuccessResponse();
     }
 
-    throw new NotFoundError('Playlist or Media not found');
+    throw new NotFoundError('Media in this Playlist not found');
   }
 }
