@@ -9,12 +9,19 @@ const MusicPlayer = () => {
   const music = useContext(MusicPlayerContext)?.music;
   const isPlaylist: boolean | undefined = useContext(MusicPlayerContext)?.isPlaylist;
   const [visibility, setVisibility] = useState(false);
-  const [currentMusic, setCurrentMusic] = useState(0);
+  const [currentMusic, setCurrentMusic] = useState(0);  // if it's a playlist
   const playlist = useContext(MusicPlayerContext)?.playlist;
-  const refPlayer = useRef<AudioPlayer>(null);
-  const [isPaused, setPaused] = useState(false);
+  const audioRefPlayer = useRef<AudioPlayer>(null);
+  const [isPaused, setPaused] = useState<boolean>(false);
+
+  // Current volume on both sides, updated according to extended player or audio player.
   const [currentVolume, setCurrentVolume] = useState<number>(0.5);
-  const audio = refPlayer.current?.audio.current;
+
+  // Current song times, both on the extended side and here
+  const [currentTime, setCurrentTime] = useState<number | undefined>(0);
+
+  // Indicates whether the extended is opened or not
+  const [isExtendedOpen, setIsExtendedOpen] = useState(false);
 
   const handleClickNext = () => {
     if (playlist) {
@@ -28,16 +35,16 @@ const MusicPlayer = () => {
     if (playlist) {
       const previous = currentMusic > 0 ? currentMusic - 1 : 0;
       setCurrentMusic(previous);
-      const audio = refPlayer.current?.audio.current;
+      const audio = audioRefPlayer.current?.audio.current;
       if (!previous && audio) {
-        console.log('ee');
         audio.currentTime = 0;
         audio.play();
       }
     }
   };
 
-  const handleEnd = () => {
+  // Goes to the next music or restarts the playlist if it is finished
+  const handleEnd = (): void => {
     if (playlist) {
       setCurrentMusic((currentMusic) =>
         currentMusic < playlist.length - 1 ? currentMusic + 1 : 0
@@ -45,48 +52,48 @@ const MusicPlayer = () => {
     }
   }
 
-  const handleOnPlay = (e: object) => {
-    console.log(e);
-    setPaused(false);
-  }
+  const handleOnPlay = (): void => setPaused(false);
+  const handleOnPause = (): void => setPaused(true);
 
-  const handleOnPause = (e: object): void => {
-    console.log(e);
-    setPaused(true);
-  }
-
-  const handleOpenedState = (event: string) => {
-    const isOpened: boolean = event.length > 0;
-    const audio = refPlayer.current?.audio.current;
-    if (refPlayer.current) {
+  const handleOpenedState = (itemName: string) => {
+    const isOpened: boolean = itemName.length > 0;
+    const audio = audioRefPlayer.current?.audio.current;
+    if (audioRefPlayer.current) {
       if (isOpened) {
+        setIsExtendedOpen(true);
         audio?.pause();
         setPaused(true);
       } else {
-        audio?.play();
+        setIsExtendedOpen(false);
+        if (!isPaused) audio?.play();
         setPaused(false);
       }
     }
   }
 
   useEffect(() => {
+    // Checks to see if a song or playlist is playing
     if (music && music.src.length > 0) setVisibility(true);
     if (playlist && playlist.length > 0) setVisibility(true);
     
-    if (audio && currentVolume !== audio?.volume) {
-      audio?.volume = currentVolume;
+    const audio = audioRefPlayer.current?.audio.current;
+    if (audio) {
+      if (currentVolume !== audio.volume) audio.volume = currentVolume;
+      if (currentTime !== audio.currentTime) audio.currentTime = currentTime ? currentTime : 0;
     }
-  }, [music, playlist, isPlaylist, currentVolume, audio]);
+  }, [music, playlist, isPlaylist, currentVolume, currentTime]);
 
   return (
     (visibility && (music !== null || (playlist && isPlaylist))) &&
-    <section className="bg-blue-400 p-2 flex flex-row fixed bottom-0 w-full justify-between">
+    <section className="bg-gray-800 p-2 flex flex-row fixed bottom-0 w-full justify-between">
       <Accordion className="w-full" onValueChange={handleOpenedState} type="single" collapsible>
         <AccordionItem value="item-1" className="border-0">
           <AccordionContent>
             <ExtendedMusicPlayer
-              currentMusicTime={refPlayer.current?.audio.current?.currentTime}
+              currentMusicTime={audioRefPlayer.current?.audio.current?.currentTime}
               playStatus={isPaused}
+              setPause={setPaused}
+              setCurrentTime={setCurrentTime}
               setCurrentVolume={setCurrentVolume}
             />
           </AccordionContent>
@@ -99,13 +106,14 @@ const MusicPlayer = () => {
               showSkipControls={isPlaylist ? true : false}
               onClickPrevious={isPlaylist ? handleClickPrevious : undefined}
               onClickNext={isPlaylist ? handleClickNext : undefined}
-              onPlay={(e) => handleOnPlay(e)}
+              onPlay={() => handleOnPlay()}
               onPause={handleOnPause}
               showFilledProgress={true}
               autoPlayAfterSrcChange={true}
-              ref={refPlayer}
+              ref={audioRefPlayer}
+              {...isExtendedOpen ? { customVolumeControls: [] } : {}}
             />
-            <AccordionTrigger className="bg-transparent">
+            <AccordionTrigger className="bg-white ml-2 w-8 flex justify-center">
             </AccordionTrigger>
           </div>
         </AccordionItem>
