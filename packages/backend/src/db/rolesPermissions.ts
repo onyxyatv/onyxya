@@ -13,6 +13,7 @@ export const rolesPermissions = {
     Permissions.UploadMedia,
     Permissions.DeleteMedia,
     Permissions.CreatePlaylist,
+    Permissions.DeletePlaylist,
   ],
   admin: [
     Permissions.ReadMedias,
@@ -26,6 +27,7 @@ export const rolesPermissions = {
     Permissions.UploadMedia,
     Permissions.DeleteMedia,
     Permissions.CreatePlaylist,
+    Permissions.DeletePlaylist,
   ],
   user: [Permissions.ReadMedias, Permissions.CreatePlaylist],
 };

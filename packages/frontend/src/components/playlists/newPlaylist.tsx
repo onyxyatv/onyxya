@@ -21,7 +21,12 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from '@/components/ui/select';
 import FrontUtilService from '@/utils/frontUtilService';
 
-const NewPlaylistPopup = (props: { reloadPlaylists: any }) => {
+interface NewPlaylistProps {
+  reloadPlaylists: () => void;
+  playlistType: 'music' | 'movies' | 'serie';
+}
+
+const NewPlaylistPopup = (props: NewPlaylistProps) => {
   const [popupOpened, setPopupOpened] = useState(false);
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
@@ -33,7 +38,7 @@ const NewPlaylistPopup = (props: { reloadPlaylists: any }) => {
       name: "",
       description: "",
       visibility: 'private',
-      type: 'music',
+      type: props.playlistType,
     }
   });
 

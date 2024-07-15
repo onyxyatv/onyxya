@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import useGetPlaylistsBy from "@/hooks/useGetPlaylistsBy";
-import NewPlaylistPopup from "./newPlaylist";
+import NewPlaylistPopup from "../playlists/newPlaylist";
 import AuthContext from "@/utils/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -32,7 +32,7 @@ const MusicsPlaylistMenu = () => {
   return (
     <div id="MusicsPlaylistMenu"
       className="w-1/6 items-center border-r-4 mr-2 h-[80vh] border-gray-500 flex flex-col p-2">
-      <NewPlaylistPopup reloadPlaylists={() => setNeedReload(true)} />
+      <NewPlaylistPopup reloadPlaylists={() => setNeedReload(true)} playlistType="music" />
       <p className="text-xs mt-2">You have {playlists ? playlists.length : 0} playlist(s)</p>
       {
         (playlists !== undefined &&

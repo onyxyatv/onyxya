@@ -2,6 +2,7 @@ import {
   BadRequestError,
   CustomError,
   NotFoundError,
+  UnauthorizedError,
 } from '@common/errors/CustomError';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,6 +21,8 @@ import { Media } from 'src/models/media.model';
 import { MediasPlaylist } from 'src/models/mediasplaylist.model';
 import { ChangeMediaPosition } from '@common/validation/playlist/changeMediaPosition.schema';
 import { EditPlaylist } from '@common/validation/playlist/editPlaylist.schema';
+import { UserService } from 'src/users/users.service';
+import { Permissions } from 'src/db/permissions';
 
 @Injectable()
 export class PlaylistsService {
@@ -32,6 +35,7 @@ export class PlaylistsService {
     private readonly mediaRepository: Repository<Media>,
     @InjectRepository(MediasPlaylist)
     private readonly mediaPlaylistRepo: Repository<MediasPlaylist>,
+    private readonly userService: UserService,
   ) {}
 
   /**
@@ -75,8 +79,11 @@ export class PlaylistsService {
     });
     if (checkPlaylist === null) {
       const playlist: Playlist = new Playlist(playlistData.name);
+      if (playlistData.description)
+        playlist.description = playlistData.description;
       playlist.user = user;
       playlist.type = playlistData.type;
+
       const resDb: Playlist = await this.playlistsRepository.save(playlist);
       if (resDb) return new CreatedResponse();
     }
@@ -262,5 +269,34 @@ export class PlaylistsService {
       return new SuccessResponse();
     }
     throw new NotFoundError('Playlist not found or data incorrect');
+  }
+
+  async deletePlaylist(
+    userId: number,
+    playlistId: number,
+  ): Promise<CustomResponse | CustomError> {
+    const playlist: Playlist = await this.playlistsRepository.findOne({
+      where: { id: playlistId },
+      relations: { user: true },
+    });
+    const user: User = await this.userRepository.findOneBy({ id: userId });
+    const canDelete: boolean = await this.userService.userHasPermission(
+      user,
+      Permissions.DeletePlaylist,
+    );
+
+    if (playlist && user) {
+      // The user is either the owner or has permission to delete a playlist
+      if (!canDelete && user.id !== playlist.user.id) {
+        throw new UnauthorizedError(
+          'Insufficient permissions to delete this playlist',
+        );
+      }
+      await this.playlistsRepository.delete(playlist);
+
+      return new SuccessResponse();
+    }
+
+    throw new NotFoundError('Playlist or user not found');
   }
 }

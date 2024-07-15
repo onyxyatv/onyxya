@@ -49,7 +49,7 @@ const EditPlaylistPopup = (props: EditPlaylistProps) => {
       const finalEndpoint: string = 
         FrontUtilService.playlistById.replace(':id', props.playlist.id.toString());
       const res: AxiosResponse = await FrontUtilService.patchApi(finalEndpoint, values);
-      if (res.status === HttpStatusCode.Created) {
+      if (res.status === HttpStatusCode.Ok) {
         if (form !== undefined) {
           form.reset();
           setPopupOpened(false);

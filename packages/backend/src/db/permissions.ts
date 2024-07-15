@@ -11,6 +11,7 @@ export enum Permissions {
   DeleteMedia = 'delete_media',
   CreatePlaylist = 'create_playlist',
   Owner = 'owner',
+  DeletePlaylist = 'delete_playlist',
 }
 
 export const permissions = [
@@ -61,5 +62,9 @@ export const permissions = [
   {
     name: Permissions.Owner,
     description: 'Is the owner of the application',
+  },
+  {
+    name: Permissions.DeletePlaylist,
+    description: "Can delete playlists it doesn't own",
   },
 ];

@@ -153,4 +153,16 @@ export class PlaylistsController {
       await this.playlistsService.editPlaylist(playlistId, editedPlaylist);
     return res.status(resService.statusCode).json(resService);
   }
+
+  @Delete('/playlist/:playlistId')
+  async deletePlaylist(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param() params: { playlistId: number },
+  ): Promise<Response> {
+    const userId: number = req['user'].id;
+    const resService: CustomResponse | CustomError =
+      await this.playlistsService.deletePlaylist(userId, params.playlistId);
+    return res.status(resService.statusCode).json(resService);
+  }
 }
