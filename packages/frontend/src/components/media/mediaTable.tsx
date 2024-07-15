@@ -35,9 +35,6 @@ export function MediaTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
   const perms = useContext(AuthContext)?.authUser?.permissions;
-  console.log(perms);
-  console.log(perms?.includes("sync_media"));
-  
 
   const columns: ColumnDef<Media>[] = [
     {

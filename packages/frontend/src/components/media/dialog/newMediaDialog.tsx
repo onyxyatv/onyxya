@@ -36,7 +36,9 @@ const NewMediaDialog = ({ onMediaAdded, disabled }: NewMediaDialogProps) => {
         const formData = new FormData();
         formData.append("file", file);
         const res = await FrontUtilService.postApi("/media", formData);
-        if (res) {
+        console.log("res", res);
+        
+        if (res.statusCode === 200) {
           toast({
             title: "Media uploaded",
             description: "Media uploaded successfully",
@@ -49,7 +51,7 @@ const NewMediaDialog = ({ onMediaAdded, disabled }: NewMediaDialogProps) => {
           console.error("Failed to upload media");
           toast({
             title: "Media upload failed",
-            description: "Failed to upload media",
+            description: res.message,
             variant: "destructive",
           });
         }
@@ -66,13 +68,6 @@ const NewMediaDialog = ({ onMediaAdded, disabled }: NewMediaDialogProps) => {
 
   return (
     <AlertDialog>
-      {/* <AlertDialogTrigger>
-        <Button
-          variant="default"
-        >
-          Add media
-        </Button>
-      </AlertDialogTrigger> */}
       {
         !disabled ? (
           <AlertDialogTrigger>
