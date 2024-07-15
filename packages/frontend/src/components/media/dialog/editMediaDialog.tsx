@@ -47,18 +47,6 @@ type EditMediaPopupProps = {
   onUpdate?: () => void;
 };
 
-const formatDate = (date: Date) => {
-  const d = new Date(date);
-  let month = "" + (d.getMonth() + 1);
-  let day = "" + d.getDate();
-  const year = d.getFullYear();
-
-  if (month.length < 2) month = "0" + month;
-  if (day.length < 2) day = "0" + day;
-
-  return [year, month, day].join("-");
-};
-
 const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
@@ -278,7 +266,7 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
                                 type="date"
                                 className="border-slate-200 border-2 bg-slate-100"
                                 value={
-                                  field.value ? formatDate(field.value) : ""
+                                  field.value ? FrontUtilService.formatDate(field.value) : ""
                                 }
                                 onChange={(e) =>
                                   field.onChange(new Date(e.target.value))

@@ -18,4 +18,5 @@ export type MediaCard = {
   category: string;
   releaseDate: Date;
   isActive: boolean;
+  media: Media;
 }

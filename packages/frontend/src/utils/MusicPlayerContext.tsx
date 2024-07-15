@@ -1,8 +1,9 @@
 import { FC, ReactNode, createContext, useState } from "react";
 import FrontUtilService from "./frontUtilService";
+import { MediaCard } from "@/components/models/media";
 
 interface MusicPlayed {
-  mediaId: number;
+  mediaCard: MediaCard;
   src: string;
 }
 
@@ -30,14 +31,14 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
   const [playlist, setPlaylist] = useState<Array<string>>([]);
 
   const fetchMusic = async (musicId: number): Promise<void> => {
-    console.log('called fetch music :', musicId);
     setIsLoading(true);
     const endpoint: string = '/media/getFile/' + musicId;
     const res: Blob = await FrontUtilService.getBlobFromApi(endpoint);
+    const resMedia: any = await FrontUtilService.getDataFromApi(`/mediacard/media/${musicId}?withMedia=true`);
     if (res.size > 0) {
       const url = URL.createObjectURL(res);
       setMusic({
-        mediaId: musicId,
+        mediaCard: resMedia,
         src: url
       });
     }

@@ -9,6 +9,7 @@ import {
   Get,
   Patch,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -61,10 +62,17 @@ export class MediaCardController {
    * @returns a media card
    */
   @Get('/media/:id')
-  async getMediaCard(@Res() res: Response, @Req() req: any): Promise<Response> {
+  async getMediaCard(
+    @Res() res: Response,
+    @Req() req: any,
+    @Query() query: { withMedia: string },
+  ): Promise<Response> {
+    const withMedia: boolean = query.withMedia
+      ? query.withMedia === 'true'
+      : false;
     const id = req.params.id;
     const mediaCard: MediaCard =
-      await this.mediaCardService.getMediaCardByMedia(id);
+      await this.mediaCardService.getMediaCardByMedia(id, withMedia);
     return res.status(200).json(mediaCard);
   }
 

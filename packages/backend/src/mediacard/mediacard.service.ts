@@ -68,10 +68,15 @@ export class MediaCardService {
    * @throws BadRequestError if the media card is not found
    * @throws InternalServerError if an error occurs
    */
-  async getMediaCardByMedia(id: string): Promise<MediaCard> {
+  async getMediaCardByMedia(
+    id: string,
+    withMedia: boolean,
+  ): Promise<MediaCard> {
     try {
+      const mediaRelation = withMedia ? { media: true } : null;
       const card = await this.mediaCardRepository.findOne({
         where: { media: { id: parseInt(id) } },
+        relations: mediaRelation,
       });
       if (!card) {
         throw new BadRequestError('MediaCard not found');
