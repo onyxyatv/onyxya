@@ -20,7 +20,7 @@ export class Playlist {
   @Column({ default: 'No name' })
   name: string;
 
-  @Column({ nullable: true, default: 'No description' })
+  @Column({ nullable: false, default: 'No description' })
   description: string;
 
   @Column({ default: true })

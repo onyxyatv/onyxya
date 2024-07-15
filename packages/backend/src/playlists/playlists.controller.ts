@@ -42,6 +42,10 @@ import {
   ChangeMediaPosition,
   changeMediaPositionSchema,
 } from '@common/validation/playlist/changeMediaPosition.schema';
+import {
+  EditPlaylist,
+  editPlaylistSchema,
+} from '@common/validation/playlist/editPlaylist.schema';
 
 @UseGuards(AuthGuard) // AuthGuard for all routes of this module
 @Controller('playlists')
@@ -134,6 +138,19 @@ export class PlaylistsController {
   ): Promise<Response> {
     const resService: CustomResponse | CustomError =
       await this.playlistsService.changeMediaPosition(changedMedia);
+    return res.status(resService.statusCode).json(resService);
+  }
+
+  @Patch('/playlist/:id')
+  async editPlaylist(
+    @Param() params: { id: number },
+    @Body(new ZodValidationPipe(editPlaylistSchema))
+    editedPlaylist: EditPlaylist,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const playlistId: number = params.id;
+    const resService: CustomResponse | CustomError =
+      await this.playlistsService.editPlaylist(playlistId, editedPlaylist);
     return res.status(resService.statusCode).json(resService);
   }
 }

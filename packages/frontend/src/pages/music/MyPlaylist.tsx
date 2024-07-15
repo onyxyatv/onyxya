@@ -77,9 +77,9 @@ const MyPlaylist = () => {
                 {playlist.mediasPlaylist.length} music(s)
               </p>
               {
-                playlist.desription &&
+                playlist.description !== undefined &&
                 <p className="font-thin">
-                  {playlist.desription}
+                  {playlist.description}
                 </p>
               }
               <div className="flex flex-row mt-2 space-x-2">

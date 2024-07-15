@@ -57,7 +57,7 @@ const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps): JSX.Element => {
     <Dialog open={popupOpened} onOpenChange={setPopupOpened}>
       <DialogTrigger>
         <Button variant="outline">
-          <Plus /> Add to Playlist
+          <Plus /> Playlists
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-slate-100">

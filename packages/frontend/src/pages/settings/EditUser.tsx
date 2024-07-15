@@ -47,7 +47,7 @@ const EditUser = () => {
         />
         <h2 className="text-2xl font-bold">Edit user #{id}</h2>
         {userId !== null && user !== null && (
-          <Card>
+          <Card className="mt-2">
             <CardHeader>
               <CardDescription className="text-center text-2xl font-bold">
                 {FrontUtilService.capitalizeString(user.username)}'s card

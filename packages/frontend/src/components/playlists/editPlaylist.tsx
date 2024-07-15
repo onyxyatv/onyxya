@@ -13,14 +13,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/co
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreatePlaylist, createPlaylistSchema } from '@common/validation/playlist/createPlaylist.schema';
 import { AxiosResponse, HttpStatusCode } from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from '@/components/ui/select';
 import FrontUtilService from '@/utils/frontUtilService';
 import { Playlist } from '../models/playlist';
+import { EditPlaylist, editPlaylistSchema } from '@common/validation/playlist/editPlaylist.schema';
 
 interface EditPlaylistProps {
   playlist: Playlist;
@@ -32,30 +32,30 @@ const EditPlaylistPopup = (props: EditPlaylistProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
   
-  const initialForm = {
+  const initialForm = useMemo(() => ({
     name: props.playlist.name,
-    description: (props.playlist.desription) ? props.playlist.desription : "",
+    description: props.playlist.description,
     visibility: (props.playlist.visibility) ? props.playlist.visibility : 'private',
-    type: props.playlist.type,
-  };
+  }), [props.playlist.description, props.playlist.name, props.playlist.visibility]);
 
-  const form = useForm<CreatePlaylist>({
-    resolver: zodResolver(createPlaylistSchema),
+  const form = useForm<EditPlaylist>({
+    resolver: zodResolver(editPlaylistSchema),
     mode: "onSubmit",
     defaultValues: initialForm,
   });
 
-  const handleCreatePlaylist = async (values: CreatePlaylist) => {
+  const handleEditPlaylist = async (values: EditPlaylist) => {
     try {
-      console.log(values);
-      /*const res: AxiosResponse = await FrontUtilService.postApi(FrontUtilService.newPlaylistEndpoint, values);
+      const finalEndpoint: string = 
+        FrontUtilService.playlistById.replace(':id', props.playlist.id.toString());
+      const res: AxiosResponse = await FrontUtilService.patchApi(finalEndpoint, values);
       if (res.status === HttpStatusCode.Created) {
         if (form !== undefined) {
           form.reset();
           setPopupOpened(false);
           props.reloadPlaylist(true);
         }
-      }*/
+      }
 
     } catch (error: any) {
       const errorMessage: string = (error.response !== undefined) ? error.response.statusText : "No More details";
@@ -66,7 +66,8 @@ const EditPlaylistPopup = (props: EditPlaylistProps) => {
 
   useEffect(() => {
     if (!popupOpened) form.reset();
-  }, [props.playlist, form, popupOpened]);
+    if (popupOpened) form.reset(initialForm);
+  }, [props.playlist, form, popupOpened, initialForm]);
 
   return (
     <Dialog open={popupOpened} onOpenChange={setPopupOpened}>
@@ -87,7 +88,7 @@ const EditPlaylistPopup = (props: EditPlaylistProps) => {
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleCreatePlaylist)}>
+                  <form onSubmit={form.handleSubmit(handleEditPlaylist)}>
                     <FormField
                       control={form.control}
                       name="name"
@@ -110,7 +111,7 @@ const EditPlaylistPopup = (props: EditPlaylistProps) => {
                           <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                              <Input className="border-slate-200 border-2 bg-slate-100" placeholder={props.playlist.desription} {...field} />
+                              <Input className="border-slate-200 border-2 bg-slate-100" placeholder={props.playlist.description} {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -146,7 +147,7 @@ const EditPlaylistPopup = (props: EditPlaylistProps) => {
                       <DialogClose>
                         <Button type="reset" variant="secondary">Close</Button>
                       </DialogClose>
-                      <Button type="submit" variant="outline" className="bg-green-300 hover:bg-green-500">Confirm</Button>
+                      <Button type="submit" variant="outline" className="bg-green-300 hover:bg-green-500">Save changes</Button>
                     </div>
                   </form>
                 </Form>

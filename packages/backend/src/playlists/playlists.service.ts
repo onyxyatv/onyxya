@@ -19,6 +19,7 @@ import { AddMediaPlaylist } from '@common/validation/playlist/addMediaPlaylist.s
 import { Media } from 'src/models/media.model';
 import { MediasPlaylist } from 'src/models/mediasplaylist.model';
 import { ChangeMediaPosition } from '@common/validation/playlist/changeMediaPosition.schema';
+import { EditPlaylist } from '@common/validation/playlist/editPlaylist.schema';
 
 @Injectable()
 export class PlaylistsService {
@@ -245,5 +246,21 @@ export class PlaylistsService {
     }
 
     throw new NotFoundError('Media in this Playlist not found');
+  }
+
+  async editPlaylist(
+    playlistId: number,
+    editedPlaylist: EditPlaylist,
+  ): Promise<CustomResponse | CustomError> {
+    const playlist: Playlist = await this.getPlaylistById(playlistId);
+    if (playlist) {
+      for (const key of Object.keys(editedPlaylist)) {
+        if (playlist[key] !== editedPlaylist[key])
+          playlist[key] = editedPlaylist[key];
+      }
+      await this.playlistsRepository.save(playlist);
+      return new SuccessResponse();
+    }
+    throw new NotFoundError('Playlist not found or data incorrect');
   }
 }

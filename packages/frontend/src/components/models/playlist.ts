@@ -11,7 +11,7 @@ export type MediasPlaylist = {
 export type Playlist = {
   id: number;
   name: string;
-  desription: string;
+  description: string;
   isActive: boolean;
   user: User;
   type: 'music' | 'movies' | 'serie';

@@ -9,3 +9,13 @@ export type Media = {
   createdAt: Date;
   ModifiedAt: Date;
 };
+
+export type MediaCard = {
+  id: number;
+  name: string;
+  description: string;
+  type: string;
+  category: string;
+  releaseDate: Date;
+  isActive: boolean;
+}

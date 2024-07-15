@@ -33,6 +33,7 @@ const MusicsPlaylistMenu = () => {
     <div id="MusicsPlaylistMenu"
       className="w-1/6 items-center border-r-4 mr-2 h-[80vh] border-gray-500 flex flex-col p-2">
       <NewPlaylistPopup reloadPlaylists={() => setNeedReload(true)} />
+      <p className="text-xs mt-2">You have {playlists ? playlists.length : 0} playlist(s)</p>
       {
         (playlists !== undefined &&
           playlists.length > 0) &&
@@ -44,6 +45,7 @@ const MusicsPlaylistMenu = () => {
                 <div key={`playlist-${playlist.name}`} onClick={() => selectPlaylist(playlist.id)}
                   className="flex justify-between w-full flex-row hover:cursor-pointer hover:bg-gray-300 p-2 rounded-sm">
                   <h5>{playlist.name}</h5>
+                  <p className="text-xs">{playlist.description}</p>
                 </div>
               );
             })
