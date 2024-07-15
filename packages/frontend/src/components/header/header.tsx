@@ -7,39 +7,38 @@ import { Link } from "react-router-dom";
 import { Button } from "../ui/button";  // Assurez-vous que ce chemin est correct pour votre projet
 
 const Header: FunctionComponent = () => {
-  const userRole = useContext(AuthContext)?.authUser?.role.name;
+  const perms = useContext(AuthContext)?.authUser?.permissions;
 
   const columns = [
     {
       name: "Home",
       link: "/home",
-      role: "user",
     },
     {
       name: "Movies",
       link: "/movies",
-      role: "user",
     },
     {
       name: "Series",
       link: "/series",
-      role: "user",
     },
     {
       name: "Music",
       link: "/music",
-      role: "user",
     },
     {
       name: "Media",
       link: "/media",
-      role: "admin",
+      perm: "admin_read_media",
     },
   ];
 
-  const filteredColumns = userRole === "admin" 
-    ? columns 
-    : columns.filter(column => column.role === "user");
+  const filteredColumns = columns.filter((column) => {
+    if (!column.perm) return true;
+    if (perms?.includes(column.perm)) return true;
+    return false;
+  });
+  
 
   return (
     <header className="flex bg-slate-600 p-4">

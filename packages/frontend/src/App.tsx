@@ -2,19 +2,19 @@ import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import MusicPlayer from "./components/music/musicPlayer";
+import { Toaster } from "./components/ui/toaster";
 import Media from "./pages/Media";
 import Movies from "./pages/Movies";
 import Music from "./pages/music/Music";
+import MyPlaylist from "./pages/music/MyPlaylist";
 import Series from "./pages/Series";
-import Unauthorized from "./pages/Unauthorized";
 import EditUser from "./pages/settings/EditUser";
 import Settings from "./pages/settings/Settings";
+import Unauthorized from "./pages/Unauthorized";
 import { AuthProvider } from "./utils/AuthContext";
-import ProtectedRoute from "./utils/ProtectedRoute";
-import MyPlaylist from "./pages/music/MyPlaylist";
-import MusicPlayer from "./components/music/musicPlayer";
 import { MusicPlayerProvider } from "./utils/MusicPlayerContext";
-import { Toaster } from "./components/ui/toaster";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 const App: React.FC = () => {
   return (
@@ -59,7 +59,9 @@ const App: React.FC = () => {
             <Route
               path="/media"
               element={
-                <Media />
+                <ProtectedRoute permission="admin_read_media">
+                  <Media />
+                </ProtectedRoute>
               }
             />
             <Route
@@ -91,7 +93,7 @@ const App: React.FC = () => {
           <MusicPlayer />
         </Router>
       </MusicPlayerProvider>
-    </AuthProvider >
+    </AuthProvider>
   );
 };
 

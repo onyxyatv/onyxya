@@ -4,9 +4,11 @@ export enum Permissions {
   CreateUser = 'create_user',
   ReadPermissions = 'read_permissions',
   ReadRolePermissions = 'read_role_permissions',
+  AdminReadMedia = 'admin_read_media',
   AdminUsers = 'admin_users',
   AdminRoles = 'admin_roles',
   AdminUserPermissions = 'admin_user_permissions',
+  SyncMedia = 'sync_media',
   UploadMedia = 'upload_media',
   DeleteMedia = 'delete_media',
   CreatePlaylist = 'create_playlist',
@@ -35,6 +37,10 @@ export const permissions = [
     description: 'List permissions of a role',
   },
   {
+    name: Permissions.AdminReadMedia,
+    description: 'Can see all media',
+  },
+  {
     name: Permissions.AdminUsers,
     description: 'Can administrate users (Modification / Deletion)',
   },
@@ -45,6 +51,10 @@ export const permissions = [
   {
     name: Permissions.AdminUserPermissions,
     description: 'Can administrate roles and edit their permissions',
+  },
+  {
+    name: Permissions.SyncMedia,
+    description: 'Can synchronize media',
   },
   {
     name: Permissions.UploadMedia,

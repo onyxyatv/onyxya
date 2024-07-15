@@ -17,9 +17,10 @@ import { Input } from "@/components/ui/input";
 
 type NewMediaDialogProps = {
   onMediaAdded?: () => void;
+  disabled?: boolean;
 };
 
-const NewMediaDialog = ({ onMediaAdded }: NewMediaDialogProps) => {
+const NewMediaDialog = ({ onMediaAdded, disabled }: NewMediaDialogProps) => {
   const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,13 +66,26 @@ const NewMediaDialog = ({ onMediaAdded }: NewMediaDialogProps) => {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger>
+      {/* <AlertDialogTrigger>
         <Button
           variant="default"
         >
           Add media
         </Button>
-      </AlertDialogTrigger>
+      </AlertDialogTrigger> */}
+      {
+        !disabled ? (
+          <AlertDialogTrigger>
+            <Button size="sm" variant="default" className="m-1">
+              Add media
+            </Button>
+          </AlertDialogTrigger>
+        ) : (
+          <Button size="sm" variant="default" className="m-1" disabled>
+            Add media
+          </Button>
+        )
+      }
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Add media</AlertDialogTitle>
