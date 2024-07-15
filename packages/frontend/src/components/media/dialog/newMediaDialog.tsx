@@ -38,7 +38,7 @@ const NewMediaDialog = ({ onMediaAdded, disabled }: NewMediaDialogProps) => {
         const res = await FrontUtilService.postApi("/media", formData);
         console.log("res", res);
         
-        if (res.statusCode === 200) {
+        if (res.status === 201) {
           toast({
             title: "Media uploaded",
             description: "Media uploaded successfully",

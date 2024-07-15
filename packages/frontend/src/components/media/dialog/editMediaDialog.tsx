@@ -16,7 +16,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
 import { Button } from "../../ui/button";
@@ -102,11 +102,6 @@ const EditMediaDialog = ({
     }
   };
 
-  useEffect(() => {
-    fetchMediaCard();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const fetchMediaCard = async () => {
     const card: MediaCard = await FrontUtilService.getDataFromApi(
       `/mediacard/media/${mediaId}`
@@ -116,8 +111,14 @@ const EditMediaDialog = ({
     }
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen) {
+      fetchMediaCard();
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog onOpenChange={handleOpenChange}>
       {!disabled ? (
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="m-1">
