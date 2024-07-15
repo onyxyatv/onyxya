@@ -21,18 +21,20 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { Media } from "../models/media";
 import DeleteMediaDialog from "./dialog/deleteMediaDialog";
 import NewMediaDialog from "./dialog/newMediaDialog";
 import EditMediaDialog from "./dialog/editMediaDialog";
 import { SyncMediaButton } from "./syncMediaButton";
+import AuthContext from "@/utils/AuthContext";
 
 export function MediaTable() {
   const [medias, setMedias] = useState<Array<Media>>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const perms = useContext(AuthContext)?.authUser?.permissions;
 
   const columns: ColumnDef<Media>[] = [
     {
@@ -60,14 +62,12 @@ export function MediaTable() {
       header: "Actions",
       cell: (info) => (
         <div className="">
-          <Button variant="outline" size="sm" className="m-1">
-            View
-          </Button>
           <EditMediaDialog
             mediaId={info.row.original.id}
             onUpdate={fetchData}
+            disabled={!perms?.includes("edit_media")}
           />
-          <DeleteMediaDialog mediaId={info.row.original.id} />
+          <DeleteMediaDialog mediaId={info.row.original.id} disabled={!perms?.includes("delete_media")}/>
         </div>
       ),
     },
@@ -112,8 +112,8 @@ export function MediaTable() {
           }
           className="max-w-sm"
         />
-        <SyncMediaButton onSyncComplete={fetchData}>Sync Media</SyncMediaButton>
-        <NewMediaDialog onMediaAdded={fetchData}/>
+        <SyncMediaButton onSyncComplete={fetchData} disabled={!perms?.includes("sync_media")}>Sync Media</SyncMediaButton>
+        <NewMediaDialog onMediaAdded={fetchData} disabled={!perms?.includes("upload_media")}/>
       </div>
       <ScrollArea className="h-[250px] pr-3">
         <Table className="border-2 border-gray-200">

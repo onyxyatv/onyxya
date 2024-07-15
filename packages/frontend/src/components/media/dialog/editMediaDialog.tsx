@@ -6,7 +6,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useGetPerms } from "@/hooks/useGetPerms";
 import FrontUtilService from "@/utils/frontUtilService";
 import {
   MediaCard,
@@ -17,7 +16,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
 import { Button } from "../../ui/button";
@@ -45,6 +44,7 @@ import { toast } from "../../ui/use-toast";
 type EditMediaPopupProps = {
   mediaId: number;
   onUpdate?: () => void;
+  disabled?: boolean;
 };
 
 const formatDate = (date: Date) => {
@@ -59,10 +59,13 @@ const formatDate = (date: Date) => {
   return [year, month, day].join("-");
 };
 
-const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
+const EditMediaDialog = ({
+  mediaId,
+  onUpdate,
+  disabled,
+}: EditMediaPopupProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
-  const perms = useGetPerms();
 
   const form = useForm<MediaCard>({
     resolver: zodResolver(mediaCardSchema),
@@ -72,15 +75,6 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
 
   const handleEditMedia = async (values: MediaCard) => {
     try {
-      if (!perms?.includes("edit_media")) {
-        toast({
-          title: "Edit media",
-          description: "You don't have the permission to edit media",
-          variant: "destructive",
-        });
-        return;
-      }
-
       const res: AxiosResponse = await FrontUtilService.patchApi(
         `/mediacard/${values.id}`,
         values
@@ -108,11 +102,6 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
     }
   };
 
-  useEffect(() => {
-    fetchMediaCard();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const fetchMediaCard = async () => {
     const card: MediaCard = await FrontUtilService.getDataFromApi(
       `/mediacard/media/${mediaId}`
@@ -122,13 +111,25 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
     }
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen) {
+      fetchMediaCard();
+    }
+  };
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="m-1">
+    <Dialog onOpenChange={handleOpenChange}>
+      {!disabled ? (
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm" className="m-1">
+            Edit Media
+          </Button>
+        </DialogTrigger>
+      ) : (
+        <Button variant="outline" size="sm" className="m-1" disabled>
           Edit Media
         </Button>
-      </DialogTrigger>
+      )}
       <DialogContent className="bg-slate-100">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl">Edit Media</DialogTitle>

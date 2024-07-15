@@ -4,25 +4,41 @@ import FrontUtilService from "@/utils/frontUtilService";
 type SyncMediaButtonProps = {
   onSyncComplete: () => void;
   children?: React.ReactNode;
-};
+  disabled?: boolean;
+}
 
-export const SyncMediaButton = ({ onSyncComplete, children }: SyncMediaButtonProps): JSX.Element => {
+export const SyncMediaButton = ({ onSyncComplete, children, disabled }: SyncMediaButtonProps): JSX.Element => {
 
   function syncMedia() {
     FrontUtilService.getDataFromApi("/media/sync");
   }
 
   return (
-    <Button
-      variant="default"
-      size="sm"
-      className="m-2"
-      onClick={() => {
-        syncMedia();
-        onSyncComplete();
-      }}
-    >
-      {children || "Sync Media"}
-    </Button>
+    <>
+      {
+        !disabled ? (
+          <Button
+            variant="default"
+            size="sm"
+            className="m-2"
+            onClick={() => {
+              syncMedia();
+              onSyncComplete();
+            }}
+          >
+            {children || "Sync Media"}
+          </Button>
+        ) : (
+          <Button
+            variant="default"
+            size="sm"
+            className="m-2"
+            disabled
+          >
+            {children || "Sync Media"}
+          </Button>
+        )
+      }
+    </>
   );
 };

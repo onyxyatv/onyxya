@@ -5,9 +5,10 @@ import AuthContext from "../utils/AuthContext";
 interface ProtectedRouteProps {
   children: React.ReactNode;
   role?: string;
+  permission?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role, permission }) => {
   const context = useContext(AuthContext);
 
   if (!context) {
@@ -25,6 +26,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   }
 
   if (role && authUser.role.name !== role) {
+    return <Navigate to="/unauthorized" />;
+  }
+
+  if (permission && !authUser.permissions.includes(permission)) {
     return <Navigate to="/unauthorized" />;
   }
 
