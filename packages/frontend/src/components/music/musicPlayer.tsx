@@ -85,7 +85,7 @@ const MusicPlayer = () => {
 
   return (
     (visibility && (music !== null || (playlist && isPlaylist))) &&
-    <section className="bg-gray-800 p-2 flex flex-row fixed bottom-0 w-full justify-between">
+    <section className="bg-gray-800 p-2 z-40 flex flex-row fixed bottom-0 w-full justify-between">
       <Accordion className="w-full" onValueChange={handleOpenedState} type="single" collapsible>
         <AccordionItem value="item-1" className="border-0">
           <AccordionContent>

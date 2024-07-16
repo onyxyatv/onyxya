@@ -21,6 +21,9 @@ services:
     environment:
       - ONYXYA_API_PORT=3000
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      # Don't forget to change admin's credentials
+      - ONYXYA_OWNER_USERNAME=admin
+      - ONYXYA_OWNER_PASSWORD=changeme
     ports:
       - "3000:3000"
       - "5173:5173"
