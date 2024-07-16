@@ -3,17 +3,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { UsersDataTable } from "./users/userDataTable";
 import { userColumns } from "./users/userColumns";
 import CreateUserPopup from "./users/createUserPopup";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import AuthContext from "@/utils/AuthContext";
+import { Alert } from "../ui/alert";
 
 const UserAdminSettings = () => {
   const [usersList, setUsers] = useGetUsers();
   const [needReload, reloadUsers] = useState(false);
+  const perms = useContext(AuthContext)?.authUser?.permissions;
 
   useEffect(() => {
     setUsers();
     if (needReload) reloadUsers(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [needReload]);
+
+  if (!perms?.includes("admin_users")) {
+    return (
+      <Alert variant={"destructive"}>You don't have access to this ressource</Alert>
+    )
+  }
 
   return (
     <section>
