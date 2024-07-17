@@ -59,7 +59,7 @@ export class PlaylistsController {
     return res.status(200).json({
       count: playlists.length,
       playlists: playlists,
-    }); // Example -> { count: 0, users: [] }
+    }); // Example -> { count: 0, playlists: [] }
   }
 
   @UseGuards(PermissionsGuard)

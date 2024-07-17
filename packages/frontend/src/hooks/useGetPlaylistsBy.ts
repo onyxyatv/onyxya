@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { Playlist } from "@/components/models/playlist";
 
 interface GetPlaylistsByProps {
-  userId: number;
-  name: string;
+  userId: number | undefined;
+  name: string | undefined;
   withMedias: boolean;
+  isPublic: boolean | undefined;
 }
 
 function useGetPlaylistsBy(props: GetPlaylistsByProps): [playlists: Array<Playlist>, getPlaylists: () => Promise<void>, error: any] {
@@ -18,9 +19,10 @@ function useGetPlaylistsBy(props: GetPlaylistsByProps): [playlists: Array<Playli
   if (props) {
     const query = [];
     endpoint += '/by?';
-    if (props.userId !== 0) query.push('userId=' + props.userId);
-    if (props.name.length > 0) query.push('name=' + props.name);
+    if (props.userId && props.userId !== 0) query.push('userId=' + props.userId);
+    if (props.name && props.name.length > 0) query.push('name=' + props.name);
     if (props.withMedias) query.push('withMedias=true'); 
+    if (props.isPublic) query.push('isPublic=true');
     endpoint += query.join('&');
   }
 

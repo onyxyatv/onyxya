@@ -105,11 +105,15 @@ export class PlaylistsService {
       else throw new NotFoundError('User not found or permission missing');
     }
 
+    if (query.isPublic) finalSearch['visibility'] = 'public';
+
     const playlists: Array<Playlist> = await this.playlistsRepository.find({
       where: finalSearch,
       select: {
         id: true,
         name: true,
+        visibility: true,
+        description: true,
         isActive: true,
         mediasPlaylist: { media: { id: true }, id: true },
       },
