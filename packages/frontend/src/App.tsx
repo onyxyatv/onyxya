@@ -5,7 +5,8 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import MusicPlayer from "./components/music/musicPlayer";
 import { Toaster } from "./components/ui/toaster";
 import Media from "./pages/Media";
-import Movies from "./pages/Movies";
+import Movie from "./pages/movie/Movie";
+import PlayMovie from "./pages/movie/PlayMovie";
 import Music from "./pages/music/Music";
 import MyPlaylist from "./pages/music/MyPlaylist";
 import Series from "./pages/Series";
@@ -33,10 +34,10 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/movies"
+              path="/movie"
               element={
                 <ProtectedRoute>
-                  <Movies />
+                  <Movie />
                 </ProtectedRoute>
               }
             />
@@ -85,6 +86,14 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <MyPlaylist />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/movie/:id"
+              element={
+                <ProtectedRoute>
+                  <PlayMovie />
                 </ProtectedRoute>
               }
             />

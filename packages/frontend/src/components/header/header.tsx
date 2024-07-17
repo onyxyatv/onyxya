@@ -16,7 +16,7 @@ const Header: FunctionComponent = () => {
     },
     {
       name: "Movies",
-      link: "/movies",
+      link: "/movie",
     },
     {
       name: "Series",
