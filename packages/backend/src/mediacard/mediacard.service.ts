@@ -62,16 +62,37 @@ export class MediaCardService {
   }
 
   /**
-   * This medthod is used to get a media card by the id of the media.
+   * This method is used to get a media card by its id.
+   * @param id the id of the media card
+   * @returns the media card
+   * @throws BadRequestError if the media card is not found
+   */
+  async getMediaCardById(id: string): Promise<MediaCard> {
+    try {
+      const card = await this.mediaCardRepository.findOne({
+        where: { id: parseInt(id) },
+      });
+      if (!card) {
+        throw new BadRequestError('MediaCard not found');
+      }
+      return card;
+    } catch (error) {
+      console.log('Error at getMediaCardById : ', error);
+      throw new InternalServerError('Error at getMediaCardById');
+    }
+  }
+
+  /**
+   * This method is used to get a media card by the id of the media.
    * @param id the id of the media
    * @returns the mediacard
    * @throws BadRequestError if the media card is not found
    * @throws InternalServerError if an error occurs
    */
-  async getMediaCardByMedia(id: string): Promise<MediaCard> {
+  async getMediaCardByMedia(id: number): Promise<MediaCard> {
     try {
       const card = await this.mediaCardRepository.findOne({
-        where: { media: { id: parseInt(id) } },
+        where: { media: id },
       });
       if (!card) {
         throw new BadRequestError('MediaCard not found');

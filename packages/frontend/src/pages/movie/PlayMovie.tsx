@@ -3,7 +3,6 @@ import MoviePlayer from "@/components/movie/MoviePlayer";
 import { useParams } from "react-router-dom";
 
 const PlayMovie = () => {
-
   // Get the movie id from the URL (e.g. /movie/1)
   const { id } = useParams();
 

@@ -77,6 +77,12 @@ export class MediaController {
   }
 
   @NeedPermissions(Permissions.ReadMedias)
+  @Get('mediacard/:id')
+  async findById(@Param('id') id: string): Promise<object> {
+    return this.mediaService.findByMediaCardId(id);
+  }
+
+  @NeedPermissions(Permissions.ReadMedias)
   @Get('sync')
   async syncMedia(): Promise<object> {
     return this.mediaService.syncMedia();

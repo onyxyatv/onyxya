@@ -200,6 +200,10 @@ export class MediaService implements OnModuleInit {
     return this.mediaRepository.find();
   }
 
+  async findByMediaCardId(id: number) {
+    const mediaCard = await this.mediaCardService.getMediaCardById(id.toString());
+  }
+
   async getFileById(
     fileId: number,
   ): Promise<{ statusCode: number; file: string }> {
