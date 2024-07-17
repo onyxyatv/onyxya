@@ -12,6 +12,11 @@ import EditMediaDialog from "../media/dialog/editMediaDialog";
 import { MediaCard } from "../models/media";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 
+interface MusicsListsProps {
+  setPlaylistsReload: (v: boolean) => void;
+  needPlaylistsReload: boolean;
+}
+
 interface Music {
   id: number;
   mediaCard: MediaCard;
@@ -19,7 +24,7 @@ interface Music {
 
 type MusicCategories = Record<string, Array<Music>>;
 
-const MusicsLists = () => {
+const MusicsLists = (props: MusicsListsProps) => {
   const userId: number | undefined = useContext(AuthContext)?.authUser?.id;
   const [musicsByCategories, setMusics] = useState<MusicCategories>({});
   const [error, setError] = useState('');
@@ -28,8 +33,9 @@ const MusicsLists = () => {
     userId: (userId) ? userId : 0,
     name: "",
     withMedias: true,
+    isPublic: undefined,
   });
-  const [needReload, setReload] = useState<boolean>(false);
+  const [needLocalReload, setLocalReload] = useState<boolean>(false);
 
   const playMusic = (musicId: number) => {
     if (musicContext?.fetchMusic) {
@@ -54,12 +60,13 @@ const MusicsLists = () => {
 
   useEffect(() => {
     fetchAllMusics();
-    if (needReload) {
+    if (needLocalReload || props.needPlaylistsReload) {
       getPlaylists();
-      setReload(false);
+      setLocalReload(false);
+      props.setPlaylistsReload(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [needReload]);
+  }, [needLocalReload, props.needPlaylistsReload]);
 
   return (
     <div id="musicsListContainer" className="w-5/6">
@@ -105,10 +112,10 @@ const MusicsLists = () => {
                                 <AddMusicPlaylistPopup
                                   playlists={playlists}
                                   musicName={music.mediaCard.name}
-                                  reloadPlaylists={() => setReload(true)}
+                                  reloadPlaylists={() => setLocalReload(true)}
                                   musicId={music.id}
                                 />
-                                <EditMediaDialog mediaId={music.id} onUpdate={() => setReload(true)} />
+                                <EditMediaDialog mediaId={music.id} onUpdate={() => setLocalReload(true)} />
                               </CardFooter>
                             </Card>
                           );

@@ -128,6 +128,7 @@ export class PlaylistsService {
     if (playlistId !== 0) {
       const playlist: Playlist = await this.playlistsRepository.findOne({
         where: { id: playlistId },
+        relations: { user: true },
       });
       const mediasPlaylist: Array<MediasPlaylist> =
         await this.mediaPlaylistRepo.find({

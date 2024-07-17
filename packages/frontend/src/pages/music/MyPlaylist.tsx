@@ -7,6 +7,7 @@ import playlistMusicsCols from "@/components/playlists/playlistMusicsCols";
 import { PlaylistMusicsTable } from "@/components/playlists/playlistMusicsTable";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import AuthContext from "@/utils/AuthContext";
 import MusicPlayerContext from "@/utils/MusicPlayerContext";
 import FrontUtilService from "@/utils/frontUtilService";
 import { AlertCircle, ArrowLeft } from "lucide-react";
@@ -22,6 +23,7 @@ const MyPlaylist = () => {
   const setPlaylistMode = useContext(MusicPlayerContext)?.setPlaylistMode;
   const fetchMusic = useContext(MusicPlayerContext)?.fetchMusic;
   const [needReload, setReload] = useState<boolean>(false);
+  const userId: number | undefined = useContext(AuthContext)?.authUser?.id;
 
   const playMusic = (musicId: number): void => {
     if (fetchMusic) fetchMusic(musicId);
@@ -62,7 +64,7 @@ const MyPlaylist = () => {
       <Header />
 
       <section className="flex justify-start p-2">
-        <MusicsPlaylistMenu />
+        <MusicsPlaylistMenu needPlaylistsReload={needReload} setPlaylistsReload={setReload} />
         <div>
           <ArrowLeft
             className="w-5 hover:cursor-pointer"
@@ -74,6 +76,10 @@ const MyPlaylist = () => {
               <h2 className="text-2xl font-bold">
                 {FrontUtilService.capitalizeString(playlist.name)}
               </h2>
+              {
+                playlist.user.id !== userId && 
+                <h3>The playlist is managed by {playlist.user.username}</h3>
+              }
               <p>
                 {playlist.mediasPlaylist.length} music(s)
               </p>

@@ -50,8 +50,11 @@ const PlaylistsMenuList = (props: PlaylistsMenuListProps) => {
                           <div className="flex w-full justify-between">
                             <h5>{playlist.name}</h5>
                             {
-                              playlist.visibility === 'private' ?
+                              playlistContainer.tabName === 'myPlaylists' && 
+                              (
+                                playlist.visibility === 'private' ?
                                 <Lock className="text-gray-500" /> : <Globe className="text-gray-500" />
+                              )
                             }
                           </div>
                           <p className="text-xs">

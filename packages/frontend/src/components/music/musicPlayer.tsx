@@ -4,6 +4,7 @@ import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import ExtendedMusicPlayer from "./extendedMusicPlayer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import { CircleX } from "lucide-react";
 
 const MusicPlayer = () => {
   const music = useContext(MusicPlayerContext)?.music;
@@ -12,7 +13,8 @@ const MusicPlayer = () => {
   const [currentMusic, setCurrentMusic] = useState(0);  // if it's a playlist
   const playlist = useContext(MusicPlayerContext)?.playlist;
   const audioRefPlayer = useRef<AudioPlayer>(null);
-  const [isPaused, setPaused] = useState<boolean>(false);
+  const isMusicPlayling = useContext(MusicPlayerContext)?.isMusicPlayling;
+  const setIsMusicPlayling = useContext(MusicPlayerContext)?.setIsMusicPlayling;
 
   // Current volume on both sides, updated according to extended player or audio player.
   const [currentVolume, setCurrentVolume] = useState<number>(0.5);
@@ -52,8 +54,13 @@ const MusicPlayer = () => {
     }
   }
 
-  const handleOnPlay = (): void => setPaused(false);
-  const handleOnPause = (): void => setPaused(true);
+  const handleOnPlay = (): void => {
+    if (setIsMusicPlayling) setIsMusicPlayling(true);
+  };
+
+  const handleOnPause = (): void => {
+    if (setIsMusicPlayling) setIsMusicPlayling(false);
+  };
 
   const handleOpenedState = (itemName: string) => {
     const isOpened: boolean = itemName.length > 0;
@@ -62,11 +69,12 @@ const MusicPlayer = () => {
       if (isOpened) {
         setIsExtendedOpen(true);
         audio?.pause();
-        setPaused(true);
       } else {
         setIsExtendedOpen(false);
-        if (!isPaused) audio?.play();
-        setPaused(false);
+        if (isMusicPlayling && audio?.paused) {
+          audio.play();
+          if (setIsMusicPlayling) setIsMusicPlayling(true);
+        }
       }
     }
   }
@@ -75,7 +83,7 @@ const MusicPlayer = () => {
     // Checks to see if a song or playlist is playing
     if (music && music.src.length > 0) setVisibility(true);
     if (playlist && playlist.length > 0) setVisibility(true);
-    
+
     const audio = audioRefPlayer.current?.audio.current;
     if (audio) {
       if (currentVolume !== audio.volume) audio.volume = currentVolume;
@@ -88,11 +96,15 @@ const MusicPlayer = () => {
     <section className="bg-gray-800 p-2 z-40 flex flex-row fixed bottom-0 w-full justify-between">
       <Accordion className="w-full" onValueChange={handleOpenedState} type="single" collapsible>
         <AccordionItem value="item-1" className="border-0">
+          <div className="mb-2 flex w-full text-white justify-end">
+            <CircleX 
+              className="hover:cursor-pointer h-6 hover:text-red-500" 
+              onClick={() => setVisibility(false)}
+            />
+          </div>
           <AccordionContent>
             <ExtendedMusicPlayer
               currentMusicTime={audioRefPlayer.current?.audio.current?.currentTime}
-              playStatus={isPaused}
-              setPause={setPaused}
               setCurrentTime={setCurrentTime}
               setCurrentVolume={setCurrentVolume}
             />
