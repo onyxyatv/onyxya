@@ -57,7 +57,7 @@ const ExtendedMusicPlayer = (props: ExtendedMplayerProps) => {
   }, [mediaPlayerRef.current?.currentTime, props, isMusicPlayling]);
 
   return (
-    <section className="z-40 flex flex-row justify-between">
+    <section className="z-40 flex h-[77vh] overflow-y-auto flex-row justify-between">
       <div className="flex h-full w-full flex-col">
         <div className="text-white p-2">
           <h3 className="font-bold text-2xl">{music?.mediaCard.name}</h3>

@@ -2,9 +2,23 @@ import MusicPlayerContext from "@/utils/MusicPlayerContext";
 import { useContext, useEffect, useRef, useState } from "react";
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
-import ExtendedMusicPlayer from "./extendedMusicPlayer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { CircleX } from "lucide-react";
+import '@vidstack/react/player/styles/default/theme.css';
+import '@vidstack/react/player/styles/default/layouts/video.css';
+import { MediaPlayer, MediaPlayerInstance, MediaProvider, MediaSrc } from '@vidstack/react';
+import { Music } from "lucide-react";
+import {
+  DefaultAudioLayout,
+  defaultLayoutIcons,
+  DefaultVideoLayout,
+} from '@vidstack/react/player/layouts/default';
+import FrontUtilService from "@/utils/frontUtilService";
+
+interface volumeChangedProps {
+  volume: number;
+  muted: boolean;
+}
 
 const MusicPlayer = () => {
   const music = useContext(MusicPlayerContext)?.music;
@@ -54,29 +68,45 @@ const MusicPlayer = () => {
     }
   }
 
-  const handleOnPlay = (): void => {
-    if (setIsMusicPlayling) setIsMusicPlayling(true);
-  };
-
-  const handleOnPause = (): void => {
-    if (setIsMusicPlayling) setIsMusicPlayling(false);
-  };
-
   const handleOpenedState = (itemName: string) => {
     const isOpened: boolean = itemName.length > 0;
     const audio = audioRefPlayer.current?.audio.current;
     if (audioRefPlayer.current) {
       if (isOpened) {
+        if (mediaPlayerRef.current && audio?.currentTime) 
+          mediaPlayerRef.current.currentTime = audio?.currentTime;
         setIsExtendedOpen(true);
         audio?.pause();
       } else {
         setIsExtendedOpen(false);
         if (isMusicPlayling && audio?.paused) {
+          if (currentTime) audio.currentTime = currentTime;
           audio.play();
           if (setIsMusicPlayling) setIsMusicPlayling(true);
         }
       }
     }
+  }
+
+  //const music = useContext(MusicPlayerContext)?.music;
+  const musicSrc = (music) ? music.src : '';
+  const musicVideo: MediaSrc = { src: musicSrc, type: "video/mp4" };
+  const mediaPlayerRef = useRef<MediaPlayerInstance>(null);
+  //const isMusicPlayling = useContext(MusicPlayerContext)?.isMusicPlayling;
+  //const setIsMusicPlayling = useContext(MusicPlayerContext)?.setIsMusicPlayling;
+
+  const handleVolumeChanged = (infos: volumeChangedProps): void => {
+    //props.setCurrentVolume(infos.volume);
+    //if (infos.muted) props.setCurrentVolume(0);
+  }
+
+  const handleOnPause = (): void => {
+    if (setIsMusicPlayling) setIsMusicPlayling(false);
+  }
+
+  const handleOnPlay = (e: any): void => {
+    console.log(e);
+    if (setIsMusicPlayling) setIsMusicPlayling(true);
   }
 
   useEffect(() => {
@@ -97,17 +127,65 @@ const MusicPlayer = () => {
       <Accordion className="w-full" onValueChange={handleOpenedState} type="single" collapsible>
         <AccordionItem value="item-1" className="border-0">
           <div className="mb-2 flex w-full text-white justify-end">
-            <CircleX 
-              className="hover:cursor-pointer h-6 hover:text-red-500" 
+            <CircleX
+              className="hover:cursor-pointer h-6 hover:text-red-500"
               onClick={() => setVisibility(false)}
             />
           </div>
           <AccordionContent>
-            <ExtendedMusicPlayer
+            {/*<ExtendedMusicPlayer
               currentMusicTime={audioRefPlayer.current?.audio.current?.currentTime}
               setCurrentTime={setCurrentTime}
               setCurrentVolume={setCurrentVolume}
-            />
+            />*/}
+            <section className="z-40 flex h-[77vh] overflow-y-auto flex-row justify-between">
+              <div className="flex h-full w-full flex-col">
+                <div className="text-white p-2">
+                  <h3 className="font-bold text-2xl">{music?.mediaCard.name}</h3>
+                  <div className="text-base">
+                    <p>
+                      Description: {music?.mediaCard.description}
+                    </p>
+                    <p>
+                      Release Date:
+                      {
+                        music?.mediaCard.releaseDate &&
+                        ' ' + FrontUtilService.formatEuDate(music?.mediaCard.releaseDate)
+                      }
+                      {
+                        !music?.mediaCard.releaseDate && ' No informations'
+                      }
+                    </p>
+                  </div>
+                </div>
+                {
+                  <MediaPlayer
+                    ref={mediaPlayerRef}
+                    //viewType="video"
+                    //onTimeUpdate={handleOnTimeUpdate}
+                    //onTimeChange={setCurrentTime}
+                    //currentTime={currentTime}
+                    title={music?.mediaCard.name}
+                    //onPlay={handleOnPlay}
+                    onPause={() => handleOnPause}
+                    autoPlay={true}
+                    //onVolumeChange={handleVolumeChanged}
+                    className="m-2 max-w-screen-lg" src={musicVideo}
+                  >
+                    <MediaProvider />
+                    <DefaultAudioLayout colorScheme="dark" icons={defaultLayoutIcons} smallLayoutWhen={true} />
+                    <DefaultVideoLayout colorScheme="dark" icons={defaultLayoutIcons} smallLayoutWhen={false} />
+                  </MediaPlayer>
+                }
+                {
+                  !music &&
+                  <Music />
+                }
+              </div>
+              <div className="flex flex-col text-white">
+                <h4 className="text-xl">Lyrics</h4>
+              </div>
+            </section>
           </AccordionContent>
           <div className="w-full flex justify-between">
             <AudioPlayer
@@ -118,7 +196,7 @@ const MusicPlayer = () => {
               showSkipControls={isPlaylist ? true : false}
               onClickPrevious={isPlaylist ? handleClickPrevious : undefined}
               onClickNext={isPlaylist ? handleClickNext : undefined}
-              onPlay={() => handleOnPlay()}
+              onPlay={handleOnPlay}
               onPause={handleOnPause}
               showFilledProgress={true}
               autoPlayAfterSrcChange={true}
