@@ -14,6 +14,7 @@ export class MediaCardService {
   constructor(
     @InjectRepository(MediaCard)
     private mediaCardRepository: Repository<MediaCard>,
+    private mediaRepository: Repository<Media>,
   ) {}
 
   searchNewMedia(body: SearchMediaName): Promise<object> {
@@ -89,20 +90,26 @@ export class MediaCardService {
    * @throws BadRequestError if the media card is not found
    * @throws InternalServerError if an error occurs
    */
-  async getMediaCardByMedia(id: number): Promise<MediaCard> {
+  async getMediaCardByMedia(id: number): Promise<Media> {
     try {
-      const card = await this.mediaCardRepository.findOne({
-        where: { media: id },
+      const mediaCard: MediaCard = await this.mediaCardRepository.findOne({
+        where: { media: { id: id } },
       });
-      if (!card) {
+
+      if (!mediaCard) {
         throw new BadRequestError('MediaCard not found');
       }
-      return card;
+
+      const media: Media = await this.mediaRepository.findOne({
+        where: { id: id },
+      });
+
+      return media;
     } catch (error) {
-      console.log('Error at getMediaCardByMedia : ', error);
       if (error instanceof BadRequestError) {
         throw error;
       }
+      console.log('Error at getMediaCardByMedia : ', error);
       throw new InternalServerError('Error at getMediaCardByMedia');
     }
   }
