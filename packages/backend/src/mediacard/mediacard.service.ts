@@ -14,6 +14,7 @@ export class MediaCardService {
   constructor(
     @InjectRepository(MediaCard)
     private mediaCardRepository: Repository<MediaCard>,
+    @InjectRepository(Media)
     private mediaRepository: Repository<Media>,
   ) {}
 
