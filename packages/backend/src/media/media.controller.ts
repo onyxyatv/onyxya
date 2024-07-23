@@ -70,25 +70,21 @@ const fileFilter = (req, file, cb) => {
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
-  @NeedPermissions(Permissions.ReadMedias)
   @Get()
   async findAll() {
     return this.mediaService.findAll();
   }
 
-  @NeedPermissions(Permissions.ReadMedias)
   @Get('mediacard/:id')
   async findById(@Param('id') id: string): Promise<object> {
     return this.mediaService.findByMediaCardId(Number.parseInt(id));
   }
 
-  @NeedPermissions(Permissions.ReadMedias)
   @Get('sync')
   async syncMedia(): Promise<object> {
     return this.mediaService.syncMedia();
   }
 
-  @NeedPermissions(Permissions.ReadMedias)
   @Get('getFile/:fileId')
   async getFile(@Req() req: Request, @Res() res: Response): Promise<void> {
     const fileId: number = Number.parseInt(req.params.fileId);
@@ -97,7 +93,6 @@ export class MediaController {
     return res.status(data.statusCode).sendFile(data.file);
   }
 
-  @NeedPermissions(Permissions.ReadMedias)
   @Get(':mediaType/byCategories')
   async getMediasByCategories(
     @Req() req: Request,
