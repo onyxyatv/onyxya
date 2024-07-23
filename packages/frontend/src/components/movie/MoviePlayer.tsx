@@ -1,35 +1,68 @@
 import FrontUtilService from "@/utils/frontUtilService";
-import { MediaPlayer, MediaProvider, MediaSrc } from "@vidstack/react";
-import { useState } from "react";
+import { MediaCard } from "@common/validation/media/mediaCard.schema";
+import { MediaPlayer, MediaProvider } from "@vidstack/react";
+import {
+  defaultLayoutIcons,
+  DefaultVideoLayout,
+} from "@vidstack/react/player/layouts/default";
+import { useEffect, useState } from "react";
 
 type MoviePlayerProps = {
-  id: string;
+  id: string | undefined;
 };
 
 const MoviePlayer = (props: MoviePlayerProps) => {
+  const [movie, setMovie] = useState<string | null>(null);
+  const [media, setMedia] = useState<MediaCard | null>(null);
 
-  // // State
-  // const [movie, setMovie] = useState<MediaSrc | undefined>(undefined);
+  useEffect(() => {
+    if (!props.id) {
+      return;
+    }
+    getMovie(props.id).then((data) => {
+      setMovie(data);
+    });
 
-  // // Get the media from the mediaCard id
-  // const getMovie = async (id) => {
-  //   try {
-  //     const data = FrontUtilService.getDataFromApi(`/media/${id}`);
-  //   }
-  // };
+    getMedia(props.id).then((data) => {
+      setMedia(data);
+    });
+  }, [props.id]);
 
+  const getMovie = async (id: string) => {
+    const data = FrontUtilService.fetchMusic(Number(id));
+    return data;
+  };
 
+  const getMedia = async (id: string) => {
+    const data = FrontUtilService.getDataFromApi("/mediacard/media/" + id);
+    console.log(data);
+    return data;
+  };
+
+  if (!movie) {
+    return <h1>Loading...</h1>;
+  }
 
   return (
-    <h1>{props.id}</h1>
-    // <MediaPlayer src="" viewType="video" autoPlay={true}>
-    //   <MediaProvider />
-    // </MediaPlayer>
+    <div>
+      <h1>{media?.name}</h1>
+      <p>{media?.description}</p>
+      <p>{media?.category}</p>
+      {movie.length && (
+        <MediaPlayer
+          src={{
+            src: movie,
+            type: "video/mp4",
+          }}
+          viewType="video"
+          className="m-2 max-w-screen-lg"
+        >
+          <MediaProvider />
+          <DefaultVideoLayout colorScheme="dark" icons={defaultLayoutIcons} />
+        </MediaPlayer>
+      )}
+    </div>
   );
-}
+};
 
 export default MoviePlayer;
-
-// function getDataFromApi(arg0: string) {
-//   throw new Error("Function not implemented.");
-// }
