@@ -12,5 +12,25 @@
     "profile": "Profil",
     "parameters": "Paramètres",
     "disconnect": "Déconnexion"
+  },
+  "media": {
+    "table": {
+      "header": {
+        "name": "Nom",
+        "type": "Type",
+        "size": "Taille",
+        "createdAt": "Créé le",
+        "action": "Action"
+      },
+      "action": {
+        "delete": "Supprimer",
+        "edit": "Modifier"
+      }
+    },
+    "search": {
+      "placeholder": "Rechercher un média"
+    },
+    "addMediaButton": "Ajouter un média",
+    "syncMedia": "Synchroniser les médias"
   }
 }

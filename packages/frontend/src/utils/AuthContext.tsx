@@ -74,7 +74,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const initializeAuth = useCallback(async () => {
     const token = localStorage.getItem("onyxyaToken");
     if (!localStorage.getItem("onyxyaLang")) {
-      localStorage.setItem("onyxyaLang", "fr");
+      localStorage.setItem("onyxyaLang", "en");
     }
     if (token) {
       const user = parseJwt(token);
@@ -100,7 +100,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     async (token: string) => {
       localStorage.setItem("onyxyaToken", token);
       if (!localStorage.getItem("onyxyaLang")) {
-        localStorage.setItem("onyxyaLang", "fr");
+        localStorage.setItem("onyxyaLang", "en");
       }
       const user = parseJwt(token);
       if (user && user.exp * 1000 > Date.now()) {

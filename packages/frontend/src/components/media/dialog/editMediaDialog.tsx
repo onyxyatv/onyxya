@@ -18,6 +18,7 @@ import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
 import { Button } from "../../ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "../../ui/card";
@@ -66,6 +67,7 @@ const EditMediaDialog = ({
 }: EditMediaPopupProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
+  const { t } = useTranslation();
 
   const form = useForm<MediaCard>({
     resolver: zodResolver(mediaCardSchema),
@@ -122,12 +124,12 @@ const EditMediaDialog = ({
       {!disabled ? (
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="m-1">
-            Edit Media
+            {t("media.table.action.edit")}
           </Button>
         </DialogTrigger>
       ) : (
         <Button variant="outline" size="sm" className="m-1" disabled>
-          Edit Media
+          {t("media.table.action.edit")}
         </Button>
       )}
       <DialogContent className="bg-slate-100">
@@ -154,7 +156,7 @@ const EditMediaDialog = ({
                               className="border-slate-200 border-2 bg-slate-100"
                               placeholder="Media Name"
                               {...field}
-                              value={field.value ?? ''}
+                              value={field.value ?? ""}
                             />
                           </FormControl>
                           <FormDescription>Name of the media</FormDescription>
@@ -175,7 +177,7 @@ const EditMediaDialog = ({
                                 className="border-slate-200 border-2 bg-slate-100"
                                 placeholder="Description"
                                 {...field}
-                                value={field.value ?? ''}
+                                value={field.value ?? ""}
                               />
                             </FormControl>
                             <FormDescription>
@@ -195,7 +197,7 @@ const EditMediaDialog = ({
                           <FormItem>
                             <FormLabel>Type</FormLabel>
                             <Select
-                              value={field.value?? ''}
+                              value={field.value ?? ""}
                               onValueChange={field.onChange}
                             >
                               <FormControl>
@@ -233,7 +235,7 @@ const EditMediaDialog = ({
                           <FormItem>
                             <FormLabel>Category</FormLabel>
                             <Select
-                              value={field.value ?? ''}
+                              value={field.value ?? ""}
                               onValueChange={field.onChange}
                             >
                               <FormControl>

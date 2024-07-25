@@ -28,6 +28,7 @@ import NewMediaDialog from "./dialog/newMediaDialog";
 import EditMediaDialog from "./dialog/editMediaDialog";
 import { SyncMediaButton } from "./syncMediaButton";
 import AuthContext from "@/utils/AuthContext";
+import { useTranslation } from "react-i18next";
 
 export function MediaTable() {
   const [medias, setMedias] = useState<Array<Media>>([]);
@@ -35,31 +36,32 @@ export function MediaTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
   const perms = useContext(AuthContext)?.authUser?.permissions;
+  const { t } = useTranslation();
 
   const columns: ColumnDef<Media>[] = [
     {
       accessorKey: "name",
-      header: "Name",
+      header: t("media.table.header.name"),
       cell: (info) => info.getValue(),
     },
     {
       accessorKey: "type",
-      header: "Type",
+      header: t("media.table.header.type"),
       cell: (info) => info.row.original.mimeType,
     },
     {
       accessorKey: "size",
-      header: "Size",
+      header: t("media.table.header.size"),
       cell: (info) => `${(info.row.original.size / 1024 / 1024).toFixed(2)} MB`,
     },
     {
       accessorKey: "createdAt",
-      header: "Created At",
+      header: t("media.table.header.createdAt"),
       cell: (info) => new Date(info.row.original.createdAt).toLocaleString(),
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t("media.table.header.action"),
       cell: (info) => (
         <div className="">
           <EditMediaDialog
@@ -105,14 +107,14 @@ export function MediaTable() {
     <div className="rounded-md border p-2">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter by name"
+          placeholder={t("media.search.placeholder")}
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <SyncMediaButton onSyncComplete={fetchData} disabled={!perms?.includes("sync_media")}>Sync Media</SyncMediaButton>
+        <SyncMediaButton onSyncComplete={fetchData} disabled={!perms?.includes("sync_media")}>{t("media.syncMedia")}</SyncMediaButton>
         <NewMediaDialog onMediaAdded={fetchData} disabled={!perms?.includes("upload_media")}/>
       </div>
       <ScrollArea className="h-[250px] pr-3">
