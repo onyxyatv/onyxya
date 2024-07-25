@@ -1,6 +1,13 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode"; // Correction : import sans accolades
-import { FC, ReactNode, createContext, useEffect, useState, useCallback } from "react";
+import {
+  FC,
+  ReactNode,
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { api_url } from "../../config.json";
 
 interface AuthContextType {
@@ -45,9 +52,12 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const getPermissions = useCallback(async (id: number, token: string) => {
     try {
-      const res = await axios.get(`${api_url}/users/user/${id}/permissions/owned`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${api_url}/users/user/${id}/permissions/owned`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!res.data) {
         return null;
@@ -63,6 +73,9 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const initializeAuth = useCallback(async () => {
     const token = localStorage.getItem("onyxyaToken");
+    if (!localStorage.getItem("onyxyaLang")) {
+      localStorage.setItem("onyxyaLang", "fr");
+    }
     if (token) {
       const user = parseJwt(token);
       if (user && user.exp * 1000 > Date.now()) {
@@ -83,20 +96,26 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     initializeAuth();
   }, [initializeAuth]);
 
-  const login = useCallback(async (token: string) => {
-    localStorage.setItem("onyxyaToken", token);
-    const user = parseJwt(token);
-    if (user && user.exp * 1000 > Date.now()) {
-      const permissions = await getPermissions(user.id, token);
-      if (permissions) {
-        setAuthUser({ ...user, permissions });
+  const login = useCallback(
+    async (token: string) => {
+      localStorage.setItem("onyxyaToken", token);
+      if (!localStorage.getItem("onyxyaLang")) {
+        localStorage.setItem("onyxyaLang", "fr");
+      }
+      const user = parseJwt(token);
+      if (user && user.exp * 1000 > Date.now()) {
+        const permissions = await getPermissions(user.id, token);
+        if (permissions) {
+          setAuthUser({ ...user, permissions });
+        } else {
+          localStorage.removeItem("onyxyaToken");
+        }
       } else {
         localStorage.removeItem("onyxyaToken");
       }
-    } else {
-      localStorage.removeItem("onyxyaToken");
-    }
-  }, [parseJwt, getPermissions]);
+    },
+    [parseJwt, getPermissions]
+  );
 
   const logout = useCallback(() => {
     localStorage.removeItem("onyxyaToken");

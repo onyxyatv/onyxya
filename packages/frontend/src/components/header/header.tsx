@@ -5,29 +5,31 @@ import { NavigationMenu } from "../ui/navigation-menu";
 import UserMenu from "./userMenu";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";  // Assurez-vous que ce chemin est correct pour votre projet
+import { useTranslation } from "react-i18next";
 
 const Header: FunctionComponent = () => {
   const perms = useContext(AuthContext)?.authUser?.permissions;
+  const [ t ] = useTranslation();
 
   const columns = [
     {
-      name: "Home",
+      name: t("header.home"),
       link: "/home",
     },
     {
-      name: "Movies",
+      name: t("header.movie"),
       link: "/movie",
     },
     {
-      name: "Series",
+      name: t("header.series"),
       link: "/series",
     },
     {
-      name: "Music",
+      name: t("header.music"),
       link: "/music",
     },
     {
-      name: "Media",
+      name: t("header.media"),
       link: "/media",
       perm: "admin_read_media",
     },

@@ -1,0 +1,16 @@
+{
+  "hello_world": "Bonjour, Monde!",
+  "header": {
+    "home": "Accueil",
+    "movie": "Film",
+    "series": "Série",
+    "music": "Musique",
+    "media": "Média"
+  },
+  "userMenu": {
+    "myAccount": "Mon Compte",
+    "profile": "Profil",
+    "parameters": "Paramètres",
+    "disconnect": "Déconnexion"
+  }
+}
