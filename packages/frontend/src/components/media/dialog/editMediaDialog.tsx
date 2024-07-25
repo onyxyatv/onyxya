@@ -154,6 +154,7 @@ const EditMediaDialog = ({
                               className="border-slate-200 border-2 bg-slate-100"
                               placeholder="Media Name"
                               {...field}
+                              value={field.value ?? ''}
                             />
                           </FormControl>
                           <FormDescription>Name of the media</FormDescription>
@@ -174,6 +175,7 @@ const EditMediaDialog = ({
                                 className="border-slate-200 border-2 bg-slate-100"
                                 placeholder="Description"
                                 {...field}
+                                value={field.value ?? ''}
                               />
                             </FormControl>
                             <FormDescription>
@@ -193,7 +195,7 @@ const EditMediaDialog = ({
                           <FormItem>
                             <FormLabel>Type</FormLabel>
                             <Select
-                              value={field.value}
+                              value={field.value?? ''}
                               onValueChange={field.onChange}
                             >
                               <FormControl>
@@ -231,7 +233,7 @@ const EditMediaDialog = ({
                           <FormItem>
                             <FormLabel>Category</FormLabel>
                             <Select
-                              value={field.value}
+                              value={field.value ?? ''}
                               onValueChange={field.onChange}
                             >
                               <FormControl>
@@ -303,7 +305,7 @@ const EditMediaDialog = ({
                             <FormLabel>Active</FormLabel>
                             <FormControl>
                               <Switch
-                                checked={field.value}
+                                checked={field.value ?? false}
                                 onCheckedChange={field.onChange}
                               />
                             </FormControl>

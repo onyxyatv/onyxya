@@ -14,6 +14,8 @@ export class MediaCardService {
   constructor(
     @InjectRepository(MediaCard)
     private mediaCardRepository: Repository<MediaCard>,
+    @InjectRepository(Media)
+    private mediaRepository: Repository<Media>,
   ) {}
 
   searchNewMedia(body: SearchMediaName): Promise<object> {
@@ -62,26 +64,53 @@ export class MediaCardService {
   }
 
   /**
-   * This medthod is used to get a media card by the id of the media.
-   * @param id the id of the media
-   * @returns the mediacard
+   * This method is used to get a media card by its id.
+   * @param id the id of the media card
+   * @returns the media card
    * @throws BadRequestError if the media card is not found
-   * @throws InternalServerError if an error occurs
    */
-  async getMediaCardByMedia(id: string): Promise<MediaCard> {
+  async getMediaCardById(id: string): Promise<MediaCard> {
     try {
       const card = await this.mediaCardRepository.findOne({
-        where: { media: { id: parseInt(id) } },
+        where: { id: parseInt(id) },
       });
       if (!card) {
         throw new BadRequestError('MediaCard not found');
       }
       return card;
     } catch (error) {
-      console.log('Error at getMediaCardByMedia : ', error);
+      console.log('Error at getMediaCardById : ', error);
+      throw new InternalServerError('Error at getMediaCardById');
+    }
+  }
+
+  /**
+   * This method is used to get a media card by the id of the media.
+   * @param id the id of the media
+   * @returns the mediacard
+   * @throws BadRequestError if the media card is not found
+   * @throws InternalServerError if an error occurs
+   */
+  async getMediaCardByMedia(id: number): Promise<Media> {
+    try {
+      const mediaCard: MediaCard = await this.mediaCardRepository.findOne({
+        where: { media: { id: id } },
+      });
+
+      if (!mediaCard) {
+        throw new BadRequestError('MediaCard not found');
+      }
+
+      const media: Media = await this.mediaRepository.findOne({
+        where: { id: id },
+      });
+
+      return media;
+    } catch (error) {
       if (error instanceof BadRequestError) {
         throw error;
       }
+      console.log('Error at getMediaCardByMedia : ', error);
       throw new InternalServerError('Error at getMediaCardByMedia');
     }
   }

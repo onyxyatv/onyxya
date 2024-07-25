@@ -4,7 +4,8 @@ import GlobalSettings from "@/components/settings/globalSettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import RolesAdminSettings from "@/components/settings/rolesAdmin";
 import { Location, NavigateFunction, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import AuthContext from "@/utils/AuthContext";
 //import { User } from "@/components/models/user";
 
 const Settings = () => {
@@ -12,6 +13,7 @@ const Settings = () => {
   const navigate: NavigateFunction = useNavigate();
   const location: Location<any> = useLocation();
   const currentTab = location.pathname.split('/').pop();
+  const perms = useContext(AuthContext)?.authUser?.permissions;
 
   useEffect(() => {
     if (currentTab === 'settings' || currentTab === '') navigate('/settings/global-settings');
@@ -31,8 +33,8 @@ const Settings = () => {
           <TabsList>
             <TabsTrigger value="global-settings">Global settings</TabsTrigger>
             {/* TODO -> admin check */}
-            <TabsTrigger value="users-administration">Users Administration</TabsTrigger>
-            <TabsTrigger value="roles-administration">Roles Administration</TabsTrigger>
+            <TabsTrigger disabled={!perms?.includes("admin_users")} value="users-administration">Users Administration</TabsTrigger>
+            <TabsTrigger disabled={!perms?.includes("admin_roles")} value="roles-administration">Roles Administration</TabsTrigger>
           </TabsList>
           <TabsContent value="global-settings">
             <GlobalSettings />

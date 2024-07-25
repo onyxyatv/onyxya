@@ -7,19 +7,21 @@ import {
   Post,
   Req,
   Res,
+  StreamableFile,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
+import { createReadStream } from 'fs';
 import { diskStorage } from 'multer';
 import { basename, extname } from 'path';
+import { Permissions } from 'src/db/permissions';
 import { AuthGuard } from 'src/middlewares/auth.guard';
+import { PermissionsGuard } from 'src/middlewares/permissions.guard';
 import { NeedPermissions } from 'src/permissions/permissions.decorator';
 import { MediaService } from './media.service';
-import { PermissionsGuard } from 'src/middlewares/permissions.guard';
-import { Permissions } from 'src/db/permissions';
 
 const fileFilter = (req, file, cb) => {
   // Vérification du type de fichier
@@ -70,19 +72,37 @@ const fileFilter = (req, file, cb) => {
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
-  @NeedPermissions(Permissions.ReadMedias)
+  /**
+   * This route is used to get all media.
+   * @returns a list of all media
+   */
   @Get()
   async findAll() {
     return this.mediaService.findAll();
   }
 
-  @NeedPermissions(Permissions.ReadMedias)
+  /**
+   * This route is used to get a media by its id.
+   * @param id the id of the media
+   * @returns a media
+   */
+  @Get('mediacard/:id')
+  async findById(@Param('id') id: string): Promise<object> {
+    return this.mediaService.findByMediaCardId(Number.parseInt(id));
+  }
+
+  /**
+   * This route is used to sync media
+   */
   @Get('sync')
   async syncMedia(): Promise<object> {
     return this.mediaService.syncMedia();
   }
 
-  @NeedPermissions(Permissions.ReadMedias)
+  /**
+   * This route is used to get a file by its id.
+   * @returns the file
+   */
   @Get('getFile/:fileId')
   async getFile(@Req() req: Request, @Res() res: Response): Promise<void> {
     const fileId: number = Number.parseInt(req.params.fileId);
@@ -91,7 +111,18 @@ export class MediaController {
     return res.status(data.statusCode).sendFile(data.file);
   }
 
-  @NeedPermissions(Permissions.ReadMedias)
+  @Get('stream/:fileId')
+  streamFile(): StreamableFile {
+    const file = createReadStream(
+      '/home/node/media/music/Babalos - Snow Crystal HQ-770.mp3',
+    );
+    return new StreamableFile(file);
+  }
+
+  /**
+   * This route is used to get all media by their type.
+   * @returns a list of all media by their type
+   */
   @Get(':mediaType/byCategories')
   async getMediasByCategories(
     @Req() req: Request,
@@ -106,6 +137,11 @@ export class MediaController {
     });
   }
 
+  /**
+   * This route is used to delete a media by its id.
+   * @param id the id of the media
+   * @returns the status of the deletion
+   */
   @NeedPermissions(Permissions.DeleteMedia)
   @Delete(':id')
   async deleteMedia(
@@ -117,6 +153,11 @@ export class MediaController {
     return res.status(data.statusCode).json({ message: data.message });
   }
 
+  /**
+   * This route is used to upload a file.
+   * @param file the file to upload
+   * @returns the uploaded file
+   */
   @NeedPermissions(Permissions.UploadMedia)
   @Post()
   @UseInterceptors(

@@ -1,6 +1,6 @@
 import Header from "@/components/header/header";
 
-const Movies = () => {
+const Movie = () => {
   return (
     <div>
       <Header />
@@ -8,4 +8,4 @@ const Movies = () => {
   );
 };
 
-export default Movies;
+export default Movie;
