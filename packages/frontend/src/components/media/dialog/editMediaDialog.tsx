@@ -12,6 +12,7 @@ import {
   MediaCategory,
   MediaType,
   mediaCardSchema,
+  MediaVisibility,
 } from "@common/validation/media/mediaCard.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosResponse, HttpStatusCode } from "axios";
@@ -51,6 +52,7 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
   const perms = useContext(AuthContext)?.authUser?.permissions;
+  const [popupOpened, setPopupOpened] = useState(false);
 
   const form = useForm<MediaCard>({
     resolver: zodResolver(mediaCardSchema),
@@ -74,9 +76,12 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
         values
       );
       if (res.status === HttpStatusCode.Ok) {
-        form.reset();
-        if (onUpdate) {
-          onUpdate();
+        if (form) {
+          //form.reset();
+          if (onUpdate) {
+            onUpdate();
+            setPopupOpened(false);
+          }
         }
 
         toast({
@@ -111,7 +116,7 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
   };
 
   return (
-    <Dialog>
+    <Dialog open={popupOpened} onOpenChange={setPopupOpened}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="m-1">
           Edit Media
@@ -172,7 +177,7 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
                       />
                     </div>
 
-                    <div className="mt-2">
+                    <div className="mt-2 flex justify-between">
                       <FormField
                         control={form.control}
                         name="type"
@@ -208,6 +213,42 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
                           </FormItem>
                         )}
                       />
+
+                      <FormField
+                        control={form.control}
+                        name="visibility"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Visibility</FormLabel>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="p-2 rounded-md w-full border-slate-200 border-2 bg-slate-100">
+                                  <SelectValue placeholder="Choose visibility" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {Object.keys(MediaVisibility).map((key) => (
+                                  <SelectItem
+                                    key={key}
+                                    value={
+                                      MediaVisibility[key as keyof typeof MediaVisibility]
+                                    }
+                                  >
+                                    {MediaVisibility[key as keyof typeof MediaVisibility]}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Select media visibility
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
 
                     <div className="mt-2">
@@ -232,13 +273,13 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
                                     key={key}
                                     value={
                                       MediaCategory[
-                                        key as keyof typeof MediaCategory
+                                      key as keyof typeof MediaCategory
                                       ]
                                     }
                                   >
                                     {
                                       MediaCategory[
-                                        key as keyof typeof MediaCategory
+                                      key as keyof typeof MediaCategory
                                       ]
                                     }
                                   </SelectItem>

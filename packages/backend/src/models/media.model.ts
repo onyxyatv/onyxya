@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -10,6 +11,7 @@ import {
 import { MediaCard } from './mediacard.model';
 import { MediasPlaylist } from './mediasplaylist.model';
 import { MediaChapter } from './media-chapter.model';
+import { User } from './user.model';
 
 @Entity()
 export class Media {
@@ -51,6 +53,9 @@ export class Media {
 
   @OneToMany(() => MediaChapter, (mediaChapter) => mediaChapter.media)
   chapters: MediaChapter[];
+
+  @ManyToOne(() => User, (user) => user.medias)
+  user: User;
 
   constructor(
     name: string,

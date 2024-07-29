@@ -6,7 +6,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CircleUser, LogOut, Settings } from "lucide-react";
 import { FunctionComponent, useContext } from "react";
 import { Link } from "react-router-dom";
@@ -25,8 +25,8 @@ const UserMenu: FunctionComponent = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="mr-2">
-        <Avatar className="bg-blue-950 rounded-full p-2">
-          <AvatarFallback className="rounded-full text-white font-bold">
+        <Avatar>
+          <AvatarFallback className="bg-blue-950 text-xl text-white font-bold">
             {authUserName && authUserName[0].toUpperCase()}
             {!authUserName && "U"}
           </AvatarFallback>

@@ -10,6 +10,7 @@ import {
 import { Permission } from './permission.model';
 import { Role } from './role.model';
 import { Playlist } from './playlist.model';
+import { Media } from './media.model';
 
 @Entity()
 export class User {
@@ -56,4 +57,7 @@ export class User {
 
   @OneToMany(() => Playlist, (playlist) => playlist.user)
   playlists: Playlist[];
+
+  @OneToMany(() => Media, (media) => media.user)
+  medias: Media[];
 }

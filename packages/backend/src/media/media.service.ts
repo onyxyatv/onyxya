@@ -7,6 +7,7 @@ import { MediaCardService } from 'src/mediacard/mediacard.service';
 import { Like, Repository } from 'typeorm';
 import { MediaPathService } from '../media-path/media-path.service';
 import { Media } from '../models/media.model';
+import FfmepgService from 'src/services/ffmpeg.service';
 
 @Injectable()
 export class MediaService implements OnModuleInit {
@@ -19,6 +20,7 @@ export class MediaService implements OnModuleInit {
 
   async onModuleInit() {
     await this.syncMedia();
+    FfmepgService.test();
   }
 
   /**
@@ -213,21 +215,32 @@ export class MediaService implements OnModuleInit {
     return { file: null, statusCode: HttpStatus.NOT_FOUND };
   }
 
-  async getMediasByCategories(mediaType: string) {
-    const musics: Array<Media> = await this.mediaRepository.find({
+  /**
+   * Returns all media of a type by mediacard category
+   * @param userId | the ID of the user who made the request
+   * @param mediaType | music or serie or movies
+   * @returns medias by category
+   */
+  async getMediasByCategories(userId: number, mediaType: string) {
+    const medias: Array<Media> = await this.mediaRepository.find({
       where: { type: mediaType },
-      relations: { mediaCard: true },
+      relations: { mediaCard: true, user: true },
     });
 
     const musicsByCategories = {};
-    musics.forEach((music) => {
-      if (musicsByCategories[music.mediaCard.category] === undefined)
-        musicsByCategories[music.mediaCard.category] = [];
-      const tempMusic: object = {
-        id: music.id,
-        mediaCard: music.mediaCard,
-      };
-      musicsByCategories[music.mediaCard.category].push(tempMusic);
+    medias.forEach((media) => {
+      // Returns only public or user-owned media
+      if (media.mediaCard.visibility === 'public' || media.user.id === userId) {
+        // If the category has not yet been defined
+        if (musicsByCategories[media.mediaCard.category] === undefined)
+          musicsByCategories[media.mediaCard.category] = [];
+
+        const tempMedia: object = {
+          id: media.id,
+          mediaCard: media.mediaCard,
+        };
+        musicsByCategories[media.mediaCard.category].push(tempMedia);
+      }
     });
     return musicsByCategories;
   }

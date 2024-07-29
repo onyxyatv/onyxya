@@ -98,7 +98,7 @@ export class MediaCardService {
    * @throws BadRequestError if the media card is not found
    * @throws InternalServerError if an error occurs
    */
-  async updateMediaCard(id, body): Promise<MediaCard> {
+  async updateMediaCard(id: number, body: any): Promise<MediaCard> {
     try {
       const mediaCard: MediaCard = await this.mediaCardRepository.findOne({
         where: { id: id },
@@ -114,6 +114,7 @@ export class MediaCardService {
       mediaCard.category = body.category;
       mediaCard.isActive = body.isActive;
       mediaCard.releaseDate = body.releaseDate;
+      mediaCard.visibility = body.visibility;
       return await this.mediaCardRepository.save(mediaCard);
     } catch (error) {
       if (error instanceof BadRequestError) {

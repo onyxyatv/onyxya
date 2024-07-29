@@ -97,9 +97,12 @@ export class MediaController {
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<object> {
+    const userId: number = req['user'].id;
     const mediaType: string = req.params.mediaType;
-    const data: object =
-      await this.mediaService.getMediasByCategories(mediaType);
+    const data: object = await this.mediaService.getMediasByCategories(
+      userId,
+      mediaType,
+    );
     return res.status(200).json({
       categoriesCount: Object.keys(data).length,
       categories: data,
