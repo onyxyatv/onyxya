@@ -1,6 +1,7 @@
 import { FC, ReactNode, createContext, useState } from "react";
 import FrontUtilService from "./frontUtilService";
 import { MediaCard } from "@/components/models/media";
+import { HttpStatusCode } from "axios";
 
 interface MusicPlayed {
   mediaCard: MediaCard;
@@ -20,6 +21,7 @@ interface MusicPlayerContextT {
   setIsMusicPlayling: (v: boolean) => void;
   random: boolean;
   setRandomMode: (v: boolean) => void;
+  finishMediaStream: () => void;
 }
 
 interface MusicPlayerProps {
@@ -35,23 +37,32 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
   const [playlist, setPlaylist] = useState<Array<string>>([]);
   const [isMusicPlayling, setIsMusicPlayling] = useState<boolean>(false);
   const [random, setRandomMode] = useState<boolean>(false);
+  const [musicId, setMusicId] = useState<number>(0);
 
-  const fetchMusic = async (musicId: number): Promise<void> => {
+  const fetchMusic = async (localMusicId: number): Promise<void> => {
     setIsLoading(true);
-    const endpoint: string = '/media/getFile/' + musicId;
+    setMusicId(localMusicId);
+    const endpoint: string = '/media/getFile/' + localMusicId;
     //const res: Blob = await FrontUtilService.getBlobFromApi(endpoint);
     const res: any = await FrontUtilService.getDataFromApi(endpoint);
     console.log(res);
-    const resMedia: any = await FrontUtilService.getDataFromApi(`/mediacard/media/${musicId}?withMedia=true`);
+    const resMedia: any = await FrontUtilService.getDataFromApi(`/mediacard/media/${localMusicId}?withMedia=true`);
     //if (res.size > 0) {
-      //const url = URL.createObjectURL(res);
+      //const url = URL.createObjectURL(res); 
       setMusic({
         mediaCard: resMedia,
-        src: 'http://localhost:3000/media_hls/'+res.file,
+        src: FrontUtilService.apiUrl+res.file,
       });
     //}
     setIsLoading(false);
   };
+
+  const finishMediaStream = async (): Promise<void> => {
+    const endpoint: string = '/media/stream/delete/' + musicId;
+    const resApi: any = await FrontUtilService.deleteApi(endpoint);
+    if (resApi.status === HttpStatusCode.Ok) return;
+    //TODO: Does we put error toast?
+  }
 
   const setPlaylistMode = (): void => setIsPlaylist(true);
 
@@ -63,7 +74,7 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
     <MusicPlayerContext.Provider 
     value={{ music, fetchMusic, isLoading, isPlaylist, 
              setPlaylistMode, setMusicMode, playlist, setPlaylistsMusics, 
-             isMusicPlayling, setIsMusicPlayling, random, setRandomMode }}>
+             isMusicPlayling, setIsMusicPlayling, random, setRandomMode, finishMediaStream }}>
       {children}
     </MusicPlayerContext.Provider>
   );

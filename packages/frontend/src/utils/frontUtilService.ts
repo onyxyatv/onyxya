@@ -2,6 +2,7 @@ import axios, { AxiosResponse, HttpStatusCode } from "axios";
 import { api_url } from "../../config.json";
 
 class FrontUtilService {
+  static apiUrl: string = api_url;
   static token: string | null = localStorage.getItem("onyxyaToken");
   static userEndpoint: string = '/users/user/:id';
   static newUserEndpoint: string = '/users/new';

@@ -30,6 +30,7 @@ const MusicPlayer = () => {
   const isMusicPlayling = useContext(MusicPlayerContext)?.isMusicPlayling;
   const setIsMusicPlayling = useContext(MusicPlayerContext)?.setIsMusicPlayling;
   const randomMode: boolean | undefined = useContext(MusicPlayerContext)?.random;
+  const finishMediaStream = useContext(MusicPlayerContext)?.finishMediaStream;
 
   // Current volume on both sides, updated according to extended player or audio player.
   const [currentVolume, setCurrentVolume] = useState<number>(0.5);
@@ -132,6 +133,11 @@ const MusicPlayer = () => {
     if (setIsMusicPlayling) setIsMusicPlayling(true);
   }
 
+  const closePlayer = async (): void => {
+    if (finishMediaStream) await finishMediaStream();
+    setVisibility(false);
+  }
+
   useEffect(() => {
     // Checks to see if a song or playlist is playing
     if (music && music.src.length > 0) setVisibility(true);
@@ -152,7 +158,7 @@ const MusicPlayer = () => {
           <div className="mb-2 flex w-full text-white justify-end">
             <CircleX
               className="hover:cursor-pointer h-6 hover:text-red-500"
-              onClick={() => setVisibility(false)}
+              onClick={() => closePlayer(false)}
             />
           </div>
           <AccordionContent>

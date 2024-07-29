@@ -20,6 +20,8 @@ import { NeedPermissions } from 'src/permissions/permissions.decorator';
 import { MediaService } from './media.service';
 import { PermissionsGuard } from 'src/middlewares/permissions.guard';
 import { Permissions } from 'src/db/permissions';
+import { CustomError } from '@common/errors/CustomError';
+import { CustomResponse } from '@common/errors/customResponses';
 
 const fileFilter = (req, file, cb) => {
   // Vérification du type de fichier
@@ -154,5 +156,17 @@ export class MediaController {
       message: 'File uploaded successfully',
       file: file,
     };
+  }
+
+  @NeedPermissions(Permissions.ReadMedias)
+  @Delete('stream/delete/:mediaId')
+  async deleteMediaStreamFiles(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<object> {
+    const mediaId: number = Number.parseInt(req.params.mediaId);
+    const data: CustomError | CustomResponse =
+      await this.mediaService.deleteMediaStreamFiles(mediaId);
+    return res.status(data.statusCode).json(data);
   }
 }

@@ -1,4 +1,5 @@
 import * as ffmpeg from 'fluent-ffmpeg';
+import UtilService from './util.service';
 
 class FfmepgService {
   static command = ffmpeg();
@@ -18,6 +19,8 @@ class FfmepgService {
   }
 
   public static createStream(filePath: string): Promise<string> {
+    const randomValue = UtilService.generateSalt();
+    const outputFile = 'output-' + randomValue + '.m3u8';
     return new Promise((resolve, reject) => {
       ffmpeg(filePath, { timeout: 432000 })
         .addOption([
@@ -28,12 +31,12 @@ class FfmepgService {
           '-hls_list_size 0', // Maximum number of segments, set 0 to set no limit
           '-f hls', // We use HTTP Live streaming
         ])
-        .output('/home/node/media/output/output.m3u8')
+        .output(`/home/node/media/output/${outputFile}`)
         .on('error', (err) => {
           console.log('An error occurred: ' + err);
           reject(err);
         })
-        .on('end', () => resolve('output.m3u8'))
+        .on('end', () => resolve(outputFile))
         .run();
     });
   }

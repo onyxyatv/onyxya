@@ -1,4 +1,8 @@
-import { InternalServerError, NotFoundError } from '@common/errors/CustomError';
+import {
+  CustomError,
+  InternalServerError,
+  NotFoundError,
+} from '@common/errors/CustomError';
 import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { promises as fs } from 'fs';
@@ -8,6 +12,10 @@ import { Like, Repository } from 'typeorm';
 import { MediaPathService } from '../media-path/media-path.service';
 import { Media } from '../models/media.model';
 import FfmepgService from 'src/services/ffmpeg.service';
+import {
+  CustomResponse,
+  SuccessResponse,
+} from '@common/errors/customResponses';
 
 @Injectable()
 export class MediaService implements OnModuleInit {
@@ -208,9 +216,17 @@ export class MediaService implements OnModuleInit {
       id: fileId,
     });
     if (fileMedia) {
-      const file = path.join('/home/node/media/music', fileMedia.name);
-      const outputFileStream: string = await FfmepgService.createStream(file);
-      return { file: outputFileStream, statusCode: 200 };
+      // If a stream already exists for this file,
+      // then there's no need to duplicate the file, just use the existing stream.
+      let outputFileStream: string | null = fileMedia.streamFile;
+      if (!fileMedia.streamFile) {
+        const file = path.join('/home/node/media/music', fileMedia.name);
+        outputFileStream = await FfmepgService.createStream(file);
+        fileMedia.streamFile = outputFileStream;
+        fileMedia.streamQueue += 1;
+        await this.mediaRepository.save(fileMedia);
+      }
+      return { file: '/media_hls/' + outputFileStream, statusCode: 200 };
     }
     return { file: null, statusCode: HttpStatus.NOT_FOUND };
   }
@@ -268,6 +284,47 @@ export class MediaService implements OnModuleInit {
       }
       console.log('Error at deleteMedia : ', error);
       throw new InternalServerError('Error at deleteMedia');
+    }
+  }
+
+  async deleteMediaStreamFiles(
+    mediaId: number,
+  ): Promise<CustomResponse | CustomError> {
+    try {
+      const media: Media = await this.mediaRepository.findOneBy({
+        id: mediaId,
+      });
+
+      if (media) {
+        // To keep track of how many people are currently listening
+        media.streamQueue = media.streamQueue > 0 ? media.streamQueue - 1 : 0;
+        // If someone is still listening, then there's no need to delete the stream.
+        if (media.streamQueue > 0) return new SuccessResponse();
+
+        let streamName = media.streamFile;
+        if (!streamName)
+          throw new NotFoundError('Stream does not exist on this media');
+        if (streamName.includes('.'))
+          streamName = media.streamFile.split('.')[0];
+
+        if (media.streamQueue === 0) media.streamFile = null;
+        await this.mediaRepository.save(media);
+
+        const tmp = await fs.readdir(`/home/node/media/output/`);
+        const streamFilesToDelete = tmp.filter((file) =>
+          file.includes(streamName),
+        );
+
+        for (const file of streamFilesToDelete) {
+          await fs.unlink('/home/node/media/output/' + file);
+        }
+        return new SuccessResponse();
+      }
+
+      throw new NotFoundError('Media or stream not fund');
+    } catch (error) {
+      console.log(error);
+      throw new NotFoundError('Stream file to delete not found');
     }
   }
 }

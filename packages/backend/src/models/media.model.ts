@@ -57,6 +57,12 @@ export class Media {
   @ManyToOne(() => User, (user) => user.medias)
   user: User;
 
+  @Column({ nullable: true })
+  streamFile: string;
+
+  @Column({ nullable: false, default: 0 })
+  streamQueue: number;
+
   constructor(
     name: string,
     path: string,
