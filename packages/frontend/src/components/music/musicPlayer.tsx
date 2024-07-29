@@ -29,6 +29,7 @@ const MusicPlayer = () => {
   const audioRefPlayer = useRef<AudioPlayer>(null);
   const isMusicPlayling = useContext(MusicPlayerContext)?.isMusicPlayling;
   const setIsMusicPlayling = useContext(MusicPlayerContext)?.setIsMusicPlayling;
+  const randomMode: boolean | undefined = useContext(MusicPlayerContext)?.random;
 
   // Current volume on both sides, updated according to extended player or audio player.
   const [currentVolume, setCurrentVolume] = useState<number>(0.5);
@@ -39,11 +40,28 @@ const MusicPlayer = () => {
   // Indicates whether the extended is opened or not
   const [isExtendedOpen, setIsExtendedOpen] = useState(false);
 
+  const playNextRandom = (): void => {
+    if (playlist) {
+      setCurrentMusic((currentMusic) => {
+        let next: number = currentMusic;
+        // To make sure you don't get the current one
+        while (next === currentMusic) {
+          next = Math.floor(Math.random() * playlist.length);
+        }
+        return next;
+      });
+    }
+  }
+
   const handleClickNext = () => {
     if (playlist) {
-      setCurrentMusic((currentMusic) =>
-        currentMusic < playlist.length - 1 ? currentMusic + 1 : 0
-      );
+      if (randomMode) {
+        playNextRandom();
+      } else {
+        setCurrentMusic((currentMusic) =>
+          currentMusic < playlist.length - 1 ? currentMusic + 1 : 0
+        );
+      }
     }
   };
 
@@ -62,9 +80,13 @@ const MusicPlayer = () => {
   // Goes to the next music or restarts the playlist if it is finished
   const handleEnd = (): void => {
     if (playlist) {
-      setCurrentMusic((currentMusic) =>
-        currentMusic < playlist.length - 1 ? currentMusic + 1 : 0
-      );
+      if (randomMode) {
+        playNextRandom();
+      } else {
+        setCurrentMusic((currentMusic) =>
+          currentMusic < playlist.length - 1 ? currentMusic + 1 : 0
+        );
+      }
     }
   }
 
@@ -73,7 +95,7 @@ const MusicPlayer = () => {
     const audio = audioRefPlayer.current?.audio.current;
     if (audioRefPlayer.current) {
       if (isOpened) {
-        if (mediaPlayerRef.current && audio?.currentTime) 
+        if (mediaPlayerRef.current && audio?.currentTime)
           mediaPlayerRef.current.currentTime = audio?.currentTime;
         setIsExtendedOpen(true);
         audio?.pause();

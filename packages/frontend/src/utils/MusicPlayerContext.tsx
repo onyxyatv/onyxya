@@ -18,6 +18,8 @@ interface MusicPlayerContextT {
   setPlaylistsMusics: (list: Array<string>) => void;
   isMusicPlayling: boolean;
   setIsMusicPlayling: (v: boolean) => void;
+  random: boolean;
+  setRandomMode: (v: boolean) => void;
 }
 
 interface MusicPlayerProps {
@@ -32,6 +34,7 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
   const [isPlaylist, setIsPlaylist] = useState(false);
   const [playlist, setPlaylist] = useState<Array<string>>([]);
   const [isMusicPlayling, setIsMusicPlayling] = useState<boolean>(false);
+  const [random, setRandomMode] = useState<boolean>(false);
 
   const fetchMusic = async (musicId: number): Promise<void> => {
     setIsLoading(true);
@@ -58,7 +61,7 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
     <MusicPlayerContext.Provider 
     value={{ music, fetchMusic, isLoading, isPlaylist, 
              setPlaylistMode, setMusicMode, playlist, setPlaylistsMusics, 
-             isMusicPlayling, setIsMusicPlayling }}>
+             isMusicPlayling, setIsMusicPlayling, random, setRandomMode }}>
       {children}
     </MusicPlayerContext.Provider>
   );

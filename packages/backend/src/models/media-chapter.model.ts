@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Media } from './media.model';
 
 @Entity()
 export class MediaChapter {
@@ -13,4 +14,7 @@ export class MediaChapter {
 
   @Column({ nullable: false })
   endTime: number;
+
+  @ManyToOne(() => Media, (media) => media.chapters)
+  media: Media;
 }

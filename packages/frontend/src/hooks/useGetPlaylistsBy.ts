@@ -8,6 +8,7 @@ interface GetPlaylistsByProps {
   name: string | undefined;
   withMedias: boolean;
   isPublic: boolean | undefined;
+  type: "music" | "serie" | "movies";
 }
 
 function useGetPlaylistsBy(props: GetPlaylistsByProps): [playlists: Array<Playlist>, getPlaylists: () => Promise<void>, error: any] {

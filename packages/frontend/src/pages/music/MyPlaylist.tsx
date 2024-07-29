@@ -21,6 +21,7 @@ const MyPlaylist = () => {
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const setPlaylistsMusics = useContext(MusicPlayerContext)?.setPlaylistsMusics;
   const setPlaylistMode = useContext(MusicPlayerContext)?.setPlaylistMode;
+  const setPlaylistRandom = useContext(MusicPlayerContext)?.setRandomMode;
   const fetchMusic = useContext(MusicPlayerContext)?.fetchMusic;
   const [needReload, setReload] = useState<boolean>(false);
   const userId: number | undefined = useContext(AuthContext)?.authUser?.id;
@@ -29,7 +30,7 @@ const MyPlaylist = () => {
     if (fetchMusic) fetchMusic(musicId);
   }
 
-  const playPlaylist = async (): Promise<void> => {
+  const playPlaylist = async (random: boolean): Promise<void> => {
     const musicsToPlay: Array<string> = [];
     if (playlist && playlist.mediasPlaylist) {
       for (const mediaPlaylist of playlist.mediasPlaylist) {
@@ -39,6 +40,7 @@ const MyPlaylist = () => {
     }
     if (setPlaylistsMusics && setPlaylistMode) {
       setPlaylistMode();
+      if (random && setPlaylistRandom) setPlaylistRandom(true);
       setPlaylistsMusics(musicsToPlay);
     }
   }
@@ -77,7 +79,7 @@ const MyPlaylist = () => {
                 {FrontUtilService.capitalizeString(playlist.name)}
               </h2>
               {
-                playlist.user.id !== userId && 
+                playlist.user.id !== userId &&
                 <h3>The playlist is managed by {playlist.user.username}</h3>
               }
               <p>
@@ -92,13 +94,22 @@ const MyPlaylist = () => {
               <div className="flex flex-row mt-2 space-x-2">
                 {
                   playlist.mediasPlaylist.length > 0 &&
-                  <Button onClick={() => playPlaylist()}>
+                  <Button onClick={() => playPlaylist(false)}>
                     Play
                   </Button>
                 }
+                {
+                  playlist.mediasPlaylist.length > 1 &&
+                  <Button 
+                    className="bg-indigo-900 hover:bg-indigo-700" 
+                    onClick={() => playPlaylist(true)}
+                  >
+                    Random play
+                  </Button>
+                }
                 <EditPlaylistPopup playlist={playlist} reloadPlaylist={(v: boolean) => setReload(v)} />
-                <DeletePlaylistDialog 
-                  playlistId={playlist.id} 
+                <DeletePlaylistDialog
+                  playlistId={playlist.id}
                   playlistName={playlist.name}
                 />
               </div>

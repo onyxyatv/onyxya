@@ -5,6 +5,7 @@ import { NavigationMenu } from "../ui/navigation-menu";
 import UserMenu from "./userMenu";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";  // Assurez-vous que ce chemin est correct pour votre projet
+import { Moon, Sun } from "lucide-react";
 
 const Header: FunctionComponent = () => {
   const userRole = useContext(AuthContext)?.authUser?.role.name;
@@ -56,7 +57,10 @@ const Header: FunctionComponent = () => {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="flex">
-        <button className="mr-1">Dark mode</button>
+        <button className="mr-2">
+          <Moon />
+          <Sun />
+        </button>
         <UserMenu />
       </div>
     </header>

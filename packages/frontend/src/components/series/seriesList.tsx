@@ -4,7 +4,6 @@ import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { AlertCircle, Play } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
-import AddMusicPlaylistPopup from "./addMusicPlaylist";
 import AuthContext from "@/utils/AuthContext";
 import MusicPlayerContext from "@/utils/MusicPlayerContext";
 import useGetPlaylistsBy from "@/hooks/useGetPlaylistsBy";
@@ -12,7 +11,7 @@ import EditMediaDialog from "../media/dialog/editMediaDialog";
 import { MediaCard } from "../models/media";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 
-interface MusicsListsProps {
+interface SeriesListProps {
   setPlaylistsReload: (v: boolean) => void;
   needPlaylistsReload: boolean;
 }
@@ -24,17 +23,17 @@ interface Music {
 
 type MusicCategories = Record<string, Array<Music>>;
 
-const MusicsLists = (props: MusicsListsProps) => {
+const SeriesList = (props: SeriesListProps) => {
   const userId: number | undefined = useContext(AuthContext)?.authUser?.id;
-  const [musicsByCategories, setMusics] = useState<MusicCategories>({});
+  const [musicsByCategories, setSeries] = useState<MusicCategories>({});
   const [error, setError] = useState('');
   const musicContext = useContext(MusicPlayerContext);
-  const [playlists, getPlaylists] = useGetPlaylistsBy({
+  const [series, getSeries] = useGetPlaylistsBy({
     userId: (userId) ? userId : 0,
     name: "",
     withMedias: true,
     isPublic: undefined,
-    type: "music",
+    type: "serie",
   });
   const [needLocalReload, setLocalReload] = useState<boolean>(false);
 
@@ -47,14 +46,14 @@ const MusicsLists = (props: MusicsListsProps) => {
 
   const fetchAllMusics = async () => {
     try {
-      const endpoint: string = FrontUtilService.getMediaByTypeCategories.replace(':mediaType', 'music');
+      const endpoint: string = FrontUtilService.getMediaByTypeCategories.replace(':mediaType', 'serie');
       const data: any | null = await FrontUtilService.getDataFromApi(endpoint);
       if (data !== null) {
-        setMusics(data.categories);
+        setSeries(data.categories);
         setError('');
       }
     } catch (error) {
-      setMusics({});
+      setSeries({});
       setError('Error during fetching musics list');
     }
   }
@@ -62,7 +61,7 @@ const MusicsLists = (props: MusicsListsProps) => {
   useEffect(() => {
     fetchAllMusics();
     if (needLocalReload || props.needPlaylistsReload) {
-      getPlaylists();
+      getSeries();
       setLocalReload(false);
       props.setPlaylistsReload(false);
     }
@@ -70,8 +69,8 @@ const MusicsLists = (props: MusicsListsProps) => {
   }, [needLocalReload, props.needPlaylistsReload]);
 
   return (
-    <div id="musicsListContainer" className="w-5/6">
-      <ScrollArea className="h-[80vh] p-2 pr-6 border-b-2 border-b-gray-600 rounded-sm">
+    <div id="seriesListContainer" className="mt-2">
+      <ScrollArea className="h-[80vh] pr-6 border-b-2 border-b-gray-600 rounded-sm">
         {
           musicsByCategories !== null &&
           Object.keys(musicsByCategories).map((musicCategoryName: string) => {
@@ -110,12 +109,6 @@ const MusicsLists = (props: MusicsListsProps) => {
                                 <Button className="bg-green-700 hover:bg-green-600" onClick={() => playMusic(music.id)}>
                                   <Play />
                                 </Button>
-                                <AddMusicPlaylistPopup
-                                  playlists={playlists}
-                                  musicName={music.mediaCard.name}
-                                  reloadPlaylists={() => setLocalReload(true)}
-                                  musicId={music.id}
-                                />
                                 <EditMediaDialog mediaId={music.id} onUpdate={() => setLocalReload(true)} />
                               </CardFooter>
                             </Card>
@@ -146,4 +139,4 @@ const MusicsLists = (props: MusicsListsProps) => {
   );
 }
 
-export default MusicsLists;
+export default SeriesList;

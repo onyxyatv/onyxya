@@ -14,6 +14,7 @@ const PlaylistsMenuList = (props: PlaylistsMenuListProps) => {
     isPublic: true,
     userId: undefined,
     name: undefined,
+    type: "music",
   });
   const playlistsByVisibility = [
     { tabName: 'myPlaylists', playlists: props.myPlaylists },

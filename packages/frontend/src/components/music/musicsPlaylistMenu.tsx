@@ -17,6 +17,7 @@ const MusicsPlaylistMenu = (props: MusicPlaylistMenuProps) => {
     name: "",
     withMedias: false,
     isPublic: undefined,
+    type: "music",
   });
 
   useEffect(() => {
@@ -30,7 +31,7 @@ const MusicsPlaylistMenu = (props: MusicPlaylistMenuProps) => {
   return (
     <div id="MusicsPlaylistMenu"
       className="w-1/6 items-center border-r-4 mr-2 h-[80vh] border-gray-500 flex flex-col p-2">
-      <NewPlaylistPopup reloadPlaylists={() => props.setPlaylistsReload(true)} playlistType="music" />
+      <NewPlaylistPopup reloadPlaylists={props.setPlaylistsReload} playlistType="music" />
       <p className="text-xs mt-2">You have {playlists ? playlists.length : 0} playlist(s)</p>
       <PlaylistsMenuList myPlaylists={playlists} />
     </div>

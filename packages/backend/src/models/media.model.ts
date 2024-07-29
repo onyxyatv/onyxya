@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { MediaCard } from './mediacard.model';
 import { MediasPlaylist } from './mediasplaylist.model';
+import { MediaChapter } from './media-chapter.model';
 
 @Entity()
 export class Media {
@@ -47,6 +48,9 @@ export class Media {
 
   @OneToMany(() => MediasPlaylist, (mediasPlaylist) => mediasPlaylist.media)
   mediasPlaylist: MediasPlaylist[];
+
+  @OneToMany(() => MediaChapter, (mediaChapter) => mediaChapter.media)
+  chapters: MediaChapter[];
 
   constructor(
     name: string,
