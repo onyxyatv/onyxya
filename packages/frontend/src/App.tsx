@@ -15,6 +15,7 @@ import MyPlaylist from "./pages/music/MyPlaylist";
 import MusicPlayer from "./components/music/musicPlayer";
 import { MusicPlayerProvider } from "./utils/MusicPlayerContext";
 import { Toaster } from "./components/ui/toaster";
+import Profile from "./pages/Profile";
 
 const App: React.FC = () => {
   return (
@@ -83,6 +84,14 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <MyPlaylist />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />

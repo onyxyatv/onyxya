@@ -3,10 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  MessageEvent,
   Patch,
   Post,
   Request,
   Res,
+  Sse,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -29,6 +31,7 @@ import {
   editUserSchema,
   EditUser,
 } from '@common/validation/auth/editUser.schema';
+import { interval, map, Observable } from 'rxjs';
 
 @Controller()
 export class UserController {
@@ -139,5 +142,12 @@ export class UserController {
     return res
       .status(200)
       .json({ count: userPermissions.length, permissions: userPermissions });
+  }
+
+  @Sse('/users/events/test')
+  getConnectedAmount(): Observable<MessageEvent> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    let test = 1;
+    return interval(1000).pipe(map((_) => ({ data: 'hello toi ' + test++ })));
   }
 }

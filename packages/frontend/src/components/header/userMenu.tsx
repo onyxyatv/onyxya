@@ -36,7 +36,8 @@ const UserMenu: FunctionComponent = () => {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <CircleUser className="mr-1 h-5" /> Profile
+          <CircleUser className="mr-1 h-5" />
+          <Link to="/profile">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Settings className="mr-1 h-5" href="/settings" to="/settings" />{" "}
