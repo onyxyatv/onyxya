@@ -84,11 +84,11 @@ export class MediaController {
 
   @NeedPermissions(Permissions.ReadMedias)
   @Get('getFile/:fileId')
-  async getFile(@Req() req: Request, @Res() res: Response): Promise<void> {
+  async getFile(@Req() req: Request, @Res() res: Response): Promise<object> {
     const fileId: number = Number.parseInt(req.params.fileId);
     const data: { statusCode: number; file: string } =
       await this.mediaService.getFileById(fileId);
-    return res.status(data.statusCode).sendFile(data.file);
+    return res.status(data.statusCode).json({ file: data.file });
   }
 
   @NeedPermissions(Permissions.ReadMedias)

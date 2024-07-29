@@ -39,15 +39,17 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
   const fetchMusic = async (musicId: number): Promise<void> => {
     setIsLoading(true);
     const endpoint: string = '/media/getFile/' + musicId;
-    const res: Blob = await FrontUtilService.getBlobFromApi(endpoint);
+    //const res: Blob = await FrontUtilService.getBlobFromApi(endpoint);
+    const res: any = await FrontUtilService.getDataFromApi(endpoint);
+    console.log(res);
     const resMedia: any = await FrontUtilService.getDataFromApi(`/mediacard/media/${musicId}?withMedia=true`);
-    if (res.size > 0) {
-      const url = URL.createObjectURL(res);
+    //if (res.size > 0) {
+      //const url = URL.createObjectURL(res);
       setMusic({
         mediaCard: resMedia,
-        src: url
+        src: 'http://localhost:3000/media_hls/'+res.file,
       });
-    }
+    //}
     setIsLoading(false);
   };
 

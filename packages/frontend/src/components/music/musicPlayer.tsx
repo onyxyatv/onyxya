@@ -112,7 +112,8 @@ const MusicPlayer = () => {
 
   //const music = useContext(MusicPlayerContext)?.music;
   const musicSrc = (music) ? music.src : '';
-  const musicVideo: MediaSrc = { src: musicSrc, type: "video/mp4" };
+  //const musicVideo: MediaSrc = { src: musicSrc, type: "video/mp4" };
+  const musicVideo: MediaSrc = { src: musicSrc, type: 'application/x-mpegurl' };
   const mediaPlayerRef = useRef<MediaPlayerInstance>(null);
   //const isMusicPlayling = useContext(MusicPlayerContext)?.isMusicPlayling;
   //const setIsMusicPlayling = useContext(MusicPlayerContext)?.setIsMusicPlayling;
@@ -192,7 +193,8 @@ const MusicPlayer = () => {
                     onPause={() => handleOnPause}
                     autoPlay={true}
                     //onVolumeChange={handleVolumeChanged}
-                    className="m-2 max-w-screen-lg" src={musicVideo}
+                    className="m-2 max-w-screen-lg" 
+                    src={musicVideo}
                   >
                     <MediaProvider />
                     <DefaultAudioLayout colorScheme="dark" icons={defaultLayoutIcons} smallLayoutWhen={true} />

@@ -20,7 +20,6 @@ export class MediaService implements OnModuleInit {
 
   async onModuleInit() {
     await this.syncMedia();
-    FfmepgService.test();
   }
 
   /**
@@ -210,7 +209,8 @@ export class MediaService implements OnModuleInit {
     });
     if (fileMedia) {
       const file = path.join('/home/node/media/music', fileMedia.name);
-      return { file: file, statusCode: 200 };
+      const outputFileStream: string = await FfmepgService.createStream(file);
+      return { file: outputFileStream, statusCode: 200 };
     }
     return { file: null, statusCode: HttpStatus.NOT_FOUND };
   }
@@ -230,7 +230,11 @@ export class MediaService implements OnModuleInit {
     const musicsByCategories = {};
     medias.forEach((media) => {
       // Returns only public or user-owned media
-      if (media.mediaCard.visibility === 'public' || media.user.id === userId) {
+      if (
+        media.mediaCard.visibility === 'public' ||
+        media.user.id === userId ||
+        !media.user
+      ) {
         // If the category has not yet been defined
         if (musicsByCategories[media.mediaCard.category] === undefined)
           musicsByCategories[media.mediaCard.category] = [];
