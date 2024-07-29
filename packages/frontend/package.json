@@ -43,6 +43,7 @@
     "react-h5-audio-player": "^3.9.1",
     "react-hook-form": "^7.51.5",
     "react-router-dom": "^6.23.1",
+    "socket.io-client": "^4.7.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.1",

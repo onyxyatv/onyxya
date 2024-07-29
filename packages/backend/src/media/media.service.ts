@@ -28,6 +28,7 @@ export class MediaService implements OnModuleInit {
 
   async onModuleInit() {
     await this.syncMedia();
+    await this.cleanAllMediaStreams();
   }
 
   /**
@@ -325,6 +326,22 @@ export class MediaService implements OnModuleInit {
     } catch (error) {
       console.log(error);
       throw new NotFoundError('Stream file to delete not found');
+    }
+  }
+
+  async cleanAllMediaStreams(): Promise<void> {
+    try {
+      // Reset all streams medias
+      await this.mediaRepository.query(
+        'UPDATE media SET streamQueue = 0, streamFile = NULL',
+      );
+
+      const files = await fs.readdir(`/home/node/media/output/`);
+      for (const file of files) {
+        await fs.unlink('/home/node/media/output/' + file);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 }

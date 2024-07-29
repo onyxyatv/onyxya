@@ -1,5 +1,6 @@
 import Header from "@/components/header/header";
 import { useEffect, useState } from "react";
+import { io } from 'socket.io-client';
 
 const Profile = () => {
   const [test, setData] = useState('rien');
@@ -12,8 +13,24 @@ const Profile = () => {
     }
   }
 
+  const testWebSocket = () => {
+    const socket = io("ws://localhost:3002/userEvents", {
+      withCredentials: false,
+    });
+
+    socket.emit('events', { name: 'Nest' }, (data: any) => {
+      console.log(data);
+      setData(data.name);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from WebSocket server');
+    });
+  }
+
   useEffect(() => {
-    testSSE();
+    //testSSE();
+    testWebSocket();
   }, []);
 
   return (

@@ -75,6 +75,6 @@ module.exports = {
   },
   plugins: [
     require("tailwindcss-animate"), 
-    require('@vidstack/react/tailwind.cjs')
+    require('@vidstack/react/tailwind.cjs'),
   ],
 }

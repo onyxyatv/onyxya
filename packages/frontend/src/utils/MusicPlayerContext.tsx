@@ -15,8 +15,8 @@ interface MusicPlayerContextT {
   isPlaylist: boolean;
   setPlaylistMode: () => void;
   setMusicMode: () => void;
-  playlist: Array<string>;
-  setPlaylistsMusics: (list: Array<string>) => void;
+  playlist: Array<number>;
+  setPlaylistsMusics: (list: Array<number>) => void;
   isMusicPlayling: boolean;
   setIsMusicPlayling: (v: boolean) => void;
   random: boolean;
@@ -34,7 +34,7 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
   const [music, setMusic] = useState<MusicPlayed | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPlaylist, setIsPlaylist] = useState(false);
-  const [playlist, setPlaylist] = useState<Array<string>>([]);
+  const [playlist, setPlaylist] = useState<Array<number>>([]);
   const [isMusicPlayling, setIsMusicPlayling] = useState<boolean>(false);
   const [random, setRandomMode] = useState<boolean>(false);
   const [musicId, setMusicId] = useState<number>(0);
@@ -58,17 +58,19 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
   };
 
   const finishMediaStream = async (): Promise<void> => {
-    const endpoint: string = '/media/stream/delete/' + musicId;
-    const resApi: any = await FrontUtilService.deleteApi(endpoint);
-    if (resApi.status === HttpStatusCode.Ok) return;
-    //TODO: Does we put error toast?
+    try {
+      const endpoint: string = '/media/stream/delete/' + musicId;
+      const resApi: any = await FrontUtilService.deleteApi(endpoint);
+      if (resApi.status === HttpStatusCode.Ok) return;
+      //TODO: Does we put error toast?
+    } catch (_e) { return; }
   }
 
   const setPlaylistMode = (): void => setIsPlaylist(true);
 
   const setMusicMode = (): void => setIsPlaylist(false);
 
-  const setPlaylistsMusics = (list: Array<string>): void => setPlaylist(list);
+  const setPlaylistsMusics = (list: Array<number>): void => setPlaylist(list);
 
   return (
     <MusicPlayerContext.Provider 

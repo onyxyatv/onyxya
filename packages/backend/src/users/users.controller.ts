@@ -146,8 +146,10 @@ export class UserController {
 
   @Sse('/users/events/test')
   getConnectedAmount(): Observable<MessageEvent> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let test = 1;
-    return interval(1000).pipe(map((_) => ({ data: 'hello toi ' + test++ })));
+    return interval(1200).pipe(
+      map(() => ({
+        data: { activeClients: this.userService.activeClients },
+      })),
+    );
   }
 }

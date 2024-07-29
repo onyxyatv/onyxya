@@ -31,12 +31,11 @@ const MyPlaylist = () => {
   }
 
   const playPlaylist = async (random: boolean): Promise<void> => {
-    const musicsToPlay: Array<string> = [];
+    let musicsToPlay: Array<number> = [];
+    // Media ID array to read -> [4, 3, 8]
     if (playlist && playlist.mediasPlaylist) {
-      for (const mediaPlaylist of playlist.mediasPlaylist) {
-        const musicSrc: string | null = await FrontUtilService.fetchMusic(mediaPlaylist.media.id);
-        if (musicSrc) musicsToPlay.push(musicSrc);
-      }
+      const tmp: Array<number> = playlist.mediasPlaylist.map((mediaPlaylist) => mediaPlaylist.media.id);
+      musicsToPlay = tmp;
     }
     if (setPlaylistsMusics && setPlaylistMode) {
       setPlaylistMode();

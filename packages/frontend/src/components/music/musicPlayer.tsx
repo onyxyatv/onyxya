@@ -8,17 +8,28 @@ import '@vidstack/react/player/styles/default/theme.css';
 import '@vidstack/react/player/styles/default/layouts/video.css';
 import { MediaPlayer, MediaPlayerInstance, MediaProvider, MediaSrc } from '@vidstack/react';
 import { Music } from "lucide-react";
-import {
-  DefaultAudioLayout,
-  defaultLayoutIcons,
-  DefaultVideoLayout,
-} from '@vidstack/react/player/layouts/default';
 import FrontUtilService from "@/utils/frontUtilService";
+import '@vidstack/react/player/styles/base.css';
+import '@vidstack/react/player/styles/plyr/theme.css';
+import { PlyrControl, PlyrLayout, plyrLayoutIcons } from '@vidstack/react/player/layouts/plyr';
 
 interface volumeChangedProps {
   volume: number;
   muted: boolean;
 }
+
+// Order is important
+const plyrControls: PlyrControl[] = [
+  'restart',
+  'rewind',
+  'play', 
+  'fast-forward',
+  'progress',
+  'current-time',
+  'duration',
+  'mute+volume',
+  'settings',
+];
 
 const MusicPlayer = () => {
   const music = useContext(MusicPlayerContext)?.music;
@@ -114,26 +125,24 @@ const MusicPlayer = () => {
   //const music = useContext(MusicPlayerContext)?.music;
   const musicSrc = (music) ? music.src : '';
   //const musicVideo: MediaSrc = { src: musicSrc, type: "video/mp4" };
-  const musicVideo: MediaSrc = { src: musicSrc, type: 'application/x-mpegurl' };
+  //const musicVideo: MediaSrc = { src: musicSrc, type: 'application/x-mpegurl' };
   const mediaPlayerRef = useRef<MediaPlayerInstance>(null);
   //const isMusicPlayling = useContext(MusicPlayerContext)?.isMusicPlayling;
   //const setIsMusicPlayling = useContext(MusicPlayerContext)?.setIsMusicPlayling;
 
   const handleVolumeChanged = (infos: volumeChangedProps): void => {
-    //props.setCurrentVolume(infos.volume);
-    //if (infos.muted) props.setCurrentVolume(0);
+    setCurrentVolume(infos.volume);
   }
 
   const handleOnPause = (): void => {
     if (setIsMusicPlayling) setIsMusicPlayling(false);
   }
 
-  const handleOnPlay = (e: any): void => {
-    console.log(e);
+  const handleOnPlay = (): void => {
     if (setIsMusicPlayling) setIsMusicPlayling(true);
   }
 
-  const closePlayer = async (): void => {
+  const closePlayer = async (): Promise<void> => {
     if (finishMediaStream) await finishMediaStream();
     setVisibility(false);
   }
@@ -152,13 +161,13 @@ const MusicPlayer = () => {
 
   return (
     (visibility && (music !== null || (playlist && isPlaylist))) &&
-    <section className="bg-gray-800 p-2 z-40 flex flex-row fixed bottom-0 w-full justify-between">
+    <section className="bg-gray-900 p-2 z-40 flex flex-row fixed bottom-0 w-full justify-between">
       <Accordion className="w-full" onValueChange={handleOpenedState} type="single" collapsible>
         <AccordionItem value="item-1" className="border-0">
           <div className="mb-2 flex w-full text-white justify-end">
             <CircleX
               className="hover:cursor-pointer h-6 hover:text-red-500"
-              onClick={() => closePlayer(false)}
+              onClick={() => closePlayer()}
             />
           </div>
           <AccordionContent>
@@ -167,7 +176,7 @@ const MusicPlayer = () => {
               setCurrentTime={setCurrentTime}
               setCurrentVolume={setCurrentVolume}
             />*/}
-            <section className="z-40 flex h-[77vh] overflow-y-auto flex-row justify-between">
+            <section className="z-40 flex h-[80vh] overflow-y-auto flex-row justify-between">
               <div className="flex h-full w-full flex-col">
                 <div className="text-white p-2">
                   <h3 className="font-bold text-2xl">{music?.mediaCard.name}</h3>
@@ -187,7 +196,7 @@ const MusicPlayer = () => {
                     </p>
                   </div>
                 </div>
-                {
+                {/*
                   <MediaPlayer
                     ref={mediaPlayerRef}
                     //viewType="video"
@@ -199,14 +208,14 @@ const MusicPlayer = () => {
                     onPause={() => handleOnPause}
                     autoPlay={true}
                     //onVolumeChange={handleVolumeChanged}
-                    className="m-2 max-w-screen-lg" 
+                    className="m-2 max-w-screen-lg"
                     src={musicVideo}
                   >
                     <MediaProvider />
                     <DefaultAudioLayout colorScheme="dark" icons={defaultLayoutIcons} smallLayoutWhen={true} />
                     <DefaultVideoLayout colorScheme="dark" icons={defaultLayoutIcons} smallLayoutWhen={false} />
                   </MediaPlayer>
-                }
+                */}
                 {
                   !music &&
                   <Music />
@@ -218,22 +227,20 @@ const MusicPlayer = () => {
             </section>
           </AccordionContent>
           <div className="w-full flex justify-between">
-            <AudioPlayer
-              autoPlay={true}
+            <MediaPlayer
+              viewType="audio"
               src={(isPlaylist && playlist) ? playlist[currentMusic] : (music?.src) ? music.src : undefined}
-              volume={currentVolume}
-              onEnded={isPlaylist ? handleEnd : undefined}
-              showSkipControls={isPlaylist ? true : false}
-              onClickPrevious={isPlaylist ? handleClickPrevious : undefined}
-              onClickNext={isPlaylist ? handleClickNext : undefined}
-              onPlay={handleOnPlay}
+              autoPlay={true}
+              volume={0.5}
+              onVolumeChange={handleVolumeChanged}
               onPause={handleOnPause}
-              showFilledProgress={true}
-              autoPlayAfterSrcChange={true}
-              ref={audioRefPlayer}
-              {...isExtendedOpen ? { customVolumeControls: [] } : {}}
-            />
-            <AccordionTrigger className="bg-white ml-2 w-8 flex justify-center">
+              onEnd={isPlaylist ? handleEnd : undefined}
+              onPlay={handleOnPlay}
+            >
+              <MediaProvider />
+              <PlyrLayout icons={plyrLayoutIcons} controls={plyrControls} />
+            </MediaPlayer>
+            <AccordionTrigger className="bg-white ml-2 rounded-lg w-8 flex justify-center">
             </AccordionTrigger>
           </div>
         </AccordionItem>

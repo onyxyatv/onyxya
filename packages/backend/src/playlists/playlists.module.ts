@@ -12,6 +12,11 @@ import { Role } from 'src/models/role.model';
 import { UserService } from 'src/users/users.service';
 import { Media } from 'src/models/media.model';
 import { MediasPlaylist } from 'src/models/mediasplaylist.model';
+import { MediaService } from 'src/media/media.service';
+import { MediaPathService } from 'src/media-path/media-path.service';
+import { MediaCardService } from 'src/mediacard/mediacard.service';
+import { MediaPath } from 'src/models/media-path.model';
+import { MediaCard } from 'src/models/mediacard.model';
 
 @Module({
   imports: [
@@ -22,6 +27,8 @@ import { MediasPlaylist } from 'src/models/mediasplaylist.model';
       Role,
       Media,
       MediasPlaylist,
+      MediaPath,
+      MediaCard,
     ]),
   ],
   controllers: [PlaylistsController],
@@ -31,6 +38,9 @@ import { MediasPlaylist } from 'src/models/mediasplaylist.model';
     PermissionsService,
     UserService,
     PermissionsGuard,
+    MediaService,
+    MediaPathService,
+    MediaCardService,
   ],
 })
 export class PLaylistsModule {}
