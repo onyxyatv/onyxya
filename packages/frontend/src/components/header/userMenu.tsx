@@ -11,9 +11,11 @@ import { CircleUser, LogOut, Settings } from "lucide-react";
 import { FunctionComponent, useContext } from "react";
 import { Link } from "react-router-dom";
 import AuthContext from "../../utils/AuthContext";
+import { useTranslation } from "react-i18next";
 
 const UserMenu: FunctionComponent = () => {
   const { logout } = useContext(AuthContext) || {};
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     if (logout) {
@@ -33,17 +35,17 @@ const UserMenu: FunctionComponent = () => {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mr-8">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("userMenu.myAccount")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <CircleUser className="mr-1 h-5" /> Profile
+          <CircleUser className="mr-1 h-5" /> {t("userMenu.profile")}
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Settings className="mr-1 h-5" href="/settings" to="/settings" />{" "}
-          <Link to="/settings">Parameters</Link>
+          <Link to="/settings">{t("userMenu.parameters")}</Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogout}>
-          <LogOut className="mr-1 h-5" /> Disconnect
+          <LogOut className="mr-1 h-5" /> {t("userMenu.disconnect")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

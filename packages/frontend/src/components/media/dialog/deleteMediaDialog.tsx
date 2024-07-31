@@ -1,5 +1,6 @@
 import FrontUtilService from "@/utils/frontUtilService";
 import { AxiosResponse, HttpStatusCode } from "axios";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
@@ -26,6 +27,7 @@ const DeleteMediaDialog = ({
   disabled,
 }: DeleteMediaDialogProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const confirmDeleteMedia = async (): Promise<void> => {
     try {
@@ -55,13 +57,22 @@ const DeleteMediaDialog = ({
     <AlertDialog>
       {!disabled ? (
         <AlertDialogTrigger>
-          <Button size="sm" variant="destructive" className="m-1 bg-white text-red-600 border-2 border-red-600 hover:text-white">
-            Delete media
+          <Button
+            size="sm"
+            variant="destructive"
+            className="m-1 bg-white text-red-600 border-2 border-red-600 hover:text-white"
+          >
+            {t("media.table.action.delete")}
           </Button>
         </AlertDialogTrigger>
       ) : (
-        <Button size="sm" variant="destructive" className="m-1 bg-white text-red-600 border-2 border-red-600 hover:text-white" disabled>
-          Delete media
+        <Button
+          size="sm"
+          variant="destructive"
+          className="m-1 bg-white text-red-600 border-2 border-red-600 hover:text-white"
+          disabled
+        >
+          {t("media.table.action.delete")}
         </Button>
       )}
       <AlertDialogContent>
