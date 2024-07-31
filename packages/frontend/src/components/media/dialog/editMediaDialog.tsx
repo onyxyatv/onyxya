@@ -17,7 +17,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
@@ -42,7 +42,6 @@ import {
 } from "../../ui/select";
 import { Switch } from "../../ui/switch";
 import { toast } from "../../ui/use-toast";
-import AuthContext from "@/utils/AuthContext";
 
 type EditMediaPopupProps = {
   mediaId: number;
@@ -50,7 +49,7 @@ type EditMediaPopupProps = {
   disabled?: boolean;
 };
 
-const formatDate = (date: Date) => {
+/*const formatDate = (date: Date) => {
   const d = new Date(date);
   let month = "" + (d.getMonth() + 1);
   let day = "" + d.getDate();
@@ -60,7 +59,7 @@ const formatDate = (date: Date) => {
   if (day.length < 2) day = "0" + day;
 
   return [year, month, day].join("-");
-};
+};*/
 
 const EditMediaDialog = ({
   mediaId,
@@ -70,7 +69,7 @@ const EditMediaDialog = ({
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
   const { t } = useTranslation();
-  const perms = useContext(AuthContext)?.authUser?.permissions;
+  //const perms = useContext(AuthContext)?.authUser?.permissions;
   const [popupOpened, setPopupOpened] = useState(false);
 
   const form = useForm<MediaCard>({

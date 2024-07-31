@@ -38,11 +38,12 @@ export class UserGateway {
     @MessageBody() data: any,
     @ConnectedSocket() client: Socket,
   ): string {
-    this.activeClients[client.id] = {
+    const activeClient: ActiveClient = {
       id: client.id,
       userId: data.id,
       username: data.username,
     };
+    this.activeClients[client.id] = activeClient;
     console.log('Client received :', client.id, data);
     console.log(this.activeClients);
     this.updateClients();

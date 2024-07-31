@@ -20,7 +20,7 @@ import { AuthGuard } from 'src/middlewares/auth.guard';
 import { MediaCard } from 'src/models/mediacard.model';
 import { ZodValidationPipe } from 'src/pipes/zod.pipe';
 import { MediaCardService } from './mediacard.service';
-import { Media } from 'src/models/media.model';
+//import { Media } from 'src/models/media.model';
 
 @UseGuards(AuthGuard)
 @Controller('/mediacard')
@@ -65,10 +65,12 @@ export class MediaCardController {
   async getMediaCardById(
     @Res() res: Response,
     @Req() req: any,
+    @Query() query: { withMedia: string },
   ): Promise<Response> {
+    const withMedia: boolean = query.withMedia && query.withMedia === 'true';
     const id = req.params.id;
     const mediaCard: MediaCard =
-      await this.mediaCardService.getMediaCardById(id);
+      await this.mediaCardService.getMediaCardByMedia(id, withMedia);
     return res.status(200).json(mediaCard);
   }
 

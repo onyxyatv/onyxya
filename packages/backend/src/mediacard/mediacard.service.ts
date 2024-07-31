@@ -97,7 +97,7 @@ export class MediaCardService {
    * @throws BadRequestError if the media card is not found
    * @throws InternalServerError if an error occurs
    */
-  async getMediaCardByMedia(id: number): Promise<Media> {
+  /*async getMediaCardByMedia(id: number): Promise<Media> {
     try {
       const mediaCard: MediaCard = await this.mediaCardRepository.findOne({
         where: { media: { id: id } },
@@ -119,7 +119,8 @@ export class MediaCardService {
       console.log('Error at getMediaCardByMedia : ', error);
       throw new InternalServerError('Error at getMediaCardByMedia');
     }
-  }
+  }*/
+
   /**
    * This method is used to update a media card.
    * @param id the id of the media card

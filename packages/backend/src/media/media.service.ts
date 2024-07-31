@@ -256,8 +256,8 @@ export class MediaService implements OnModuleInit {
       // Returns only public or user-owned media
       if (
         media.mediaCard.visibility === 'public' ||
-        media.user.id === userId ||
-        !media.user
+        !media.user ||
+        media.user.id === userId
       ) {
         // If the category has not yet been defined
         if (musicsByCategories[media.mediaCard.category] === undefined)

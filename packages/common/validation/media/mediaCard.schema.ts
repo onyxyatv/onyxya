@@ -113,7 +113,7 @@ export const mediaCardSchema = z.object({
     .nullable(),
   visibility: z.enum(['public', 'private'], 
     { message: "Visibility must be public or private" }
-  ,
+  ),
 });
 
 export type MediaCard = z.infer<typeof mediaCardSchema>;
