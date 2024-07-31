@@ -2,6 +2,7 @@ import axios, { AxiosResponse, HttpStatusCode } from "axios";
 import { api_url } from "../../config.json";
 
 class FrontUtilService {
+  static apiUrl: string = api_url;
   static token: string | null = localStorage.getItem("onyxyaToken");
   static userEndpoint: string = '/users/user/:id';
   static newUserEndpoint: string = '/users/new';
@@ -120,6 +121,25 @@ class FrontUtilService {
       return url;
     }
     return null;
+  }
+
+  public static formatDate(date: Date): string {
+    const d = new Date(date);
+    let month = "" + (d.getMonth() + 1);
+    let day = "" + d.getDate();
+    const year = d.getFullYear();
+  
+    if (month.length < 2) month = "0" + month;
+    if (day.length < 2) day = "0" + day;
+  
+    return [year, month, day].join("-");
+  }
+
+  public static formatEuDate(date: Date | string) {
+    const formated: string = FrontUtilService.formatDate(new Date(date));
+    const splited: Array<string> = formated.split('-');
+    const final = splited[1] + '/' + splited[2] + '/' + splited[0];
+    return final;
   }
 }
 

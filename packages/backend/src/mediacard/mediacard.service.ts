@@ -69,10 +69,16 @@ export class MediaCardService {
    * @returns the media card
    * @throws BadRequestError if the media card is not found
    */
-  async getMediaCardById(id: string): Promise<MediaCard> {
+  async getMediaCardByMedia(
+    id: string,
+    withMedia: boolean,
+  ): Promise<MediaCard> {
     try {
+      const mediaRelation = withMedia ? { media: true } : null;
       const card = await this.mediaCardRepository.findOne({
-        where: { id: parseInt(id) },
+        where: { media: { id: parseInt(id) } },
+        relations: mediaRelation,
+        //where: { id: parseInt(id) },
       });
       if (!card) {
         throw new BadRequestError('MediaCard not found');
@@ -122,7 +128,7 @@ export class MediaCardService {
    * @throws BadRequestError if the media card is not found
    * @throws InternalServerError if an error occurs
    */
-  async updateMediaCard(id, body): Promise<MediaCard> {
+  async updateMediaCard(id: number, body: any): Promise<MediaCard> {
     try {
       const mediaCard: MediaCard = await this.mediaCardRepository.findOne({
         where: { id: id },
@@ -138,6 +144,7 @@ export class MediaCardService {
       mediaCard.category = body.category;
       mediaCard.isActive = body.isActive;
       mediaCard.releaseDate = body.releaseDate;
+      mediaCard.visibility = body.visibility;
       return await this.mediaCardRepository.save(mediaCard);
     } catch (error) {
       if (error instanceof BadRequestError) {

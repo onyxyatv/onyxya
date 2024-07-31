@@ -21,10 +21,17 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from '@/components/ui/select';
 import FrontUtilService from '@/utils/frontUtilService';
 
-const NewPlaylistPopup = (props: { reloadPlaylists: any }) => {
+interface NewPlaylistProps {
+  reloadPlaylists: (v: boolean) => void;
+  playlistType: 'music' | 'movies' | 'serie';
+}
+
+const NewPlaylistPopup = (props: NewPlaylistProps) => {
   const [popupOpened, setPopupOpened] = useState(false);
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
+  const buttonName: string = props.playlistType === 'serie' ? 'New Serie' : 'New Playlist';
+  const title: string = props.playlistType === 'serie' ? 'Serie' : 'Playlist';
 
   const form = useForm<CreatePlaylist>({
     resolver: zodResolver(createPlaylistSchema),
@@ -33,7 +40,7 @@ const NewPlaylistPopup = (props: { reloadPlaylists: any }) => {
       name: "",
       description: "",
       visibility: 'private',
-      type: 'music',
+      type: props.playlistType,
     }
   });
 
@@ -44,7 +51,7 @@ const NewPlaylistPopup = (props: { reloadPlaylists: any }) => {
         if (form !== undefined) {
           form.reset();
           setPopupOpened(false);
-          props.reloadPlaylists();
+          props.reloadPlaylists(true);
         }
       }
 
@@ -63,12 +70,12 @@ const NewPlaylistPopup = (props: { reloadPlaylists: any }) => {
     <Dialog open={popupOpened} onOpenChange={setPopupOpened}>
       <DialogTrigger>
         <Button variant="outline" className="w-52 border-2 border-gray-400 hover:border-transparent">
-          <Plus /> New Playlist
+          <Plus /> {buttonName}
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-slate-100">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl">Create a new Playlist</DialogTitle>
+          <DialogTitle className="text-center text-2xl">Create a new {title}</DialogTitle>
           <DialogDescription>
             <Card>
               <CardHeader>
@@ -86,7 +93,7 @@ const NewPlaylistPopup = (props: { reloadPlaylists: any }) => {
                         <FormItem>
                           <FormLabel>Name</FormLabel>
                           <FormControl>
-                            <Input className="border-slate-200 border-2 bg-slate-100" placeholder="my best music" {...field} />
+                            <Input className="border-slate-200 border-2 bg-slate-100" placeholder={`my best ${props.playlistType}s`} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

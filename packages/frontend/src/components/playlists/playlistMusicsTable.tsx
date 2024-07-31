@@ -118,7 +118,7 @@ export function PlaylistMusicsTable<TData, TValue>({
         />
       </div>
       { /* Playlist table / Area */}
-      <ScrollArea className="h-[350px] pr-3">
+      <ScrollArea className="h-[450px] pr-3">
         <Table className="border-2 border-gray-200">
           { /* Columns header */}
           <TableHeader>

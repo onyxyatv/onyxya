@@ -1,8 +1,10 @@
 import { FC, ReactNode, createContext, useState } from "react";
 import FrontUtilService from "./frontUtilService";
+import { MediaCard } from "@/components/models/media";
+import { HttpStatusCode } from "axios";
 
 interface MusicPlayed {
-  mediaId: number;
+  mediaCard: MediaCard;
   src: string;
 }
 
@@ -13,8 +15,13 @@ interface MusicPlayerContextT {
   isPlaylist: boolean;
   setPlaylistMode: () => void;
   setMusicMode: () => void;
-  playlist: Array<string>;
-  setPlaylistsMusics: (list: Array<string>) => void;
+  playlist: Array<number>;
+  setPlaylistsMusics: (list: Array<number>) => void;
+  isMusicPlayling: boolean;
+  setIsMusicPlayling: (v: boolean) => void;
+  random: boolean;
+  setRandomMode: (v: boolean) => void;
+  finishMediaStream: () => void;
 }
 
 interface MusicPlayerProps {
@@ -27,33 +34,49 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
   const [music, setMusic] = useState<MusicPlayed | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPlaylist, setIsPlaylist] = useState(false);
-  const [playlist, setPlaylist] = useState<Array<string>>([]);
+  const [playlist, setPlaylist] = useState<Array<number>>([]);
+  const [isMusicPlayling, setIsMusicPlayling] = useState<boolean>(false);
+  const [random, setRandomMode] = useState<boolean>(false);
+  const [musicId, setMusicId] = useState<number>(0);
 
-  const fetchMusic = async (musicId: number): Promise<void> => {
-    console.log('called fetch music :', musicId);
+  const fetchMusic = async (localMusicId: number): Promise<void> => {
     setIsLoading(true);
-    const endpoint: string = '/media/getFile/' + musicId;
-    const res: Blob = await FrontUtilService.getBlobFromApi(endpoint);
-    if (res.size > 0) {
-      const url = URL.createObjectURL(res);
+    setMusicId(localMusicId);
+    const endpoint: string = '/media/getFile/' + localMusicId;
+    //const res: Blob = await FrontUtilService.getBlobFromApi(endpoint);
+    const res: any = await FrontUtilService.getDataFromApi(endpoint);
+    console.log(res);
+    const resMedia: any = await FrontUtilService.getDataFromApi(`/mediacard/media/${localMusicId}?withMedia=true`);
+    //if (res.size > 0) {
+      //const url = URL.createObjectURL(res); 
       setMusic({
-        mediaId: musicId,
-        src: url
+        mediaCard: resMedia,
+        src: FrontUtilService.apiUrl+res.file,
       });
-    }
+    //}
     setIsLoading(false);
   };
+
+  const finishMediaStream = async (): Promise<void> => {
+    try {
+      const endpoint: string = '/media/stream/delete/' + musicId;
+      const resApi: any = await FrontUtilService.deleteApi(endpoint);
+      if (resApi.status === HttpStatusCode.Ok) return;
+      //TODO: Does we put error toast?
+    } catch (_e) { return; }
+  }
 
   const setPlaylistMode = (): void => setIsPlaylist(true);
 
   const setMusicMode = (): void => setIsPlaylist(false);
 
-  const setPlaylistsMusics = (list: Array<string>): void => setPlaylist(list);
+  const setPlaylistsMusics = (list: Array<number>): void => setPlaylist(list);
 
   return (
     <MusicPlayerContext.Provider 
     value={{ music, fetchMusic, isLoading, isPlaylist, 
-             setPlaylistMode, setMusicMode, playlist, setPlaylistsMusics }}>
+             setPlaylistMode, setMusicMode, playlist, setPlaylistsMusics, 
+             isMusicPlayling, setIsMusicPlayling, random, setRandomMode, finishMediaStream }}>
       {children}
     </MusicPlayerContext.Provider>
   );

@@ -72,6 +72,11 @@ export enum MediaCategory {
   Western = "Western",
 }
 
+export enum MediaVisibility {
+  private = "private",
+  public = "public",
+}
+
 export const mediaCardSchema = z.object({
   id: z.number({ message: "ID must be a number" }).nullable(),
   name: z
@@ -106,6 +111,9 @@ export const mediaCardSchema = z.object({
       z.boolean({ message: "isActive must be a boolean" })
     )
     .nullable(),
+  visibility: z.enum(['public', 'private'], 
+    { message: "Visibility must be public or private" }
+  ,
 });
 
 export type MediaCard = z.infer<typeof mediaCardSchema>;

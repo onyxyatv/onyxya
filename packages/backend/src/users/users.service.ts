@@ -24,6 +24,7 @@ import {
 import { EditUser } from '@common/validation/auth/editUser.schema';
 import { Permissions } from 'src/db/permissions';
 import { CreateOwner } from 'src/db/inits/createOwner.db';
+import { MediaService } from 'src/media/media.service';
 const secret: string = process.env.JWT_SECRET_KEY;
 
 @Injectable()
@@ -35,7 +36,13 @@ export class UserService {
     private rolesRepository: Repository<Role>,
     @InjectRepository(Permission)
     private permissionsRepository: Repository<Permission>,
-  ) {}
+
+    private readonly mediaService: MediaService,
+  ) {
+    this.activeClients = 0;
+  }
+
+  public activeClients: number;
 
   async onModuleInit(): Promise<void> {
     const ownerRole: Role = await this.rolesRepository.findOneBy({
@@ -282,5 +289,10 @@ export class UserService {
         : new InternalServerError('Error during deletion');
     }
     throw new NotFoundError('User to delete not found');
+  }
+
+  async removeActiveClient() {
+    this.activeClients -= 1;
+    if (this.activeClients <= 0) this.mediaService.cleanAllMediaStreams();
   }
 }

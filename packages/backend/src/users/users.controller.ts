@@ -3,10 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  MessageEvent,
   Patch,
   Post,
   Request,
   Res,
+  Sse,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -29,6 +31,7 @@ import {
   editUserSchema,
   EditUser,
 } from '@common/validation/auth/editUser.schema';
+import { interval, map, Observable } from 'rxjs';
 
 @Controller()
 export class UserController {
@@ -139,5 +142,14 @@ export class UserController {
     return res
       .status(200)
       .json({ count: userPermissions.length, permissions: userPermissions });
+  }
+
+  @Sse('/users/events/test')
+  getConnectedAmount(): Observable<MessageEvent> {
+    return interval(1200).pipe(
+      map(() => ({
+        data: { activeClients: this.userService.activeClients },
+      })),
+    );
   }
 }

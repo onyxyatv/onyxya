@@ -22,6 +22,8 @@ import { AuthGuard } from 'src/middlewares/auth.guard';
 import { PermissionsGuard } from 'src/middlewares/permissions.guard';
 import { NeedPermissions } from 'src/permissions/permissions.decorator';
 import { MediaService } from './media.service';
+import { CustomError } from '@common/errors/CustomError';
+import { CustomResponse } from '@common/errors/customResponses';
 
 const fileFilter = (req, file, cb) => {
   // Vérification du type de fichier
@@ -104,11 +106,11 @@ export class MediaController {
    * @returns the file
    */
   @Get('getFile/:fileId')
-  async getFile(@Req() req: Request, @Res() res: Response): Promise<void> {
+  async getFile(@Req() req: Request, @Res() res: Response): Promise<object> {
     const fileId: number = Number.parseInt(req.params.fileId);
     const data: { statusCode: number; file: string } =
       await this.mediaService.getFileById(fileId);
-    return res.status(data.statusCode).sendFile(data.file);
+    return res.status(data.statusCode).json({ file: data.file });
   }
 
   @Get('stream/:fileId')
@@ -128,9 +130,12 @@ export class MediaController {
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<object> {
+    const userId: number = req['user'].id;
     const mediaType: string = req.params.mediaType;
-    const data: object =
-      await this.mediaService.getMediasByCategories(mediaType);
+    const data: object = await this.mediaService.getMediasByCategories(
+      userId,
+      mediaType,
+    );
     return res.status(200).json({
       categoriesCount: Object.keys(data).length,
       categories: data,
@@ -192,5 +197,17 @@ export class MediaController {
       message: 'File uploaded successfully',
       file: file,
     };
+  }
+
+  @NeedPermissions(Permissions.ReadMedias)
+  @Delete('stream/delete/:mediaId')
+  async deleteMediaStreamFiles(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<object> {
+    const mediaId: number = Number.parseInt(req.params.mediaId);
+    const data: CustomError | CustomResponse =
+      await this.mediaService.deleteMediaStreamFiles(mediaId);
+    return res.status(data.statusCode).json(data);
   }
 }

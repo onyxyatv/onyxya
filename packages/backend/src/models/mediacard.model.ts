@@ -30,6 +30,9 @@ export class MediaCard {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ default: 'private' })
+  visibility: 'public' | 'private';
+
   @OneToOne(() => Media, (media) => media.mediaCard, {
     cascade: true,
     onDelete: 'CASCADE',

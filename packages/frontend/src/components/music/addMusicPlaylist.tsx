@@ -57,7 +57,7 @@ const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps): JSX.Element => {
     <Dialog open={popupOpened} onOpenChange={setPopupOpened}>
       <DialogTrigger>
         <Button variant="outline">
-          <Plus /> Add to Playlist
+          <Plus /> Playlists
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-slate-100">
@@ -92,7 +92,7 @@ const AddMusicPlaylistPopup = (props: AddMusicPlaylistProps): JSX.Element => {
                   </div>
                   {
                     !mediasPlaylistIds.includes(props.musicId) &&
-                    <Button variant="default" className='mr-2' onClick={() => addToPlaylist(playlist.id)}>
+                    <Button variant="default" onClick={() => addToPlaylist(playlist.id)}>
                       Add To Playlist
                     </Button>
                   }

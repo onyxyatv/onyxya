@@ -9,6 +9,8 @@ import { MediaPathModule } from './media-path/media-path.module';
 import { MediaCardModule } from './mediacard/mediacard.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { PLaylistsModule } from './playlists/playlists.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -19,6 +21,11 @@ import { PLaylistsModule } from './playlists/playlists.module';
     MediaModule,
     MediaPathModule,
     PLaylistsModule,
+    // To serve HLS files for media streaming
+    ServeStaticModule.forRoot({
+      rootPath: join('/home/node/media/output'),
+      serveRoot: '/media_hls/',
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

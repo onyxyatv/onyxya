@@ -12,11 +12,12 @@ import {
   MediaCategory,
   MediaType,
   mediaCardSchema,
+  MediaVisibility,
 } from "@common/validation/media/mediaCard.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
@@ -41,6 +42,7 @@ import {
 } from "../../ui/select";
 import { Switch } from "../../ui/switch";
 import { toast } from "../../ui/use-toast";
+import AuthContext from "@/utils/AuthContext";
 
 type EditMediaPopupProps = {
   mediaId: number;
@@ -68,6 +70,8 @@ const EditMediaDialog = ({
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
   const { t } = useTranslation();
+  const perms = useContext(AuthContext)?.authUser?.permissions;
+  const [popupOpened, setPopupOpened] = useState(false);
 
   const form = useForm<MediaCard>({
     resolver: zodResolver(mediaCardSchema),
@@ -82,9 +86,12 @@ const EditMediaDialog = ({
         values
       );
       if (res.status === HttpStatusCode.Ok) {
-        form.reset();
-        if (onUpdate) {
-          onUpdate();
+        if (form) {
+          //form.reset();
+          if (onUpdate) {
+            onUpdate();
+            setPopupOpened(false);
+          }
         }
 
         toast({
@@ -117,10 +124,11 @@ const EditMediaDialog = ({
     if (isOpen) {
       fetchMediaCard();
     }
+    setPopupOpened(isOpen);
   };
 
   return (
-    <Dialog onOpenChange={handleOpenChange}>
+    <Dialog open={popupOpened} onOpenChange={handleOpenChange}>
       {!disabled ? (
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="m-1">
@@ -189,7 +197,7 @@ const EditMediaDialog = ({
                       />
                     </div>
 
-                    <div className="mt-2">
+                    <div className="mt-2 flex justify-between">
                       <FormField
                         control={form.control}
                         name="type"
@@ -225,6 +233,42 @@ const EditMediaDialog = ({
                           </FormItem>
                         )}
                       />
+
+                      <FormField
+                        control={form.control}
+                        name="visibility"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Visibility</FormLabel>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="p-2 rounded-md w-full border-slate-200 border-2 bg-slate-100">
+                                  <SelectValue placeholder="Choose visibility" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {Object.keys(MediaVisibility).map((key) => (
+                                  <SelectItem
+                                    key={key}
+                                    value={
+                                      MediaVisibility[key as keyof typeof MediaVisibility]
+                                    }
+                                  >
+                                    {MediaVisibility[key as keyof typeof MediaVisibility]}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Select media visibility
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
 
                     <div className="mt-2">
@@ -249,13 +293,13 @@ const EditMediaDialog = ({
                                     key={key}
                                     value={
                                       MediaCategory[
-                                        key as keyof typeof MediaCategory
+                                      key as keyof typeof MediaCategory
                                       ]
                                     }
                                   >
                                     {
                                       MediaCategory[
-                                        key as keyof typeof MediaCategory
+                                      key as keyof typeof MediaCategory
                                       ]
                                     }
                                   </SelectItem>
@@ -283,7 +327,7 @@ const EditMediaDialog = ({
                                 type="date"
                                 className="border-slate-200 border-2 bg-slate-100"
                                 value={
-                                  field.value ? formatDate(field.value) : ""
+                                  field.value ? FrontUtilService.formatDate(field.value) : ""
                                 }
                                 onChange={(e) =>
                                   field.onChange(new Date(e.target.value))

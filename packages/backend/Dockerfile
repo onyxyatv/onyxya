@@ -24,6 +24,10 @@ WORKDIR /home/onyxya/backend
 COPY --from=build /home/onyxya/packages/backend/dist ./dist
 COPY --from=build /home/onyxya/node_modules ./node_modules
 
+RUN apk update && apk add --no-cache ffmpeg
+
+RUN mkdir -p /home/onyxya/media/output
+
 EXPOSE 3000
 
 CMD ["node", "dist/backend/src/main"]

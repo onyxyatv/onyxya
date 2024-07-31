@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -9,6 +10,8 @@ import {
 } from 'typeorm';
 import { MediaCard } from './mediacard.model';
 import { MediasPlaylist } from './mediasplaylist.model';
+import { MediaChapter } from './media-chapter.model';
+import { User } from './user.model';
 
 @Entity()
 export class Media {
@@ -47,6 +50,18 @@ export class Media {
 
   @OneToMany(() => MediasPlaylist, (mediasPlaylist) => mediasPlaylist.media)
   mediasPlaylist: MediasPlaylist[];
+
+  @OneToMany(() => MediaChapter, (mediaChapter) => mediaChapter.media)
+  chapters: MediaChapter[];
+
+  @ManyToOne(() => User, (user) => user.medias)
+  user: User;
+
+  @Column({ nullable: true })
+  streamFile: string;
+
+  @Column({ nullable: false, default: 0 })
+  streamQueue: number;
 
   constructor(
     name: string,

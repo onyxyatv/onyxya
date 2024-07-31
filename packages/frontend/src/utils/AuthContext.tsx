@@ -17,7 +17,7 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
-interface AuthUser {
+export interface AuthUser {
   id: number;
   username: string;
   role: {

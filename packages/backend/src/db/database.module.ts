@@ -9,6 +9,7 @@ import { Media } from '../models/media.model';
 import { MediaPath } from '../models/media-path.model';
 import { Playlist } from 'src/models/playlist.model';
 import { MediasPlaylist } from 'src/models/mediasplaylist.model';
+import { MediaChapter } from 'src/models/media-chapter.model';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { MediasPlaylist } from 'src/models/mediasplaylist.model';
         MediaPath,
         Playlist,
         MediasPlaylist,
+        MediaChapter,
       ],
       //migrations: [],
       synchronize: syncDbStatus,

@@ -6,6 +6,10 @@ services:
       context: .
       dockerfile: ./packages/backend/Dockerfile
     container_name: onyxya-prod-backend
+    environment:
+      # Don't forget to change admin's credentials
+      - ONYXYA_OWNER_USERNAME=admin
+      - ONYXYA_OWNER_PASSWORD=changeme
     ports:
       - "3000:3000"
 #    volumes:

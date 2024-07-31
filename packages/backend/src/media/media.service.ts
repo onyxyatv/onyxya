@@ -1,4 +1,8 @@
-import { InternalServerError, NotFoundError } from '@common/errors/CustomError';
+import {
+  CustomError,
+  InternalServerError,
+  NotFoundError,
+} from '@common/errors/CustomError';
 import { HttpStatus, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { promises as fs } from 'fs';
@@ -7,6 +11,11 @@ import { MediaCardService } from 'src/mediacard/mediacard.service';
 import { Like, Repository } from 'typeorm';
 import { MediaPathService } from '../media-path/media-path.service';
 import { Media } from '../models/media.model';
+import FfmepgService from 'src/services/ffmpeg.service';
+import {
+  CustomResponse,
+  SuccessResponse,
+} from '@common/errors/customResponses';
 
 @Injectable()
 export class MediaService implements OnModuleInit {
@@ -19,6 +28,7 @@ export class MediaService implements OnModuleInit {
 
   async onModuleInit() {
     await this.syncMedia();
+    await this.cleanAllMediaStreams();
   }
 
   /**
@@ -214,27 +224,51 @@ export class MediaService implements OnModuleInit {
       id: fileId,
     });
     if (fileMedia) {
-      const file = path.join('/home/node/media/music', fileMedia.name);
-      return { file: file, statusCode: 200 };
+      // If a stream already exists for this file,
+      // then there's no need to duplicate the file, just use the existing stream.
+      let outputFileStream: string | null = fileMedia.streamFile;
+      if (!fileMedia.streamFile) {
+        const file = path.join('/home/node/media/music', fileMedia.name);
+        outputFileStream = await FfmepgService.createStream(file);
+        fileMedia.streamFile = outputFileStream;
+        fileMedia.streamQueue += 1;
+        await this.mediaRepository.save(fileMedia);
+      }
+      return { file: '/media_hls/' + outputFileStream, statusCode: 200 };
     }
     return { file: null, statusCode: HttpStatus.NOT_FOUND };
   }
 
-  async getMediasByCategories(mediaType: string) {
-    const musics: Array<Media> = await this.mediaRepository.find({
+  /**
+   * Returns all media of a type by mediacard category
+   * @param userId | the ID of the user who made the request
+   * @param mediaType | music or serie or movies
+   * @returns medias by category
+   */
+  async getMediasByCategories(userId: number, mediaType: string) {
+    const medias: Array<Media> = await this.mediaRepository.find({
       where: { type: mediaType },
-      relations: { mediaCard: true },
+      relations: { mediaCard: true, user: true },
     });
 
     const musicsByCategories = {};
-    musics.forEach((music) => {
-      if (musicsByCategories[music.mediaCard.category] === undefined)
-        musicsByCategories[music.mediaCard.category] = [];
-      const tempMusic: object = {
-        id: music.id,
-        mediaCard: music.mediaCard,
-      };
-      musicsByCategories[music.mediaCard.category].push(tempMusic);
+    medias.forEach((media) => {
+      // Returns only public or user-owned media
+      if (
+        media.mediaCard.visibility === 'public' ||
+        media.user.id === userId ||
+        !media.user
+      ) {
+        // If the category has not yet been defined
+        if (musicsByCategories[media.mediaCard.category] === undefined)
+          musicsByCategories[media.mediaCard.category] = [];
+
+        const tempMedia: object = {
+          id: media.id,
+          mediaCard: media.mediaCard,
+        };
+        musicsByCategories[media.mediaCard.category].push(tempMedia);
+      }
     });
     return musicsByCategories;
   }
@@ -258,6 +292,63 @@ export class MediaService implements OnModuleInit {
       }
       console.log('Error at deleteMedia : ', error);
       throw new InternalServerError('Error at deleteMedia');
+    }
+  }
+
+  async deleteMediaStreamFiles(
+    mediaId: number,
+  ): Promise<CustomResponse | CustomError> {
+    try {
+      const media: Media = await this.mediaRepository.findOneBy({
+        id: mediaId,
+      });
+
+      if (media) {
+        // To keep track of how many people are currently listening
+        media.streamQueue = media.streamQueue > 0 ? media.streamQueue - 1 : 0;
+        // If someone is still listening, then there's no need to delete the stream.
+        if (media.streamQueue > 0) return new SuccessResponse();
+
+        let streamName = media.streamFile;
+        if (!streamName)
+          throw new NotFoundError('Stream does not exist on this media');
+        if (streamName.includes('.'))
+          streamName = media.streamFile.split('.')[0];
+
+        if (media.streamQueue === 0) media.streamFile = null;
+        await this.mediaRepository.save(media);
+
+        const tmp = await fs.readdir(`/home/node/media/output/`);
+        const streamFilesToDelete = tmp.filter((file) =>
+          file.includes(streamName),
+        );
+
+        for (const file of streamFilesToDelete) {
+          await fs.unlink('/home/node/media/output/' + file);
+        }
+        return new SuccessResponse();
+      }
+
+      throw new NotFoundError('Media or stream not fund');
+    } catch (error) {
+      console.log(error);
+      throw new NotFoundError('Stream file to delete not found');
+    }
+  }
+
+  async cleanAllMediaStreams(): Promise<void> {
+    try {
+      // Reset all streams medias
+      await this.mediaRepository.query(
+        'UPDATE media SET streamQueue = 0, streamFile = NULL',
+      );
+
+      const files = await fs.readdir(`/home/node/media/output/`);
+      for (const file of files) {
+        await fs.unlink('/home/node/media/output/' + file);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 }

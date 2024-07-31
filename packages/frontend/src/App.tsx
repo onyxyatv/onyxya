@@ -15,6 +15,8 @@ import Settings from "./pages/settings/Settings";
 import Unauthorized from "./pages/Unauthorized";
 import { AuthProvider } from "./utils/AuthContext";
 import { MusicPlayerProvider } from "./utils/MusicPlayerContext";
+import { Toaster } from "./components/ui/toaster";
+import Profile from "./pages/Profile";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
 const App: React.FC = () => {
@@ -86,6 +88,14 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <MyPlaylist />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />
