@@ -5,10 +5,11 @@ services:
   dev:
     image: node:20.15-alpine3.20
     container_name: onyxya-dev
-    #user: node
+    #user: node # We need to be root, Can cause problems if used as node
     working_dir: /home/node
-    # Comment the 'command' row if you want to run npm install manually
+    # Comment one of the two lines according to the launch command you wish to use
     #command: ["/bin/sh", "-c", "mkdir -p /home/node/media/output && apk update && apk add --no-cache ffmpeg && npm install && tail -f /dev/null"]
+    command: ["/bin/sh", "-c", "mkdir -p /home/node/media/output && apk update && apk add --no-cache ffmpeg"]
     volumes:
       - ./packages:/home/node/packages
       - ./package.json:/home/node/package.json
