@@ -12,6 +12,7 @@ import FrontUtilService from "@/utils/frontUtilService";
 import '@vidstack/react/player/styles/base.css';
 import '@vidstack/react/player/styles/plyr/theme.css';
 import { PlyrControl, PlyrLayout, plyrLayoutIcons } from '@vidstack/react/player/layouts/plyr';
+import { DefaultAudioLayout, defaultLayoutIcons, DefaultVideoLayout } from '@vidstack/react/player/layouts/default';
 
 interface volumeChangedProps {
   volume: number;
@@ -124,7 +125,9 @@ const MusicPlayer = () => {
 
   //const music = useContext(MusicPlayerContext)?.music;
   const musicSrc = (music) ? music.src : '';
-  //const musicVideo: MediaSrc = { src: musicSrc, type: "video/mp4" };
+  // eslint-disable-next-line no-constant-condition
+  const musicType: string = (music && music.mediaCard.media.name.includes('mp4')) ? 'video/mp4' : 'audio/mpeg';
+  const musicVideo: MediaSrc = { src: musicSrc, type: musicType };
   //const musicVideo: MediaSrc = { src: musicSrc, type: 'application/x-mpegurl' };
   const mediaPlayerRef = useRef<MediaPlayerInstance>(null);
   //const isMusicPlayling = useContext(MusicPlayerContext)?.isMusicPlayling;
@@ -196,10 +199,10 @@ const MusicPlayer = () => {
                     </p>
                   </div>
                 </div>
-                {/*
+                {
                   <MediaPlayer
                     ref={mediaPlayerRef}
-                    //viewType="video"
+                    viewType="video"
                     //onTimeUpdate={handleOnTimeUpdate}
                     //onTimeChange={setCurrentTime}
                     //currentTime={currentTime}
@@ -207,7 +210,7 @@ const MusicPlayer = () => {
                     //onPlay={handleOnPlay}
                     onPause={() => handleOnPause}
                     autoPlay={true}
-                    //onVolumeChange={handleVolumeChanged}
+                    //onVolumeChange={handleVolumeChanged}defaultLayoutIcons
                     className="m-2 max-w-screen-lg"
                     src={musicVideo}
                   >
@@ -215,7 +218,7 @@ const MusicPlayer = () => {
                     <DefaultAudioLayout colorScheme="dark" icons={defaultLayoutIcons} smallLayoutWhen={true} />
                     <DefaultVideoLayout colorScheme="dark" icons={defaultLayoutIcons} smallLayoutWhen={false} />
                   </MediaPlayer>
-                */}
+                }
                 {
                   !music &&
                   <Music />
