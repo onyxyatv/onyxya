@@ -1,5 +1,7 @@
+import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import FrontUtilService from "../../../utils/frontUtilService";
 import {
   AlertDialog,
@@ -13,14 +15,15 @@ import {
   AlertDialogTrigger,
 } from "../../ui/alert-dialog";
 import { Button } from "../../ui/button";
-import { Input } from "@/components/ui/input";
 
 type NewMediaDialogProps = {
   onMediaAdded?: () => void;
+  disabled?: boolean;
 };
 
-const NewMediaDialog = ({ onMediaAdded }: NewMediaDialogProps) => {
+const NewMediaDialog = ({ onMediaAdded, disabled }: NewMediaDialogProps) => {
   const [file, setFile] = useState<File | null>(null);
+  const { t } = useTranslation();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target?.files?.[0];
@@ -35,7 +38,8 @@ const NewMediaDialog = ({ onMediaAdded }: NewMediaDialogProps) => {
         const formData = new FormData();
         formData.append("file", file);
         const res = await FrontUtilService.postApi("/media", formData);
-        if (res) {
+
+        if (res.status === 201) {
           toast({
             title: "Media uploaded",
             description: "Media uploaded successfully",
@@ -48,7 +52,7 @@ const NewMediaDialog = ({ onMediaAdded }: NewMediaDialogProps) => {
           console.error("Failed to upload media");
           toast({
             title: "Media upload failed",
-            description: "Failed to upload media",
+            description: res.message,
             variant: "destructive",
           });
         }
@@ -65,20 +69,24 @@ const NewMediaDialog = ({ onMediaAdded }: NewMediaDialogProps) => {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger>
-        <Button
-          variant="default"
-        >
-          Add media
+      {!disabled ? (
+        <AlertDialogTrigger>
+          <Button size="sm" variant="default" className="m-1">
+            {t("media.addMediaButton")}
+          </Button>
+        </AlertDialogTrigger>
+      ) : (
+        <Button size="sm" variant="default" className="m-1" disabled>
+          {t("media.addMediaButton")}
         </Button>
-      </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Add media</AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogDescription>
           <div>
-            <Input type="file" onChange={handleFileChange}/>
+            <Input type="file" onChange={handleFileChange} />
           </div>
         </AlertDialogDescription>
         <AlertDialogFooter>

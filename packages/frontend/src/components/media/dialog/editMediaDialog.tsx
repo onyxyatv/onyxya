@@ -19,6 +19,7 @@ import { AxiosResponse, HttpStatusCode } from "axios";
 import { AlertCircle } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
 import { Button } from "../../ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "../../ui/card";
@@ -46,11 +47,29 @@ import AuthContext from "@/utils/AuthContext";
 type EditMediaPopupProps = {
   mediaId: number;
   onUpdate?: () => void;
+  disabled?: boolean;
 };
 
-const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
+const formatDate = (date: Date) => {
+  const d = new Date(date);
+  let month = "" + (d.getMonth() + 1);
+  let day = "" + d.getDate();
+  const year = d.getFullYear();
+
+  if (month.length < 2) month = "0" + month;
+  if (day.length < 2) day = "0" + day;
+
+  return [year, month, day].join("-");
+};
+
+const EditMediaDialog = ({
+  mediaId,
+  onUpdate,
+  disabled,
+}: EditMediaPopupProps) => {
   const [error, setError] = useState("");
   const [errorText, setErrorText] = useState("No more details");
+  const { t } = useTranslation();
   const perms = useContext(AuthContext)?.authUser?.permissions;
   const [popupOpened, setPopupOpened] = useState(false);
 
@@ -62,15 +81,6 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
 
   const handleEditMedia = async (values: MediaCard) => {
     try {
-      if (!perms?.includes("edit_media")) {
-        toast({
-          title: "Edit media",
-          description: "You don't have the permission to edit media",
-          variant: "destructive",
-        });
-        return;
-      }
-
       const res: AxiosResponse = await FrontUtilService.patchApi(
         `/mediacard/${values.id}`,
         values
@@ -101,11 +111,6 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
     }
   };
 
-  useEffect(() => {
-    fetchMediaCard();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const fetchMediaCard = async () => {
     const card: MediaCard = await FrontUtilService.getDataFromApi(
       `/mediacard/media/${mediaId}`
@@ -115,13 +120,26 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
     }
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen) {
+      fetchMediaCard();
+    }
+    setPopupOpened(isOpen);
+  };
+
   return (
-    <Dialog open={popupOpened} onOpenChange={setPopupOpened}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="m-1">
-          Edit Media
+    <Dialog open={popupOpened} onOpenChange={handleOpenChange}>
+      {!disabled ? (
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm" className="m-1">
+            {t("media.table.action.edit")}
+          </Button>
+        </DialogTrigger>
+      ) : (
+        <Button variant="outline" size="sm" className="m-1" disabled>
+          {t("media.table.action.edit")}
         </Button>
-      </DialogTrigger>
+      )}
       <DialogContent className="bg-slate-100">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl">Edit Media</DialogTitle>
@@ -146,6 +164,7 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
                               className="border-slate-200 border-2 bg-slate-100"
                               placeholder="Media Name"
                               {...field}
+                              value={field.value ?? ""}
                             />
                           </FormControl>
                           <FormDescription>Name of the media</FormDescription>
@@ -166,6 +185,7 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
                                 className="border-slate-200 border-2 bg-slate-100"
                                 placeholder="Description"
                                 {...field}
+                                value={field.value ?? ""}
                               />
                             </FormControl>
                             <FormDescription>
@@ -185,7 +205,7 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
                           <FormItem>
                             <FormLabel>Type</FormLabel>
                             <Select
-                              value={field.value}
+                              value={field.value ?? ""}
                               onValueChange={field.onChange}
                             >
                               <FormControl>
@@ -259,7 +279,7 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
                           <FormItem>
                             <FormLabel>Category</FormLabel>
                             <Select
-                              value={field.value}
+                              value={field.value ?? ""}
                               onValueChange={field.onChange}
                             >
                               <FormControl>
@@ -331,7 +351,7 @@ const EditMediaDialog = ({ mediaId, onUpdate }: EditMediaPopupProps) => {
                             <FormLabel>Active</FormLabel>
                             <FormControl>
                               <Switch
-                                checked={field.value}
+                                checked={field.value ?? false}
                                 onCheckedChange={field.onChange}
                               />
                             </FormControl>

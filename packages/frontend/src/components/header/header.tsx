@@ -6,41 +6,42 @@ import UserMenu from "./userMenu";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";  // Assurez-vous que ce chemin est correct pour votre projet
 import { Moon, Sun } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Header: FunctionComponent = () => {
-  const userRole = useContext(AuthContext)?.authUser?.role.name;
+  const perms = useContext(AuthContext)?.authUser?.permissions;
+  const [ t ] = useTranslation();
 
   const columns = [
     {
-      name: "Home",
+      name: t("header.home"),
       link: "/home",
-      role: "user",
     },
     {
-      name: "Movies",
-      link: "/movies",
-      role: "user",
+      name: t("header.movie"),
+      link: "/movie",
     },
     {
-      name: "Series",
+      name: t("header.series"),
       link: "/series",
-      role: "user",
     },
     {
-      name: "Music",
+      name: t("header.music"),
       link: "/music",
-      role: "user",
     },
     {
-      name: "Media",
+      name: t("header.media"),
       link: "/media",
-      role: "admin",
+      perm: "admin_read_media",
     },
   ];
 
-  const filteredColumns = userRole === "admin" 
-    ? columns 
-    : columns.filter(column => column.role === "user");
+  const filteredColumns = columns.filter((column) => {
+    if (!column.perm) return true;
+    if (perms?.includes(column.perm)) return true;
+    return false;
+  });
+  
 
   return (
     <header className="flex bg-slate-600 p-4">

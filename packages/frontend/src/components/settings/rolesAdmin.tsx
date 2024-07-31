@@ -1,8 +1,21 @@
+import { useContext } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import AdminRoleSettings from "./roles/adminRoleSettings";
 import UserRoleSettings from "./roles/userRoleSettings";
+import AuthContext from "@/utils/AuthContext";
+import { Alert } from "../ui/alert";
+
 
 const RolesAdminSettings = () => {
+
+  const perms = useContext(AuthContext)?.authUser?.permissions;
+  
+  if (!perms?.includes("admin_roles")) {
+    return (
+      <Alert variant={"destructive"}>You don't have access to this ressource</Alert>
+    )
+  }
+
   return (
     <section>
       <Card className="shadow-lg">

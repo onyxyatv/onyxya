@@ -78,30 +78,30 @@ export enum MediaVisibility {
 }
 
 export const mediaCardSchema = z.object({
-  id: z.number({ message: "ID must be a number" }).optional(),
+  id: z.number({ message: "ID must be a number" }).nullable(),
   name: z
     .string({ message: "Name must be a string" })
-    .min(1, { message: "Name must be at least 1 character" })
     .max(255, { message: "Name must be at most 255 characters" })
-    .optional(),
+    .nullable(),
   description: z
     .string({ message: "Description must be a string" })
-    .min(1, { message: "Description must be at least 1 character" })
     .max(255, { message: "Description must be at most 255 characters" })
-    .optional(),
-  type: z.nativeEnum(MediaType, {
-    message: "Type must be music, film or series",
-  }),
+    .nullable(),
+  type: z
+    .nativeEnum(MediaType, {
+      message: "Type must be music, film or series",
+    })
+    .nullable(),
   category: z
     .nativeEnum(MediaCategory, {
       message: "Category must be one of the available categories",
     })
-    .optional(),
+    .nullable(),
   releaseDate: z.coerce
     .date({
       message: "Release date must be a date",
     })
-    .optional(),
+    .nullable(),
   isActive: z
     .preprocess(
       (value) => {
@@ -110,10 +110,10 @@ export const mediaCardSchema = z.object({
       },
       z.boolean({ message: "isActive must be a boolean" })
     )
-    .optional(),
+    .nullable(),
   visibility: z.enum(['public', 'private'], 
     { message: "Visibility must be public or private" }
-  ),
+  ,
 });
 
 export type MediaCard = z.infer<typeof mediaCardSchema>;

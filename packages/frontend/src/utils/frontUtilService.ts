@@ -15,9 +15,10 @@ class FrontUtilService {
 
   // TODO: Need to talk about return any
   public static async getDataFromApi(endpoint: string): Promise<any | null> {
+    const authToken: string | null = localStorage.getItem("onyxyaToken");
     try {
       const res: AxiosResponse<any, any> = await axios.get(api_url + endpoint, {
-        headers: { "Authorization": `Bearer ${this.token}` }
+        headers: { "Authorization": `Bearer ${authToken}` }
       });
       if (res.status === HttpStatusCode.Ok) return res.data;
       return null;
@@ -40,10 +41,11 @@ class FrontUtilService {
   }
 
   public static async getUserById(userId: number): Promise<any | null> {
+    const authToken: string | null = localStorage.getItem("onyxyaToken");
     try {
       if (!isNaN(userId)) {
         const res: AxiosResponse<any, any> = await axios.get(api_url + "/users/user/" + userId, {
-          headers: { "Authorization": `Bearer ${this.token}` }
+          headers: { "Authorization": `Bearer ${authToken}` }
         });
         if (res.status === HttpStatusCode.Ok) return res.data;
       }
@@ -54,10 +56,11 @@ class FrontUtilService {
   }
 
   public static async deleteApi(endpoint: string): Promise<any | null> {
+    const authToken: string | null = localStorage.getItem("onyxyaToken");
     try {
       if (endpoint.length > 0) {
         const res: AxiosResponse<any, any> = await axios.delete(api_url + endpoint, {
-          headers: { "Authorization": `Bearer ${this.token}` }
+          headers: { "Authorization": `Bearer ${authToken}` }
         });
         return res;
       }
@@ -68,11 +71,12 @@ class FrontUtilService {
   }
 
   public static async patchApi(endpoint: string, body: any): Promise<any | null> {
+    const authToken: string | null = localStorage.getItem("onyxyaToken");
     try {
       if (endpoint.length > 0) {
         const res: AxiosResponse<any, any> = await axios.patch(api_url + endpoint,
           body,
-          { headers: { "Authorization": `Bearer ${this.token}` } }
+          { headers: { "Authorization": `Bearer ${authToken}` } }
         );
         return res;
       }
@@ -83,11 +87,12 @@ class FrontUtilService {
   }
 
   public static async postApi(endpoint: string, body: any): Promise<any | null> {
+    const authToken: string | null = localStorage.getItem("onyxyaToken"); 
     try {
       if (endpoint.length > 0) {
         const res: AxiosResponse<any, any> = await axios.post(api_url + endpoint,
           body,
-          { headers: { "Authorization": `Bearer ${this.token}` } }
+          { headers: { "Authorization": `Bearer ${authToken}` } }
         );
         return res;
       }

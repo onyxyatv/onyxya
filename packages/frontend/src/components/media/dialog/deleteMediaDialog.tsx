@@ -1,7 +1,6 @@
-import AuthContext from "@/utils/AuthContext";
 import FrontUtilService from "@/utils/frontUtilService";
 import { AxiosResponse, HttpStatusCode } from "axios";
-import { useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
@@ -19,29 +18,19 @@ import { toast } from "../../ui/use-toast";
 type DeleteMediaDialogProps = {
   mediaId: number;
   onMediaDeleted?: () => void;
+  disabled?: boolean;
 };
 
 const DeleteMediaDialog = ({
   mediaId,
   onMediaDeleted,
+  disabled,
 }: DeleteMediaDialogProps) => {
   const navigate = useNavigate();
-  const perms = useContext(AuthContext)?.authUser?.permissions;
+  const { t } = useTranslation();
 
   const confirmDeleteMedia = async (): Promise<void> => {
     try {
-      if (!perms?.includes("delete_media")) {
-        toast({
-          title: "Delete media",
-          description: "You don't have the permission to delete media",
-          variant: "destructive",
-        });
-        if (onMediaDeleted) {
-          onMediaDeleted();
-        }
-        return;
-      }
-
       const endpoint = `/media/${mediaId}`;
       const res: AxiosResponse = await FrontUtilService.deleteApi(endpoint);
 
@@ -52,6 +41,8 @@ const DeleteMediaDialog = ({
           description: "Media removed successfully",
           variant: "default",
         });
+
+        if (onMediaDeleted) onMediaDeleted();
       }
     } catch (error) {
       toast({
@@ -64,14 +55,26 @@ const DeleteMediaDialog = ({
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger>
+      {!disabled ? (
+        <AlertDialogTrigger>
+          <Button
+            size="sm"
+            variant="destructive"
+            className="m-1 bg-white text-red-600 border-2 border-red-600 hover:text-white"
+          >
+            {t("media.table.action.delete")}
+          </Button>
+        </AlertDialogTrigger>
+      ) : (
         <Button
+          size="sm"
           variant="destructive"
-          className="bg-white text-red-600 border-2 border-red-600 hover:text-white"
+          className="m-1 bg-white text-red-600 border-2 border-red-600 hover:text-white"
+          disabled
         >
-          Delete media
+          {t("media.table.action.delete")}
         </Button>
-      </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center">

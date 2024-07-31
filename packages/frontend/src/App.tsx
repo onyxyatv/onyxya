@@ -2,20 +2,22 @@ import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import MusicPlayer from "./components/music/musicPlayer";
+import { Toaster } from "./components/ui/toaster";
 import Media from "./pages/Media";
-import Movies from "./pages/Movies";
+import Movie from "./pages/movie/Movie";
+import PlayMovie from "./pages/movie/PlayMovie";
 import Music from "./pages/music/Music";
+import MyPlaylist from "./pages/music/MyPlaylist";
 import Series from "./pages/Series";
-import Unauthorized from "./pages/Unauthorized";
 import EditUser from "./pages/settings/EditUser";
 import Settings from "./pages/settings/Settings";
+import Unauthorized from "./pages/Unauthorized";
 import { AuthProvider } from "./utils/AuthContext";
-import ProtectedRoute from "./utils/ProtectedRoute";
-import MyPlaylist from "./pages/music/MyPlaylist";
-import MusicPlayer from "./components/music/musicPlayer";
 import { MusicPlayerProvider } from "./utils/MusicPlayerContext";
 import { Toaster } from "./components/ui/toaster";
 import Profile from "./pages/Profile";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 const App: React.FC = () => {
   return (
@@ -34,10 +36,10 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/movies"
+              path="/movie"
               element={
                 <ProtectedRoute>
-                  <Movies />
+                  <Movie />
                 </ProtectedRoute>
               }
             />
@@ -60,13 +62,15 @@ const App: React.FC = () => {
             <Route
               path="/media"
               element={
-                <Media />
+                <ProtectedRoute permission="admin_read_media">
+                  <Media />
+                </ProtectedRoute>
               }
             />
             <Route
               path="/settings/*"
               element={
-                <ProtectedRoute role="admin">
+                <ProtectedRoute>
                   <Settings />
                 </ProtectedRoute>
               }
@@ -95,12 +99,20 @@ const App: React.FC = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/movie/:id"
+              element={
+                <ProtectedRoute>
+                  <PlayMovie />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/unauthorized" element={<Unauthorized />} />
           </Routes>
           <MusicPlayer />
         </Router>
       </MusicPlayerProvider>
-    </AuthProvider >
+    </AuthProvider>
   );
 };
 
