@@ -1,26 +1,29 @@
-import { 
-  AlertDialog, 
-  AlertDialogDescription, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogHeader, 
-  AlertDialogTitle, 
-  AlertDialogTrigger 
+import {
+  AlertDialog,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import AuthContext from "@/utils/AuthContext";
 import FrontUtilService from "@/utils/frontUtilService";
 import { AxiosResponse, HttpStatusCode } from "axios";
-import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
 
-const DeleteUserDialog = (props: { userId: number }) => {
-  const navigate = useNavigate();
+const DeleteMyAccountDialog = (props: { userId: number }) => {
+  const logout = useContext(AuthContext)?.logout;
 
-  const confirmDeleteUser = async (): Promise<void> => {
+  const confirmDeleteMyAccount = async (): Promise<void> => {
     try {
-      const endpoint = `/users/user/${props.userId}`;
+      const endpoint = FrontUtilService.userEndpoint.replace(':id', props.userId.toString());
       const res: AxiosResponse = await FrontUtilService.deleteApi(endpoint);
-      if (res.status === HttpStatusCode.Ok) navigate('/settings/users-administration');
+      if (res.status === HttpStatusCode.Ok) {
+        if (logout) logout();
+      }
     } catch (error) {
       // TODO handle error plz
       alert('ee');
@@ -31,23 +34,23 @@ const DeleteUserDialog = (props: { userId: number }) => {
     <AlertDialog>
       <AlertDialogTrigger>
         <Button variant="destructive" className="bg-white text-red-600 border-2 border-red-600 hover:text-white">
-          Delete user
+          Delete my account
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center">
-            Are you sure to delete user #{props.userId}
+            Are you sure to delete you'r account?
           </AlertDialogTitle>
           <AlertDialogDescription className="text-center">
-            This action cannot be undone. This will permanently delete the user's account.
+            This action cannot be undone. This will permanently delete your user's account.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex flex-row justify-between">
           <AlertDialogCancel>
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction onClick={() => confirmDeleteUser()} className="bg-red-400 hover:bg-red-600">
+          <AlertDialogAction onClick={() => confirmDeleteMyAccount()} className="bg-red-400 hover:bg-red-600">
             Confirm deletion
           </AlertDialogAction>
         </div>
@@ -56,4 +59,4 @@ const DeleteUserDialog = (props: { userId: number }) => {
   );
 }
 
-export default DeleteUserDialog;
+export default DeleteMyAccountDialog;

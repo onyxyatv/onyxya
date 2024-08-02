@@ -8,13 +8,16 @@ import {
   useEffect,
   useState,
 } from "react";
-import { api_url } from "../../config.json";
+import { api_url, websocket } from "../../config.json";
+import { io } from "socket.io-client";
 
 interface AuthContextType {
   authUser: AuthUser | null;
   login: (token: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
+  websocketClient: any;
+  startWebsocketClient: () => void;
 }
 
 export interface AuthUser {
@@ -39,6 +42,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [websocketClient, setWebsocketData] = useState<any>(null);
 
   const parseJwt = useCallback((token: string): AuthUser | null => {
     try {
@@ -92,9 +96,37 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
   }, [parseJwt, getPermissions]);
 
+  const startWebsocketClient = useCallback(async () => {
+    const socket = io(`${websocket}/userEvents`, {
+      withCredentials: false,
+    });
+  
+    if (authUser) {
+      const sendedData = {
+        id: authUser.id,
+        username: authUser.username
+      };
+  
+      socket.emit('events', sendedData, (data: any) => {
+        console.log(data);
+        //setData(data);
+      });
+    }
+  
+    socket.on('clients', (data) => {
+      setWebsocketData(Object.values(data));
+    });
+  
+    socket.on('disconnect', () => {
+      console.log('Disconnected from WebSocket server');
+    });
+    // TODO: check property
+  }, [authUser?.id]);
+
   useEffect(() => {
     initializeAuth();
-  }, [initializeAuth]);
+    startWebsocketClient();
+  }, [initializeAuth, startWebsocketClient]);
 
   const login = useCallback(
     async (token: string) => {
@@ -124,7 +156,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ authUser, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ 
+      authUser, login, logout, isLoading, websocketClient,
+      startWebsocketClient
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -6,11 +6,14 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { MediaService } from 'src/media/media.service';
+import { UserService } from './users.service';
 
 interface ActiveClient {
   id: string;
   userId: number;
   username: string;
+  device: string;
 }
 
 @WebSocketGateway(3002, {
@@ -24,7 +27,7 @@ interface ActiveClient {
   },
 })
 export class UserGateway {
-  constructor() {
+  constructor(private readonly mediaService: MediaService) {
     this.activeClients = {};
   }
 
@@ -42,18 +45,23 @@ export class UserGateway {
       id: client.id,
       userId: data.id,
       username: data.username,
+      device: UserService.formatUserAgent(
+        client.handshake.headers['user-agent'],
+      ),
     };
     this.activeClients[client.id] = activeClient;
     console.log('Client received :', client.id, data);
-    console.log(this.activeClients);
+    //console.log(this.activeClients);
     this.updateClients();
     return this.activeClients.toString();
   }
 
-  handleDisconnect(client: Socket) {
-    //this.activeClients -= 1;
-    console.log(this.activeClients);
-    console.log(`Client disconnected: ${client.id}`);
+  async handleDisconnect(client: Socket) {
+    delete this.activeClients[client.id];
+    if (Object.keys(this.activeClients).length === 0) {
+      console.log("All clients disconnected -> Stream's clean");
+      await this.mediaService.cleanAllMediaStreams();
+    }
     this.updateClients();
   }
 

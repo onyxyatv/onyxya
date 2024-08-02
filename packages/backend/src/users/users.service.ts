@@ -25,6 +25,7 @@ import { EditUser } from '@common/validation/auth/editUser.schema';
 import { Permissions } from 'src/db/permissions';
 import { CreateOwner } from 'src/db/inits/createOwner.db';
 import { MediaService } from 'src/media/media.service';
+import { UAParser } from 'ua-parser-js';
 const secret: string = process.env.JWT_SECRET_KEY;
 
 @Injectable()
@@ -294,5 +295,11 @@ export class UserService {
   async removeActiveClient() {
     this.activeClients -= 1;
     if (this.activeClients <= 0) this.mediaService.cleanAllMediaStreams();
+  }
+
+  static formatUserAgent(userAgent: string): string {
+    const agentParser = new UAParser(userAgent);
+    const parsedAgent = agentParser.getResult();
+    return parsedAgent.browser.name + ' / ' + parsedAgent.os.name;
   }
 }

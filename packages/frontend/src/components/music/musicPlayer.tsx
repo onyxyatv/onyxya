@@ -6,7 +6,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import { CircleX } from "lucide-react";
 import '@vidstack/react/player/styles/default/theme.css';
 import '@vidstack/react/player/styles/default/layouts/video.css';
-import { MediaPlayer, MediaPlayerInstance, MediaProvider, MediaSrc } from '@vidstack/react';
+import { AudioMimeType, MediaPlayer, MediaPlayerInstance, MediaProvider, MediaSrc, VideoMimeType } from '@vidstack/react';
 import { Music } from "lucide-react";
 import FrontUtilService from "@/utils/frontUtilService";
 import '@vidstack/react/player/styles/base.css';
@@ -51,7 +51,7 @@ const MusicPlayer = () => {
   const [currentTime, setCurrentTime] = useState<number | undefined>(0);
 
   // Indicates whether the extended is opened or not
-  const [isExtendedOpen, setIsExtendedOpen] = useState(false);
+  //const [isExtendedOpen, setIsExtendedOpen] = useState(false);
 
   const playNextRandom = (): void => {
     if (playlist) {
@@ -66,7 +66,7 @@ const MusicPlayer = () => {
     }
   }
 
-  const handleClickNext = () => {
+  /*const handleClickNext = () => {
     if (playlist) {
       if (randomMode) {
         playNextRandom();
@@ -76,9 +76,9 @@ const MusicPlayer = () => {
         );
       }
     }
-  };
+  };*/
 
-  const handleClickPrevious = () => {
+  /*const handleClickPrevious = () => {
     if (playlist) {
       const previous = currentMusic > 0 ? currentMusic - 1 : 0;
       setCurrentMusic(previous);
@@ -88,7 +88,7 @@ const MusicPlayer = () => {
         audio.play();
       }
     }
-  };
+  };*/
 
   // Goes to the next music or restarts the playlist if it is finished
   const handleEnd = (): void => {
@@ -110,10 +110,10 @@ const MusicPlayer = () => {
       if (isOpened) {
         if (mediaPlayerRef.current && audio?.currentTime)
           mediaPlayerRef.current.currentTime = audio?.currentTime;
-        setIsExtendedOpen(true);
+        //setIsExtendedOpen(true);
         audio?.pause();
       } else {
-        setIsExtendedOpen(false);
+        //setIsExtendedOpen(false);
         if (isMusicPlayling && audio?.paused) {
           if (currentTime) audio.currentTime = currentTime;
           audio.play();
@@ -126,7 +126,8 @@ const MusicPlayer = () => {
   //const music = useContext(MusicPlayerContext)?.music;
   const musicSrc = (music) ? music.src : '';
   // eslint-disable-next-line no-constant-condition
-  const musicType: string = (music && music.mediaCard.media.name.includes('mp4')) ? 'video/mp4' : 'audio/mpeg';
+  const musicType: AudioMimeType | VideoMimeType = 
+    (music && music.mediaCard.media.name.includes('mp4')) ? 'video/mp4' : 'audio/mpeg';
   const musicVideo: MediaSrc = { src: musicSrc, type: musicType };
   //const musicVideo: MediaSrc = { src: musicSrc, type: 'application/x-mpegurl' };
   const mediaPlayerRef = useRef<MediaPlayerInstance>(null);
@@ -204,10 +205,10 @@ const MusicPlayer = () => {
                     ref={mediaPlayerRef}
                     viewType="video"
                     //onTimeUpdate={handleOnTimeUpdate}
-                    //onTimeChange={setCurrentTime}
-                    //currentTime={currentTime}
+                    onTimeChange={setCurrentTime}
+                    currentTime={currentTime}
                     title={music?.mediaCard.name}
-                    //onPlay={handleOnPlay}
+                    onPlay={handleOnPlay}
                     onPause={() => handleOnPause}
                     autoPlay={true}
                     //onVolumeChange={handleVolumeChanged}defaultLayoutIcons

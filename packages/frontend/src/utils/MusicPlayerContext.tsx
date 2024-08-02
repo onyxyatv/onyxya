@@ -1,4 +1,4 @@
-import { FC, ReactNode, createContext, useState } from "react";
+import { FC, ReactNode, createContext, useEffect, useState } from "react";
 import FrontUtilService from "./frontUtilService";
 import { MediaCard } from "@/components/models/media";
 import { HttpStatusCode } from "axios";
@@ -38,6 +38,7 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
   const [isMusicPlayling, setIsMusicPlayling] = useState<boolean>(false);
   const [random, setRandomMode] = useState<boolean>(false);
   const [musicId, setMusicId] = useState<number>(0);
+  const [oldMusicId, setOldMusicId] = useState(music?.mediaCard.media.id);
 
   const fetchMusic = async (localMusicId: number): Promise<void> => {
     setIsLoading(true);
@@ -71,6 +72,17 @@ export const MusicPlayerProvider: FC<MusicPlayerProps> = ({ children }) => {
   const setMusicMode = (): void => setIsPlaylist(false);
 
   const setPlaylistsMusics = (list: Array<number>): void => setPlaylist(list);
+
+  useEffect(() => {
+    const checkStream = async () => {
+      if (music && music.mediaCard.media.id !== oldMusicId) {
+        setOldMusicId(music.mediaCard.media.id);
+        await finishMediaStream();
+      }
+    }
+    checkStream();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [oldMusicId, music]);
 
   return (
     <MusicPlayerContext.Provider 

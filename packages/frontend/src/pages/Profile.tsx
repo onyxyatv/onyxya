@@ -1,73 +1,73 @@
 import Header from "@/components/header/header";
-import AuthContext, { AuthUser } from "@/utils/AuthContext";
+import { User } from "@/components/models/user";
+import EditMyAccount from "@/components/settings/profile/editMyAccount";
+import AuthContext from "@/utils/AuthContext";
+import FrontUtilService from "@/utils/frontUtilService";
 import { useContext, useEffect, useState } from "react";
-import { io } from 'socket.io-client';
 
 type ActiveClient = {
   id: string;
   userId: number;
   username: string;
+  device: string;
 }
 
 const Profile = () => {
-  const authUser: AuthUser | null | undefined = useContext(AuthContext)?.authUser;
   const [data, setData] = useState<ActiveClient[]>([]);
+  const websocketClient = useContext(AuthContext)?.websocketClient;
+  const [reloadStatus, setReloadStatus] = useState(true);
+  const authUser = useContext(AuthContext)?.authUser;
+  const [fullUser, setFullUser] = useState<User | null>(null);
 
-  const testSSE = () => {
+  /*const testSSE = () => {
     const sse = new EventSource('http://localhost:3000/users/events/test');
     sse.onmessage = ({ data }) => {
       setData(data);
       //console.log('New message', JSON.parse(data));
     }
-  }
-
-  const testWebSocket = () => {
-    const socket = io("ws://localhost:3002/userEvents", {
-      withCredentials: false,
-    });
-
-    if (authUser) {
-      const sendedData = {
-        id: authUser.id,
-        username: authUser.username
-      };
-      
-      socket.emit('events', sendedData, (data: any) => {
-        console.log(data);
-        //setData(data);
-      });
-    }
-      
-    socket.on('clients', (data) => {
-      setData(Object.values(data));
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Disconnected from WebSocket server');
-    });
-  }
+  }*/
 
   useEffect(() => {
     //testSSE();
-    testWebSocket();
-  }, []);
+    if (websocketClient) setData(websocketClient);
+    const fetchUser = async () => {
+      if (authUser) {
+        const user: User = await FrontUtilService.getUserById(authUser.id);
+        setFullUser(user);
+      }
+    };
+    if (reloadStatus) {
+      fetchUser();
+      setReloadStatus(false);
+    }
+  }, [websocketClient, authUser, fullUser, setFullUser, reloadStatus]);
 
   return (
     <div>
       <Header />
-      <h4>Active clients: </h4>
-      <p>
-      {
-        data.map((client) => {
-          return (
-            <div className="p-2 border-gray-400 border-2 mt-2 w-1/3">
-              <h6>{client.id}</h6>
-              <p>{client.userId} / {client.username}</p>
-            </div>
-          );
-        })
-      }
-      </p>
+      <section id="MyProfileContainer" className="max-w-[90vw] m-auto mt-2">
+      <h2 className="text-3xl font-bold">My Profile</h2>
+        {
+          fullUser &&
+          <EditMyAccount user={fullUser} setReloadStatus={(v: boolean) => setReloadStatus(v)} />
+        }
+        <section id="ActiveClientsContainer">
+          <h4>Active devices: </h4>
+          <div>
+            {
+              data.map((client) => {
+                return (
+                  <div className="p-2 border-gray-400 border-2 mt-2 w-1/3">
+                    <h6>{client.id}</h6>
+                    <p>{client.userId} / {client.username}</p>
+                    <p>{client.device}</p>
+                  </div>
+                );
+              })
+            }
+          </div>
+        </section>
+      </section>
     </div>
   );
 };

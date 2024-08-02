@@ -59,8 +59,8 @@ const Header: FunctionComponent = () => {
       </NavigationMenu>
       <div className="flex">
         <button className="mr-2">
-          <Moon />
-          <Sun />
+          <Moon color="#fff" />
+          {/*<Sun />*/}
         </button>
         <UserMenu />
       </div>
