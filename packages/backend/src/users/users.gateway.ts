@@ -8,6 +8,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { MediaService } from 'src/media/media.service';
 import { UserService } from './users.service';
+const frontIp: string = process.env.ONYXYA_FRONT_IP;
 
 interface ActiveClient {
   id: string;
@@ -20,7 +21,7 @@ interface ActiveClient {
   namespace: ['userEvents'],
   transports: ['websocket', 'polling'],
   cors: {
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', `http://${frontIp}:5173`],
     methods: 'GET,HEAD,POST,OPTION',
     allowedHeaders: ['Content-Type'],
     credentials: false,
@@ -36,7 +37,7 @@ export class UserGateway {
 
   private activeClients: object;
 
-  @SubscribeMessage('events')
+  @SubscribeMessage('connectDevice')
   handleEvent(
     @MessageBody() data: any,
     @ConnectedSocket() client: Socket,
@@ -50,10 +51,8 @@ export class UserGateway {
       ),
     };
     this.activeClients[client.id] = activeClient;
-    console.log('Client received :', client.id, data);
-    //console.log(this.activeClients);
     this.updateClients();
-    return this.activeClients.toString();
+    return activeClient.id;
   }
 
   async handleDisconnect(client: Socket) {

@@ -26,6 +26,7 @@ services:
       # Don't forget to change admin's credentials
       - ONYXYA_OWNER_USERNAME=admin
       - ONYXYA_OWNER_PASSWORD=changeme
+      - ONYXYA_FRONT_IP=changeme
     ports:
       - "3000:3000"
       - "5173:5173"

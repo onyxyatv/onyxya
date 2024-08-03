@@ -1,5 +1,5 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -7,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -15,32 +15,32 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { LoginUser, loginSchema } from "@common/validation/auth/login.schema";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios, { AxiosResponse } from "axios";
-import { AlertCircle } from "lucide-react";
-import { useContext, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Navigate } from "react-router-dom";
-import { api_url } from "../../config.json";
-import AuthContext from "../utils/AuthContext";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { LoginUser, loginSchema } from '@common/validation/auth/login.schema';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios, { AxiosResponse } from 'axios';
+import { AlertCircle } from 'lucide-react';
+import { useContext, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Navigate } from 'react-router-dom';
+import { api_url } from '../../config.json';
+import AuthContext from '@/utils/AuthContext';
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { authUser, login } = useContext(AuthContext) || {};
 
   const form = useForm<LoginUser>({
     resolver: zodResolver(loginSchema),
-    mode: "onSubmit",
+    mode: 'onSubmit',
     defaultValues: {
-      username: "",
-      password: "",
+      username: '',
+      password: '',
     },
   });
 
@@ -50,26 +50,32 @@ const Login: React.FC = () => {
       const res: AxiosResponse<{ jwt: string }> = await axios.post(
         `${api_url}/login`,
         values,
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          }
+        }
       );
       if (res.status === 200 && login) {
         login(res.data.jwt);
       }
     } catch (e) {
-      setError("Login or password is incorrect. Please try again.");
+      setError('Login or password is incorrect. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   if (authUser) {
-    return <Navigate to="/home" />;
+    return <Navigate to='/home' />;
   }
 
   return (
     <div className="h-screen w-screen flex items-center justify-center">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="w-1/5">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="w-80">
           <Card>
             <CardHeader>
               <CardTitle>Login</CardTitle>

@@ -18,6 +18,7 @@ interface AuthContextType {
   isLoading: boolean;
   websocketClient: any;
   startWebsocketClient: () => void;
+  deviceId: string;
 }
 
 export interface AuthUser {
@@ -43,6 +44,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [websocketClient, setWebsocketData] = useState<any>(null);
+  const [deviceId, setDeviceId] = useState<string>('');
 
   const parseJwt = useCallback((token: string): AuthUser | null => {
     try {
@@ -107,10 +109,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         username: authUser.username
       };
   
-      socket.emit('events', sendedData, (data: any) => {
-        console.log(data);
-        //setData(data);
-      });
+      socket.emit('connectDevice', sendedData, (deviceId: any) => setDeviceId(deviceId));
     }
   
     socket.on('clients', (data) => {
@@ -120,7 +119,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     socket.on('disconnect', () => {
       console.log('Disconnected from WebSocket server');
     });
-    // TODO: check property
+  // TODO: check property
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUser?.id]);
 
   useEffect(() => {
@@ -158,7 +158,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   return (
     <AuthContext.Provider value={{ 
       authUser, login, logout, isLoading, websocketClient,
-      startWebsocketClient
+      startWebsocketClient, deviceId
     }}>
       {children}
     </AuthContext.Provider>
