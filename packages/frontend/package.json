@@ -32,7 +32,7 @@
     "@radix-ui/react-toast": "^1.2.1",
     "@tanstack/react-table": "^8.17.3",
     "@vidstack/react": "^1.11.29",
-    "axios": "^1.7.2",
+    "axios": "1.7.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "hls.js": "1.5.13",
